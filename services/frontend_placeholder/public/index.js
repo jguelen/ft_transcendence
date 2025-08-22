@@ -8,6 +8,10 @@ const urlPageTitle = "ft_transcendence";
 // create document click that watches the nav links only
 document.addEventListener("click", (e) => {
 	const { target } = e;
+
+console.log('popstate')
+console.log(target)
+
 	if (!target.matches("nav a")) {
 		return;
 	}
@@ -42,6 +46,19 @@ const urlRoutes = {
 		title: "settings | " + urlPageTitle,
 		description: "settings page",
 	},
+
+	"/login": {
+		template: "/public/templates/login.html",
+		title: "login | " + urlPageTitle,
+		description: "login page",
+	},
+
+	"/signup": {
+		template: "/public/templates/signup.html",
+		title: "signup | " + urlPageTitle,
+		description: "signup page",
+	},
+
 };
 
 // create a function that watches the url and calls the urlLocationHandler
@@ -69,13 +86,22 @@ console.log('root page req')
 console.log('root page req2')
 		location = "/home";
 	}
+
+	var show_nav = "block";
+//	if (location == '/login' ) show_nav = "none"
+//	if (location == '/signup') show_nav = "none"
+
 	// get the route object from the urlRoutes object
-	const route = urlRoutes[location] || urlRoutes["404"];
+	const route = urlRoutes[location] || urlRoutes["404"]
 
 console.log(route)
 
 	// get the html from the template
 	const html = await fetch(route.template).then((response) => response.text());
+
+	// show/hide nav
+	document.getElementById("navdiv").style.display = show_nav
+
 	// set the content of the content div to the html
 	document.getElementById("pagemaincontent").innerHTML = html;
 	// set the title of the document to the title of the route
