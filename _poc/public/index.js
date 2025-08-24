@@ -1,50 +1,19 @@
 // Placeholder site
 
-console.log("huhuuhaha")
-console.log(window.location.pathname)
-
-
+console.log("huhuuhaha");
 
 
 const urlPageTitle = "ft_transcendence";
 
-document.getElementById("lang_en").addEventListener("click", (e) => {
-console.log('clicken')
-	e.preventDefault();
-})
-
-/*
-document.getElementById("navdiv").addEventListener("click", (e) => {
-console.log('click')
-	const { target } = e;
-
-	if (!target.matches("nav a")) {
-		return;
-	}
-
-	e.preventDefault();
-	urlRoute();
-})
-*/
-
-/*
 // create document click that watches the nav links only
 document.addEventListener("click", (e) => {
 	const { target } = e;
-
-console.log('click')
-console.log(target)
-
 	if (!target.matches("nav a")) {
 		return;
 	}
-
 	e.preventDefault();
 	urlRoute();
 });
-*/
-
-
 
 // create an object that maps the url to the template, title, and description
 const urlRoutes = {
@@ -66,33 +35,17 @@ const urlRoutes = {
 	"/chat": {
 		template: "/public/templates/chat.html",
 		title: "chat | " + urlPageTitle,
-		description: "chat page",
+		description: "game page",
 	},
 	"/settings": {
 		template: "/public/templates/settings.html",
 		title: "settings | " + urlPageTitle,
 		description: "settings page",
 	},
-
-	"/login": {
-		template: "/public/templates/login.html",
-		title: "login | " + urlPageTitle,
-		description: "login page",
-	},
-
-	"/signup": {
-		template: "/public/templates/signup.html",
-		title: "signup | " + urlPageTitle,
-		description: "signup page",
-	},
-
 };
 
 // create a function that watches the url and calls the urlLocationHandler
 const urlRoute = (event) => {
-console.log('urlRoute')
-console.log(event)
-
 	event = event || window.event; // get window.event if event argument not provided
 	event.preventDefault();
 	// window.history.pushState(state, unused, target link);
@@ -116,42 +69,15 @@ console.log('root page req')
 console.log('root page req2')
 		location = "/home";
 	}
-
-	var show_nav = "block";
-	if (location == '/login' ) show_nav = "none"
-	if (location == '/signup') show_nav = "none"
-
 	// get the route object from the urlRoutes object
-	const route = urlRoutes[location] || urlRoutes["404"]
+	const route = urlRoutes[location] || urlRoutes["404"];
 
 console.log(route)
 
 	// get the html from the template
 	const html = await fetch(route.template).then((response) => response.text());
-
-	// show/hide nav
-	document.getElementById("navdiv").style.display = show_nav
-
 	// set the content of the content div to the html
-	var my_div = document.getElementById("pagemaincontent")
-	my_div.innerHTML = html;
-	var arr = my_div.getElementsByTagName('script')
-
-	console.log(arr[0].src)
-	if (arr[0].src)
-	{
-
-var newScript = document.createElement("script");
-newScript.src = arr[0].src;
-my_div.appendChild(newScript);
-
-
-	}
-
-
-//	for (var n = 0; n < arr.length; n++)
-//		eval(arr[n].innerHTML)
-
+	document.getElementById("pagemaincontent").innerHTML = html;
 	// set the title of the document to the title of the route
 	document.title = route.title;
 	// set the description of the document to the description of the route
@@ -163,12 +89,87 @@ my_div.appendChild(newScript);
 window.onpopstate = urlLocationHandler;
 
 // call the urlLocationHandler function to handle the initial url
+
 window.route = urlRoute;
 // call the urlLocationHandler function to handle the initial url
+
 urlLocationHandler();
 
 
+
+
+
 /*
+document.getElementById("divgame").style.display = "none"
+document.getElementById("divsettings").style.display = "none"
+
+
+document.getElementById("navbtnhome").addEventListener("click", () => {
+	console.log("1");
+
+	document.getElementById("divhome").style.display = "block"
+	document.getElementById("divgame").style.display = "none"
+	document.getElementById("divsettings").style.display = "none"
+
+//	router();
+});
+
+
+document.getElementById("navbtngame").addEventListener("click", () => {
+	console.log("2");
+
+	document.getElementById("divhome").style.display = "none"
+	document.getElementById("divgame").style.display = "block"
+	document.getElementById("divsettings").style.display = "none"
+
+//	router();
+});
+
+document.getElementById("navbtnsettings").addEventListener("click", () => {
+	console.log("3");
+
+	document.getElementById("divhome").style.display = "none"
+	document.getElementById("divgame").style.display = "none"
+	document.getElementById("divsettings").style.display = "block"
+
+//	router();
+});
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+console.log("huhu");
+
+
+
+
+//	router();
+});
+
+*/
+
+
+/*
+const router = async () => {
+	const routes = [
+		{path: "/", views: () => (console.log("viewing")) },
+		{path: "/game", views: () => (console.log("game")) },
+		{path: "/profile", views: () => (console.log("profile")) }
+
+	];
+
+	const potentialMatches = routes.map(route => {
+		return {
+			route: route,
+			isMatch: location.pathname === route.path
+		};
+
+	});
+
+	console.log(potentialMatches);
+};
+
 document.addEventListener("DOMContentLoaded", () => {
 console.log("huhu");
 
