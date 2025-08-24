@@ -15,10 +15,70 @@ fastify.register(fastify_static, {
 })
 
 
-fastify.get('/', { }, function (req, res) {
+fastify.addHook('preHandler', (req, res, next) => {
+console.log("hihihihihi");
+//  req.jwt = fastify.jwt
 
+res.header("Access-Control-Allow-Origin", "*")
+ res.header("Access-Control-Allow-Methods", "*");
+ res.header("Access-Control-Allow-Headers",  "*");
+
+
+  const isPreflight = /options/i.test(req.method);
+  if (isPreflight) {
+    return res.send();
+  }
+
+  return next()
+})
+
+
+
+
+/*
+fastify.get('/', { }, function (req, res) {
 	res.sendFile('index.html')
 })
+
+
+fastify.get('/chat', { }, function (req, res) {
+ 	res.sendFile('index.html')
+})
+
+fastify.get('/settings', { }, function (req, res) {
+ 	res.sendFile('index.html')
+})
+
+fastify.get('/Profile', { }, function (req, res) {
+ 	res.sendFile('index.html')
+})
+
+fastify.get('/account', { }, function (req, res) {
+ 	res.sendFile('index.html')
+})
+
+
+fastify.get('/login', { }, function (req, res) {
+ 	res.sendFile('index.html')
+})
+
+fastify.get('/signup', { }, function (req, res) {
+ 	res.sendFile('index.html')
+})
+*/
+
+fastify.get('/', { }, sendAppPage)
+fastify.get('/home', { }, sendAppPage)
+fastify.get('/chat', { }, sendAppPage)
+fastify.get('/settings', { }, sendAppPage)
+fastify.get('/Profile', { }, sendAppPage)
+fastify.get('/account', { }, sendAppPage)
+fastify.get('/login', { }, sendAppPage)
+fastify.get('/signup', { }, sendAppPage)
+
+function sendAppPage(req, res) {
+	res.sendFile('index.html')
+}
 
 
 /*
@@ -37,7 +97,7 @@ console.log(`user: ${user}`);
 */
 
 
-// Run the server!
+// Run the serveur!
 fastify.listen({ port: 3000 }, (err) => {
 	if (err) {
 		fastify.log.error(err)
