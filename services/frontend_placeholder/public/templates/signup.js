@@ -1,9 +1,9 @@
 console.log("huhuhuhihi");
 
-document.getElementById('uuu').addEventListener('click', function(event) {
-//alert("huhuhuhuhuhu");
-console.log("scriptButton was clicked");
-})
+// document.getElementById('uuu').addEventListener('click', function(event) {
+// //alert("huhuhuhuhuhu");
+// console.log("scriptButton was clicked");
+// })
 
 /*
 document.getElementById('suf_submitbutton').addEventListener('click', function(event) {
@@ -34,8 +34,9 @@ document.getElementById('suf_submitbutton').addEventListener('click', function(e
 	if (validLogin) {
 		fetch('http://localhost:3002/api/newuser', {
 			method: 'POST',
+			credentials: 'include', // This sends cookies and other credentials
 			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify( {username:userName, useremail:userEmail, password:password} )
+			body: JSON.stringify( {username:userName, useremail:userEmail, password:password})
 		})
 		.then( function(response) {return response.text() })
 		.then( function(msg) { 
