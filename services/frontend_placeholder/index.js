@@ -19,13 +19,15 @@ fastify.addHook('preHandler', (req, res, next) => {
 console.log("hihihihihi");
 //  req.jwt = fastify.jwt
 
-res.header("Access-Control-Allow-Origin", "*")
- res.header("Access-Control-Allow-Methods", "*");
- res.header("Access-Control-Allow-Headers",  "*");
+res.header("Access-Control-Allow-Origin", "http://localhost:3002")
+res.header("Access-Control-Allow-Credentials", true)
 
 
   const isPreflight = /options/i.test(req.method);
   if (isPreflight) {
+	 res.header("Access-Control-Allow-Methods", "*")
+ res.header("Access-Control-Allow-Headers",  'Content-Type, Authorization')
+
     return res.send();
   }
 
