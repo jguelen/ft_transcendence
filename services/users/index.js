@@ -118,6 +118,71 @@ fastify.register(fastify_cookie, {
 
 
 
+fastify.get('/api/user_getbyemail/:email', {}, async function (req, res) {
+
+	console.log(req.params);
+
+	const value = req.params.email;
+
+	try {
+		var user = await prisma.user.findUnique({
+			where: { 
+				email: value
+			}
+        })
+		return res.send(user);
+	}
+	catch (error) {
+		res.status(500).send("")
+	}
+
+
+})
+
+/*
+    server.post<{ Params: lookupParams, Body: lookupBody }>('/api/user/lookup/:email', async (request, reply) => {
+        try {
+            const value = request.params.email;
+            const isEmail = value.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
+            const isId = value.match(/^[0-9]$/);
+            let user: User | null = null;
+            if (isEmail) {
+                user = await prisma.user.findUnique({
+                    where: { 
+                        email: value
+                    }
+                })
+            }
+            else if (isId)
+            {
+                user = await prisma.user.findUnique({
+                    where: { 
+                        id: Number(value)
+                    }
+                })
+            }
+            else
+            {
+                user = await prisma.user.findUnique({
+                    where: { 
+                        name: value
+                    }
+                })
+            }
+            if (!user)
+                return reply.status(230).send({ error: "1006" });
+            reply.send(user);
+        }
+        catch (error) {
+            return reply.status(230).send({ error: "0500" });
+        }
+    })
+
+
+*/
+
+
+
 
 fastify.post('/api/newuser', {}, async function (req, res) {
 
