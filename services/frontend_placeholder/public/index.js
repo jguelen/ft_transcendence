@@ -137,15 +137,11 @@ console.log(route)
 	my_div.innerHTML = html;
 	var arr = my_div.getElementsByTagName('script')
 
-	console.log(arr[0].src)
-	if (arr[0].src)
-	{
-
-var newScript = document.createElement("script");
-newScript.src = arr[0].src;
-my_div.appendChild(newScript);
-
-
+	if (arr[0]) {
+console.log(arr[0].src)
+		var newScript = document.createElement("script");
+		newScript.src = arr[0].src;
+		my_div.appendChild(newScript);
 	}
 
 
