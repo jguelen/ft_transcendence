@@ -38,11 +38,22 @@ document.getElementById('suf_submitbutton').addEventListener('click', function(e
 			headers: {'Content-Type': 'application/json'},
 			body: JSON.stringify( {username:userName, useremail:userEmail, password:password})
 		})
-		.then( function(response) {return response.text() })
-		.then( function(msg) { 
-			if(msg != "") alert(msg)
-// if(msg != "") alert(msg); else location.href = '/';
+		.then( function(response) {
+			if (response.status != 200)
+				return response.json()
+			else return null
 		})
+		.then( function(data) {
+console.log(data)
+			if (data)
+				alert(data.msg)
+		})
+
+// 		.then( function(response) {return response.text() })
+// 		.then( function(msg) { 
+// 			if(msg != "") alert(msg)
+// // if(msg != "") alert(msg); else location.href = '/';
+// 		})
 		.catch( function(error) { console.error(error) });
 
 	} else alert("Et bah non, le nom ou le mot de pass est invalide !");

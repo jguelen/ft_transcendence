@@ -9,6 +9,7 @@ const bcrypt = require('bcrypt');
 
 
 
+
 // cookies
 fastify.register(fastify_cookie, {
   secret: 'supersecretcode-CHANGE_THIS-USE_ENV_FILE',
@@ -105,12 +106,14 @@ console.log(req.body);
             body: JSON.stringify({
                 email: email,
                 name: name,
-                password: pwHash //credential: process.env.API_CREDENTIAL
+                password: pwHash
             }),
         }
 
 		);
-console.log(response);
+//console.log(response);
+		if (response.status == 500)
+			return res.status(500).send( {msg: "Can't create user"} );
 
 		const userData = await response.json();
 
@@ -129,58 +132,6 @@ console.error(error);
 
 
 
-/*
-	fastify_instance.post('/user', async (req, res) => { 
-console.log('# /user');
-console.log(req.body);
-
-		const { useremail, password } = req.body;
-		// if (username != "uu" ) 
-		// 	return res.status(401).send("Invalid user or password");
-		// if (password != "1234" ) 
-		// 	return res.status(401).send("Invalid user or password");
-
-		try {
-console.log(useremail);
-			var userByEmail = await prisma.user.findUnique({
-				where: {
-					email: useremail,
-				},
-			});
-		}
-		catch(error) {
-			return res.status(500).send(error);
-//			return res.status(401).send("Invalid user or password");
-		}
-console.log('userByEmail:');
-console.log(userByEmail);
-
-		if (!userByEmail)
-			return res.status(401).send("invalid user or password");
-
-		if (!await bcrypt.compare(password, user.password))
-			return res.status(401).send("invalid user or password");
-
-
-//		if (userByEmail.password != password)
-//			return res.status(401).send("invalid user or password(pw)");
-
-//                              VVV
-		const token = jwt.sign({userId: userByEmail.id},
-			'supersecretcode-CHANGE_THIS-USE_ENV_FILE' );
-
-		return (res.status(200).cookie("ft_transcendence_jwt", token, {
-			path: "/",
-			httpOnly: true,
-			sameSite: "none",
-			secure: true
-		}).send(""));
-	//                  }).send({ response: "successfully logged in", need2fa: true }));
-	})
-*/
-
-
-
 
 
 
@@ -191,3 +142,4 @@ fastify.listen({ port: 3001 }, (err) => {
 		process.exit(1)
 	}
 })
+

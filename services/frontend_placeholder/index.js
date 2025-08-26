@@ -1,11 +1,12 @@
-// npm i fastify @fastify/static
+// npm i fastify @fastify/static @fastify/cookie
+// npm i jsonwebtoken
 
 
 const fastify = require('fastify')({ logger: false })
 const fastify_static = require('@fastify/static')
 const path = require('path')
-
-
+const fastify_cookie = require('@fastify/cookie')
+const jwt = require('jsonwebtoken');
 
 
 fastify.register(fastify_static, {
@@ -15,8 +16,15 @@ fastify.register(fastify_static, {
 })
 
 
+// cookies
+fastify.register(fastify_cookie, {
+  secret: 'supersecretcode-CHANGE_THIS-USE_ENV_FILE',
+  hook: 'preHandler',
+})
+
+
 fastify.addHook('preHandler', (req, res, next) => {
-console.log("hihihihihi");
+//console.log("hihihihihi");
 //  req.jwt = fastify.jwt
 
 res.header("Access-Control-Allow-Origin", "http://localhost:3002")
@@ -36,67 +44,45 @@ res.header("Access-Control-Allow-Credentials", true)
 
 
 
+// JWT verification function
+const verifyJWT = async (req, res) => {
+//console.log("verifyJWT0");
 
-/*
-fastify.get('/', { }, function (req, res) {
-	res.sendFile('index.html')
-})
+	req.user = undefined
+	try {
+console.log(req.cookies);
+		if (!req.cookies)
+			return
 
+		const token = req.cookies['ft_transcendence_jwt'];
+console.log("verifyJWT 1");
+//console.log("token: " + token + "\n");
+console.log(token);
+		if (!token)
+			return;
 
-fastify.get('/chat', { }, function (req, res) {
- 	res.sendFile('index.html')
-})
-
-fastify.get('/settings', { }, function (req, res) {
- 	res.sendFile('index.html')
-})
-
-fastify.get('/Profile', { }, function (req, res) {
- 	res.sendFile('index.html')
-})
-
-fastify.get('/account', { }, function (req, res) {
- 	res.sendFile('index.html')
-})
-
-
-fastify.get('/login', { }, function (req, res) {
- 	res.sendFile('index.html')
-})
-
-fastify.get('/signup', { }, function (req, res) {
- 	res.sendFile('index.html')
-})
-*/
-
-fastify.get('/', { }, sendAppPage)
-fastify.get('/home', { }, sendAppPage)
-fastify.get('/chat', { }, sendAppPage)
-fastify.get('/settings', { }, sendAppPage)
-fastify.get('/Profile', { }, sendAppPage)
-fastify.get('/account', { }, sendAppPage)
-fastify.get('/login', { }, sendAppPage)
-fastify.get('/signup', { }, sendAppPage)
-
-function sendAppPage(req, res) {
-	res.sendFile('index.html')
-}
+		const decoded = jwt.decode(token);
+console.log("verifyJWT 2");
+console.log(decoded);
+		req.user = {userId: decoded.userId}
+	}
+	catch(error) {
+		console.error(error);
+	}
+};
 
 
-/*
-fastify.get('/', { preHandler: [verifyJWT] }, function (req, res) {
 
-console.log(`req.user: ${req.user}`);
 
-	const user = getUser(req.user);
-	if(user == undefined)
-		return res.redirect('/login')
+fastify.get('/login', { preHandler: [verifyJWT] }, sendAppPage_unconnected)
+fastify.get('/signup', { preHandler: [verifyJWT] }, sendAppPage_unconnected)
 
-console.log(`user: ${user}`);
-
-	res.sendFile('index.html')
-})
-*/
+fastify.get('/', { preHandler: [verifyJWT] }, sendAppPage_protected)
+fastify.get('/home', { preHandler: [verifyJWT] }, sendAppPage_protected)
+fastify.get('/chat', { preHandler: [verifyJWT] }, sendAppPage_protected)
+fastify.get('/settings', { preHandler: [verifyJWT] }, sendAppPage_protected)
+fastify.get('/Profile', { preHandler: [verifyJWT] }, sendAppPage_protected)
+fastify.get('/account', { preHandler: [verifyJWT] }, sendAppPage_protected)
 
 
 // Run the serveur!
@@ -106,3 +92,31 @@ fastify.listen({ port: 3000 }, (err) => {
 		process.exit(1)
 	}
 })
+
+function getUser(user) {
+//console.log(user);
+	if (user == undefined)
+		return undefined;
+
+	return {id: user.userId};
+}
+
+
+
+function sendAppPage_unconnected(req, res) {
+
+	// const user = getUser(req.user);
+	// if(user)
+	// 	return res.redirect('/home')
+	
+	res.sendFile('index.html')
+}
+
+function sendAppPage_protected(req, res) {
+
+	const user = getUser(req.user);
+	if(user == undefined)
+		return res.redirect('/login')
+
+	res.sendFile('index.html')
+}
