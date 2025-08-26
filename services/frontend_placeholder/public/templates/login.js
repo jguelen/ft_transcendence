@@ -19,15 +19,28 @@ document.getElementById('sif_submitbutton').addEventListener('click', function(e
 		return
 	}
 
-	fetch('http://localhost:3001/auth_login', {
+	fetch('http://localhost:3001/api/auth_login', {
 		method: 'POST',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify( { useremail:userEmail, password:password } )
 	})
-	.then( function(response) {return response.text() })
-	.then( function(msg) { 
-		if(msg != "") alert(msg); else location.href = '/'
+	.then( function(response) {
+		if (response.status != 200)
+			return response.json()
+		else return null
 	})
+	.then( function(data) {
+console.log(data)
+		if (data)
+			alert(data.msg)
+		//if(msg != "") alert(msg); else location.href = '/';
+
+	})
+
+//	.then( function(response) {return response.text() })
+//	.then( function(msg) { 
+//		if(msg != "") alert(msg); else location.href = '/'
+//	})
 	.catch( function(error) { console.error(error) })
 
 
