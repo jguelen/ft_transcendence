@@ -21,6 +21,7 @@ document.getElementById('sif_submitbutton').addEventListener('click', function(e
 
 	fetch('http://localhost:3001/api/auth_login', {
 		method: 'POST',
+		credentials: 'include',
 		headers: {'Content-Type': 'application/json'},
 		body: JSON.stringify( { useremail:userEmail, password:password } )
 	})
@@ -33,31 +34,9 @@ document.getElementById('sif_submitbutton').addEventListener('click', function(e
 console.log(data)
 		if (data)
 			alert(data.msg)
-		//if(msg != "") alert(msg); else location.href = '/';
-
+		else {
+			location.href = '/';
+		} 
 	})
-
-//	.then( function(response) {return response.text() })
-//	.then( function(msg) { 
-//		if(msg != "") alert(msg); else location.href = '/'
-//	})
 	.catch( function(error) { console.error(error) })
-
-
-/*	
-	if (validLogin) {
-		fetch('/user', {
-			method: 'POST',
-			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify( {useremail:userEmail, password:password} )
-		})
-		.then( function(response) {return response.text();})
-		.then( function(msg) { 
-			if(msg != "") alert(msg); else location.href = '/';
-		})
-		.catch( function(error) { console.error(error); });
-
-	} else alert("Et bah non, le nom ou le mot de pass est invalide !");
-*/
-}
-)
+})

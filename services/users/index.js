@@ -36,8 +36,6 @@ const prisma = new PrismaClient()
 */
 
 
-
-
 const fastify = require('fastify')({ logger: false })
 
 //const { prisma } = require('./index.js')
@@ -55,9 +53,7 @@ console.log("hohohoho");
 	res.header("Access-Control-Allow-Origin", "http://localhost:3000")
 	res.header("Access-Control-Allow-Credentials", true)
 
-
-
-  const isPreflight = /options/i.test(req.method);
+	const isPreflight = /options/i.test(req.method);
 	if (isPreflight) {
 		res.header("Access-Control-Allow-Methods", "*");
 		res.header("Access-Control-Allow-Headers", 'Content-Type, Authorization');
@@ -67,18 +63,6 @@ console.log("hohohoho");
 
   return next()
 })
-
-/*
- res.header("Access-Control-Allow-Origin", "*");
-	res.header("Access-Control-Allow-Methods", "POST");
-	res.header("Access-Control-Allow-Headers",  "*");
-*/
-
-
-
-
-//fastify.register(private_routes)
-//fastify.register(public_routes)
 
 
 
@@ -95,20 +79,9 @@ console.log("hahaha");
 	} catch (error) {
 		return res.status(401).send({ error: 'Invalid token' });
 	}
-
-
   return next()
 })
 */
-
-/*
-// cookies
-fastify.register(fastify_cookie, {
-  secret: 'supersecretcode-CHANGE_THIS-USE_ENV_FILE',
-  hook: 'preHandler',
-})
-*/
-
 
 
 
@@ -140,11 +113,14 @@ console.log('# /newuser');
 console.log(req.body);
 
 //		const { username, useremail, password } = req.body;
+	try {
+		const email = req.body.email;
+		const name = req.body.name;
+		const password = req.body.password;
 
-		try {
-			const email = req.body.email;
-			const name = req.body.name;
-			const password = req.body.password;
+//		if (!validateEmail(email))
+//			return (res.status(404).send({ error: 1}))
+
 
 /*
 console.log('newuser 1');			
@@ -162,60 +138,12 @@ console.log('newuser created');
 		catch (error) {
 console.error('newuser pancarte');
 console.error(error);
-			res.status(500).send({});
+			res.status(500).send( {} );
 		}
 
 
 })
 
-
-
-
-
-/*
-fastify.post('/api/newuser', {}, async function (req, res) {
-
-console.log('# /newuser');
-console.log(req.body);
-
-//		const { username, useremail, password } = req.body;
-
-		try {
-			const email = req.body.useremail;
-			const name = req.body.username;
-			const password = req.body.password;
-
-console.log('newuser 1');			
-			const pwHash = await bcrypt.hash(password, 12);
-console.log('newuser 2');
-
-			let user = await prisma.user.create({
-				data: { name, email, password }
-			})
-console.log(user);
-console.log('newuser created');
-
-			const token = jwt.sign({userId: user.id}, 'supersecretcode-CHANGE_THIS-USE_ENV_FILE' );
-console.log('token:');
-console.log(token);
-
-			res.status(200).cookie("ft_transcendence_jwt", token, {
-				path: "/",
-				httpOnly: true,
-				sameSite: "none",
-				secure: true
-			}).send("");
-
-		}
-		catch (error) {
-console.error('newuser pancarte');
-console.error(error);
-			res.status(500).send("Error");
-		}
-
-
-})
-*/
 
 
 
@@ -226,3 +154,21 @@ fastify.listen({ port: 3002 }, (err) => {
 		process.exit(1)
 	}
 })
+
+
+function validateEmail(email) {
+	return String(email)
+    	.toLowerCase()
+    	.match(
+		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+};
+
+
+function validateUserName(userName) {
+
+};
+
+function validatePasword(password) {
+
+};
