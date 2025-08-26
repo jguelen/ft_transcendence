@@ -1,5 +1,7 @@
 // npm i fastify
- 
+// npm i sqlite3
+// npm i prisma --save-dev
+
 
 //@fastify/static
 // npm i @fastify/cookie
@@ -40,15 +42,8 @@ const fastify = require('fastify')({ logger: false })
 
 //const { prisma } = require('./index.js')
 
-
-const jwt = require('jsonwebtoken');
-
-const bcrypt = require('bcrypt');
-
 const  { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
-
-const fastify_cookie = require('@fastify/cookie')
 
 
 
@@ -57,17 +52,16 @@ fastify.addHook('preHandler', (req, res, next) => {
 console.log("hohohoho");
 //  req.jwt = fastify.jwt
 
-res.header("Access-Control-Allow-Origin", "http://localhost:3000")
-res.header("Access-Control-Allow-Credentials", true)
+	res.header("Access-Control-Allow-Origin", "http://localhost:3000")
+	res.header("Access-Control-Allow-Credentials", true)
 
 
 
   const isPreflight = /options/i.test(req.method);
-  if (isPreflight) {
- res.header("Access-Control-Allow-Methods", "*");
- res.header("Access-Control-Allow-Headers", 'Content-Type, Authorization');
-
-	return res.send();
+	if (isPreflight) {
+		res.header("Access-Control-Allow-Methods", "*");
+		res.header("Access-Control-Allow-Headers", 'Content-Type, Authorization');
+		return res.send();
   }
 
 
@@ -107,20 +101,20 @@ console.log("hahaha");
 })
 */
 
-
+/*
 // cookies
 fastify.register(fastify_cookie, {
   secret: 'supersecretcode-CHANGE_THIS-USE_ENV_FILE',
   hook: 'preHandler',
 })
-
+*/
 
 
 
 
 fastify.get('/api/user_getbyemail/:email', {}, async function (req, res) {
 
-	console.log(req.params);
+console.log(req.params);
 
 	const value = req.params.email;
 
@@ -129,7 +123,7 @@ fastify.get('/api/user_getbyemail/:email', {}, async function (req, res) {
 			where: { 
 				email: value
 			}
-        })
+		})
 		return res.send(user);
 	}
 	catch (error) {
@@ -139,51 +133,46 @@ fastify.get('/api/user_getbyemail/:email', {}, async function (req, res) {
 
 })
 
+
+fastify.post('/api/user_newuser', {}, async function (req, res) {
+
+console.log('# /newuser');
+console.log(req.body);
+
+//		const { username, useremail, password } = req.body;
+
+		try {
+			const email = req.body.email;
+			const name = req.body.name;
+			const password = req.body.password;
+
 /*
-    server.post<{ Params: lookupParams, Body: lookupBody }>('/api/user/lookup/:email', async (request, reply) => {
-        try {
-            const value = request.params.email;
-            const isEmail = value.match(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/);
-            const isId = value.match(/^[0-9]$/);
-            let user: User | null = null;
-            if (isEmail) {
-                user = await prisma.user.findUnique({
-                    where: { 
-                        email: value
-                    }
-                })
-            }
-            else if (isId)
-            {
-                user = await prisma.user.findUnique({
-                    where: { 
-                        id: Number(value)
-                    }
-                })
-            }
-            else
-            {
-                user = await prisma.user.findUnique({
-                    where: { 
-                        name: value
-                    }
-                })
-            }
-            if (!user)
-                return reply.status(230).send({ error: "1006" });
-            reply.send(user);
-        }
-        catch (error) {
-            return reply.status(230).send({ error: "0500" });
-        }
-    })
-
-
+console.log('newuser 1');			
+			const pwHash = await bcrypt.hash(password, 12);
+console.log('newuser 2');
 */
+			let user = await prisma.user.create({
+				data: { name, email, password }
+			})
+console.log(user);
+console.log('newuser created');
+
+			res.status(200).send(user);
+		}
+		catch (error) {
+console.error('newuser pancarte');
+console.error(error);
+			res.status(500).send({});
+		}
+
+
+})
 
 
 
 
+
+/*
 fastify.post('/api/newuser', {}, async function (req, res) {
 
 console.log('# /newuser');
@@ -226,7 +215,7 @@ console.error(error);
 
 
 })
-
+*/
 
 
 
