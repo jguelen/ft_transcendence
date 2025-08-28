@@ -119,21 +119,23 @@ console.log(req.body);
 		const password = req.body.password;
 
 		uniqueUserName = await checkUserNameDuplicate(name)
+		console.log("uniqueUserName");
+		console.log(uniqueUserName);
 
-
+		if (uniqueUserName == "")
+			res.status(404).send( {} );
 
 
 //		if (!validateEmail(email))
 //			return (res.status(404).send({ error: 1}))
-
-
 /*
 console.log('newuser 1');			
 			const pwHash = await bcrypt.hash(password, 12);
 console.log('newuser 2');
 */
+
 			let user = await prisma.user.create({
-				data: { name, email, password }
+				data: { name: uniqueUserName, email, password }
 			})
 console.log(user);
 console.log('newuser created');
@@ -142,7 +144,7 @@ console.log('newuser created');
 		}
 		catch (error) {
 console.error('newuser pancarte');
-console.error(error);
+			console.error(error);
 			res.status(500).send( {} );
 		}
 
@@ -179,22 +181,37 @@ function validatePassword(password) {
 };
 
 async function checkUserNameDuplicate(userName) {
+console.log("checkUserNameDuplicate")
 
-	try {
-		var user = await prisma.user.findUnique({
+//	try {
+		var user = await prisma.user.findMany({
 			where: { 
-				name: value
+				name: userName
 			}
 		})
-		console.log("Dupl 0")
-		console.log(user)
+console.log(user)
+		if (user.length == 0)
+			return userName
 
 
+		const altSuffixes = ["-1", "-2", "-3"]
+
+		for (let index = 0; index < altSuffixes.length; index++) {			
+			var alternateName = userName + altSuffixes[index];
+			var user = await prisma.user.findMany({
+				where: { 
+					name: alternateName
+				}
+			})
+console.log(user)
+			if (user.length == 0)
+				return alternateName
+		}
 
 		return ""
-	}
-	catch (error) {
-		
-		return ""
-	}
+//	}
+// 	catch (error) {
+// console.log("Dupl catch")
+// 		throw new Error(error);
+// 	}
 };
