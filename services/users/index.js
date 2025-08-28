@@ -118,6 +118,11 @@ console.log(req.body);
 		const name = req.body.name;
 		const password = req.body.password;
 
+		uniqueUserName = await checkUserNameDuplicate(name)
+
+
+
+
 //		if (!validateEmail(email))
 //			return (res.status(404).send({ error: 1}))
 
@@ -169,6 +174,27 @@ function validateUserName(userName) {
 
 };
 
-function validatePasword(password) {
+function validatePassword(password) {
 
+};
+
+async function checkUserNameDuplicate(userName) {
+
+	try {
+		var user = await prisma.user.findUnique({
+			where: { 
+				name: value
+			}
+		})
+		console.log("Dupl 0")
+		console.log(user)
+
+
+
+		return ""
+	}
+	catch (error) {
+		
+		return ""
+	}
 };
