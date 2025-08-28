@@ -1,0 +1,36 @@
+# Ce fichier écrase certaines valeurs du docker-compose.yml principal pour la production
+services:
+  frontend:
+    environment:
+      - NODE_ENV=production
+    restart: always
+
+  api-gateway:
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET}
+    restart: always
+
+  auth-service:
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=${JWT_SECRET}
+    restart: always
+
+  game-service:
+    environment:
+      - NODE_ENV=production
+    restart: always
+
+  profile-service:
+    environment:
+      - NODE_ENV=production
+    restart: always
+
+  chat-service:
+    environment:
+      - NODE_ENV=production
+    restart: always
+
+  redis:
+    restart: always
