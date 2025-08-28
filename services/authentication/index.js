@@ -8,8 +8,6 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 
-
-
 // cookies
 fastify.register(fastify_cookie, {
   secret: 'supersecretcode-CHANGE_THIS-USE_ENV_FILE',
@@ -17,8 +15,7 @@ fastify.register(fastify_cookie, {
 })
 
 
-
-
+// Temporary
 fastify.addHook('preHandler', (req, res, next) => {
 console.log("hohohoho");
 //  req.jwt = fastify.jwt
@@ -98,7 +95,6 @@ console.log(req.body);
 	const pwHash = await bcrypt.hash(password, 12);
 
 	try {
-
 		const response = await fetch(`http://localhost:3002/api/user_newuser`,
         {
             method: 'POST',
@@ -114,6 +110,9 @@ console.log(req.body);
 //console.log(response);
 		if (response.status == 500)
 			return res.status(500).send( {msg: "Can't create user"} );
+
+		if (response.status == 404)
+			return res.status(404).send( {msg: "Invalid user name of password"} );
 
 		const userData = await response.json();
 
