@@ -45,7 +45,7 @@ const prisma = new PrismaClient()
 
 
 
-
+// Temporary due to CORS sh!te
 fastify.addHook('preHandler', (req, res, next) => {
 console.log("hohohoho");
 //  req.jwt = fastify.jwt
@@ -105,8 +105,8 @@ console.log(req.params);
 
 
 })
-
-
+//0123456789012345678901234567890123456789
+ 
 fastify.post('/api/user_newuser', {}, async function (req, res) {
 
 console.log('# /newuser');
