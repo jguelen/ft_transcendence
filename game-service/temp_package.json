@@ -1,0 +1,17 @@
+{
+  "name": "temp-game-service",
+  "version": "0.0.1",
+  "description": "Configuration temporaire pour tester l'infrastructure",
+  "main": "dist/temp_server.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/temp_server.js"
+  },
+  "dependencies": {
+    "fastify": "^4.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "typescript": "^5.0.4"
+  }
+}
