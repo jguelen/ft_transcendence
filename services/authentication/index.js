@@ -15,7 +15,7 @@ fastify.register(fastify_cookie, {
 })
 
 
-// Temporary
+// Temporary due to CORS sh!te
 fastify.addHook('preHandler', (req, res, next) => {
 console.log("hohohoho");
 //  req.jwt = fastify.jwt
