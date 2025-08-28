@@ -118,21 +118,17 @@ console.log(req.body);
 		const name = req.body.name;
 		const password = req.body.password;
 
+		if (!validateUserName(name))
+			return res.status(404).send( {} );
+
+		if (!validatePassword(password))
+			return res.status(404).send( {} );
+
 		uniqueUserName = await checkUserNameDuplicate(name)
-		console.log("uniqueUserName");
-		console.log(uniqueUserName);
-
+console.log("uniqueUserName");
+console.log(uniqueUserName);
 		if (uniqueUserName == "")
-			res.status(404).send( {} );
-
-
-//		if (!validateEmail(email))
-//			return (res.status(404).send({ error: 1}))
-/*
-console.log('newuser 1');			
-			const pwHash = await bcrypt.hash(password, 12);
-console.log('newuser 2');
-*/
+			return res.status(404).send( {} );
 
 			let user = await prisma.user.create({
 				data: { name: uniqueUserName, email, password }
@@ -140,17 +136,14 @@ console.log('newuser 2');
 console.log(user);
 console.log('newuser created');
 
-			res.status(200).send(user);
-		}
-		catch (error) {
+		res.status(200).send(user);
+	}
+	catch (error) {
 console.error('newuser pancarte');
-			console.error(error);
-			res.status(500).send( {} );
-		}
-
-
+		console.error(error);
+		res.status(500).send( {} );
+	}
 })
-
 
 
 
@@ -174,10 +167,24 @@ function validateEmail(email) {
 
 function validateUserName(userName) {
 
+	if (userName.length == 0)
+		return false
+
+	if (userName.length > 32)
+		return false
+
+	return true	
 };
 
 function validatePassword(password) {
 
+	if (password.length < 8)
+		return false
+
+	if (password.length > 32)
+		return false
+
+	return true
 };
 
 async function checkUserNameDuplicate(userName) {
