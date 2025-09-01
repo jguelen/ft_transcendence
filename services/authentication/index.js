@@ -10,7 +10,7 @@ const bcrypt = require('bcrypt');
 
 // cookies
 fastify.register(fastify_cookie, {
-  secret: 'supersecretcode-CHANGE_THIS-USE_ENV_FILE',
+  secret: process.env.JWT_SECRET,
   hook: 'preHandler',
 })
 
@@ -61,8 +61,7 @@ console.log(userData);
 //			return res.status(401).send("invalid user or password(pw)");
 
 //                              VVV
-		const token = jwt.sign( {userId: userData.id},
-			'supersecretcode-CHANGE_THIS-USE_ENV_FILE' );
+		const token = jwt.sign( { userId: userData.id }, process.env.JWT_SECRET );
 
 console.log(token)
 
