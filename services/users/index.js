@@ -12,7 +12,7 @@
 // npm i jsonwebtoken
 
 //Create db from schema
-//npx prisma migrate dev --name init
+//DATABASE_URL="file:./users_db.db"; npx prisma migrate dev --name init
 //npx prisma migrate reset
 
 
@@ -143,10 +143,13 @@ console.log(req.body);
 		const name = req.body.name;
 		const password = req.body.password;
 
-		if (!validateUserName(name))
-			return res.status(404).send( {} );
+//		if (!validateEmail(email))
+//			return res.status(404).send( {} );
 
 		if (!validatePassword(password))
+		 	return res.status(404).send( {} );
+
+		if (!validateUserName(name))
 			return res.status(404).send( {} );
 
 		uniqueUserName = await checkUserNameDuplicate(name)
@@ -182,6 +185,7 @@ fastify.listen({ port: 3002 }, (err) => {
 
 
 function validateEmail(email) {
+
 	return String(email)
     	.toLowerCase()
     	.match(
@@ -194,19 +198,14 @@ function validateUserName(userName) {
 
 	if (userName.length == 0)
 		return false
-
 	if (userName.length > 32)
 		return false
-
 	return true	
 };
 
 function validatePassword(password) {
 
-	if (password.length < 8)
-		return false
-
-	if (password.length > 32)
+	if (password.length > 64)
 		return false
 
 	return true

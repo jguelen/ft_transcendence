@@ -47,6 +47,8 @@ document.getElementById('suf_submitbutton').addEventListener('click', function(e
 console.log(data)
 			if (data)
 				alert(data.msg)
+			else
+				location.href = '/';
 		})
 
 // 		.then( function(response) {return response.text() })

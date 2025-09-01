@@ -58,11 +58,23 @@ const urlRoutes = {
 		title: "Home | " + urlPageTitle,
 		description: "home page",
 	},
-	"/game": {
-		template: "/public/templates/game.html",
-		title: "game | " + urlPageTitle,
-		description: "game page",
+	"/game_local": {
+		template: "/public/templates/game_local.html",
+		title: "Local game | " + urlPageTitle,
+		description: "Local game page",
 	},
+	"/game_online": {
+		template: "/public/templates/game_online.html",
+		title: "Online game | " + urlPageTitle,
+		description: "Online game page",
+	},
+	"/game_tournament": {
+		template: "/public/templates/game.html",
+		title: "Tournament | " + urlPageTitle,
+		description: "Tournament page",
+	},
+
+
 	"/chat": {
 		template: "/public/templates/chat.html",
 		title: "chat | " + urlPageTitle,

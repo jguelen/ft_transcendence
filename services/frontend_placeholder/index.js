@@ -18,7 +18,7 @@ fastify.register(fastify_static, {
 
 // cookies
 fastify.register(fastify_cookie, {
-  secret: 'supersecretcode-CHANGE_THIS-USE_ENV_FILE',
+  secret: 'jwtsecret',
   hook: 'preHandler',
 })
 
@@ -83,6 +83,12 @@ fastify.get('/chat', { preHandler: [verifyJWT] }, sendAppPage_protected)
 fastify.get('/settings', { preHandler: [verifyJWT] }, sendAppPage_protected)
 fastify.get('/Profile', { preHandler: [verifyJWT] }, sendAppPage_protected)
 fastify.get('/account', { preHandler: [verifyJWT] }, sendAppPage_protected)
+
+fastify.get('/game_local', { preHandler: [verifyJWT] }, sendAppPage_protected)
+fastify.get('/game_online', { preHandler: [verifyJWT] }, sendAppPage_protected)
+fastify.get('/game_tournament', { preHandler: [verifyJWT] }, sendAppPage_protected)
+
+
 
 
 // Run the serveur!

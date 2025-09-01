@@ -1,6 +1,6 @@
 datasource db {
 	provider = "sqlite"
-	url = "file:./users_db.db"
+	url = env("DATABASE_URL")
 }
 
 generator client {
@@ -11,20 +11,24 @@ generator client {
 model User {
 	id				Int @id @unique @default(autoincrement())
 	name			String
-	email			String @unique
+	email			String	@unique
 	password		String?
 	language		String	@default("en")
-	rank			Int		@default(0)
+	rank			Int		@default(1)
+	keymap			String	@default("qa69")
 
-	blockedUsers	BlockedUser[]
-	friendUsers		Friendship[]
-	friendshipReqs	FriendshipRequest[]
+	blockedUsers	BlockedUser[] @relation("blockerToBlocked")
+	blockedByUsers	BlockedUser[] @relation("blockedToBlocker")
+	friends1		Friendship[] @relation("user1ToUser2")
+	friends2		Friendship[] @relation("user2ToUser1")
+	friendshipReqs	FriendshipRequest[] @relation("requesterToRequested")
+	ReqByUsers		FriendshipRequest[] @relation("requestedToRequester")
 }
 
 model FriendshipRequest {
-	requester		User @relation(fields: [requesterId], references: [id], onDelete: Cascade)
+	requester		User @relation("requesterToRequested", fields: [requesterId], references: [id], onDelete: Cascade)
 	requesterId		Int
-	requested		User @relation(fields: [requestedId], references: [id], onDelete: Cascade)
+	requested		User @relation("requestedToRequester", fields: [requestedId], references: [id], onDelete: Cascade)
 	requestedId		Int
 	declined		Int
 	createdAt		DateTime @default(now())
@@ -33,9 +37,9 @@ model FriendshipRequest {
 }
 
 model Friendship {
-	user1		User @relation(fields: [user1Id], references: [id], onDelete: Cascade)
+	user1		User @relation("user1ToUser2", fields: [user1Id], references: [id], onDelete: Cascade)
 	user1Id		Int
-	user2		User @relation(fields: [user2Id], references: [id], onDelete: Cascade)
+	user2		User @relation("user2ToUser1", fields: [user2Id], references: [id], onDelete: Cascade)
 	user2Id		Int
 	createdAt	DateTime @default(now())
 
@@ -43,11 +47,11 @@ model Friendship {
 }
 
 model BlockedUser {
-	requester		User @relation(fields: [blockerId], references: [id], onDelete: Cascade)
-	blockerId		Int
-	requested		User @relation(fields: [blockedId], references: [id], onDelete: Cascade)
-	blockedId		Int
-	createdAt		DateTime @default(now())
+	blocker		User @relation("blockerToBlocked", fields: [blockerId], references: [id], onDelete: Cascade)
+	blockerId	Int
+	blocked		User @relation("blockedToBlocker", fields: [blockedId], references: [id], onDelete: Cascade)
+	blockedId	Int
+	createdAt	DateTime @default(now())
 
 	@@id([blockerId, blockedId])
 }
