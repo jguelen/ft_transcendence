@@ -16,7 +16,7 @@
 //npx prisma migrate reset
 
 
-/*
+/* 9 6
 
 const fastify = require('fastify')({ logger: false })
 const fastify_static = require('@fastify/static')
@@ -105,6 +105,31 @@ console.log(req.params);
 
 
 })
+
+
+
+fastify.get('/api/user_getbyid/:id', {}, async function (req, res) {
+
+console.log(req.params);
+
+	const value = req.params.id;
+
+	try {
+		var user = await prisma.user.findUnique({
+			where: { 
+				id: value
+			}
+		})
+		return res.send(user);
+	}
+	catch (error) {
+		res.status(500).send("")
+	}
+
+
+})
+
+
 //0123456789012345678901234567890123456789
  
 fastify.post('/api/user_newuser', {}, async function (req, res) {

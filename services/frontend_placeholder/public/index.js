@@ -88,6 +88,10 @@ const urlRoutes = {
 
 };
 
+
+
+
+
 // create a function that watches the url and calls the urlLocationHandler
 const urlRoute = (event) => {
 console.log('urlRoute')
