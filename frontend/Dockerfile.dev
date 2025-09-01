@@ -1,0 +1,24 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Installation des dépendances globales utiles
+RUN npm install -g npm@latest
+
+# Copie des fichiers de configuration
+COPY package.json ./
+# Si vous avez besoin de tous vos fichiers de configuration
+COPY vite.config.js ./
+COPY postcss.config.js ./
+COPY tailwind.config.js ./
+COPY index.html ./
+COPY src ./src
+
+# Installation des dépendances
+RUN npm install
+
+# Exposition du port utilisé par Vite (généralement 5173)
+EXPOSE 5173
+
+# Commande qui garde le conteneur en vie
+CMD ["tail", "-f", "/dev/null"]

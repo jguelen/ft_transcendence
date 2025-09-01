@@ -2,3 +2,8 @@
 .env
 **/node_modules
 ._poc
+shell.nix
+.envrc
+.direnv/
+result
+result-*
