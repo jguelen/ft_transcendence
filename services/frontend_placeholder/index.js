@@ -33,8 +33,8 @@ res.header("Access-Control-Allow-Credentials", true)
 
   const isPreflight = /options/i.test(req.method);
   if (isPreflight) {
-	 res.header("Access-Control-Allow-Methods", "*")
- res.header("Access-Control-Allow-Headers",  'Content-Type, Authorization')
+	res.header("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST, OPTIONS")
+	res.header("Access-Control-Allow-Headers",  'Content-Type, Authorization')
 
     return res.send();
   }
@@ -87,6 +87,11 @@ fastify.get('/account', { preHandler: [verifyJWT] }, sendAppPage_protected)
 fastify.get('/game_local', { preHandler: [verifyJWT] }, sendAppPage_protected)
 fastify.get('/game_online', { preHandler: [verifyJWT] }, sendAppPage_protected)
 fastify.get('/game_tournament', { preHandler: [verifyJWT] }, sendAppPage_protected)
+
+fastify.get('/profile_profile', { preHandler: [verifyJWT] }, sendAppPage_protected)
+fastify.get('/profile_settings', { preHandler: [verifyJWT] }, sendAppPage_protected)
+fastify.get('/profile_account', { preHandler: [verifyJWT] }, sendAppPage_protected)
+
 
 
 

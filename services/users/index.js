@@ -60,7 +60,7 @@ console.log("preHandler-CORS-tmp");
 
 	const isPreflight = /options/i.test(req.method);
 	if (isPreflight) {
-		res.header("Access-Control-Allow-Methods", "*");
+		res.header("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST, OPTIONS");
 		res.header("Access-Control-Allow-Headers", 'Content-Type, Authorization');
 		return res.send();
   }
@@ -272,6 +272,7 @@ function protected_routes(fastify_instance, options, next) {
 const verifyJWT = async (req, res) => {
 console.log("PreHandler verifyJWT");
 
+
 	req.user = undefined
 	try {
 console.log(req.cookies);
@@ -296,35 +297,58 @@ console.log(decoded);
 };
 
 
-fastify_instance.get('/api/user/getloggeduser', { preHandler: [verifyJWT] }, async function (req, res) {
-
-//	const value = req.params.id;
+	fastify_instance.get('/api/user/getloggeduser', { preHandler: [verifyJWT] }, async function (req, res) {
 
 console.log("/api/user/getloggeduser");
 console.log(req.user);
 
-	try {
-		var user = await prisma.user.findUnique({
-			where: { 
-				id: req.user.userId
-			}
-		})
-		return res.status(200).send(
-			{
-			id: user.id,
-			name: user.name, email: user.email,
-			language: user.language, rank: user.rank, keymap: user.keymap
-			}
+		try {
+			var user = await prisma.user.findUnique({
+				where: { 
+					id: req.user.userId
+				}
+			})
+			return res.status(200).send(
+				{
+				id: user.id,
+				name: user.name, email: user.email,
+				language: user.language, rank: user.rank, keymap: user.keymap
+				}
 
 
-		);
-	}
-	catch (error) {
-		res.status(500)
-	}
+			);
+		}
+		catch (error) {
+			res.status(500)
+		}
+	})
 
 
-})
+
+	fastify_instance.put('/api/user/updatekeybinds/:keymap', { preHandler: [verifyJWT] }, async function (req, res) {
+
+		const keymap = req.params.keymap;
+
+console.log("/api/user/updatekeybinds");
+console.log(keymap);
+
+		try {
+			var user = await prisma.user.update({
+				where: { 
+					id: req.user.userId
+				},
+    			data: {
+                    keymap: keymap
+                }
+			})
+			return res.status(200).send({keymap: keymap}
+			);
+		}
+		catch (error) {
+			res.status(500)
+		}
+	})
+
 
 	next()
 }
