@@ -4,46 +4,12 @@ console.log("huhuuhaha")
 console.log(window.location.pathname)
 
 
-
-
 const urlPageTitle = "ft_transcendence";
 
 document.getElementById("lang_en").addEventListener("click", (e) => {
 console.log('clicken')
 	e.preventDefault();
 })
-
-/*
-document.getElementById("navdiv").addEventListener("click", (e) => {
-console.log('click')
-	const { target } = e;
-
-	if (!target.matches("nav a")) {
-		return;
-	}
-
-	e.preventDefault();
-	urlRoute();
-})
-*/
-
-/*
-// create document click that watches the nav links only
-document.addEventListener("click", (e) => {
-	const { target } = e;
-
-console.log('click')
-console.log(target)
-
-	if (!target.matches("nav a")) {
-		return;
-	}
-
-	e.preventDefault();
-	urlRoute();
-});
-*/
-
 
 
 // create an object that maps the url to the template, title, and description
@@ -58,6 +24,7 @@ const urlRoutes = {
 		title: "Home | " + urlPageTitle,
 		description: "home page",
 	},
+
 	"/game_local": {
 		template: "/public/templates/game_local.html",
 		title: "Local game | " + urlPageTitle,
@@ -74,6 +41,21 @@ const urlRoutes = {
 		description: "Tournament page",
 	},
 
+	"/profile_profile": {
+		template: "/public/templates/profile_profile.html",
+		title: "Profile | " + urlPageTitle,
+		description: "Profile page",
+	},
+	"/profile_settings": {
+		template: "/public/templates/profile_settings.html",
+		title: "Settings | " + urlPageTitle,
+		description: "Settings page",
+	},
+	"/profile_account": {
+		template: "/public/templates/profile_account.html",
+		title: "Account | " + urlPageTitle,
+		description: "Account page",
+	},
 
 	"/chat": {
 		template: "/public/templates/chat.html",
