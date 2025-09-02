@@ -1,6 +1,8 @@
 // npm i fastify
 // npm i sqlite3
 // npm i prisma --save-dev
+// npm i @fastify/cookie
+// npm i jsonwebtoken
 
 
 //@fastify/static
@@ -43,11 +45,14 @@ const fastify = require('fastify')({ logger: false })
 const  { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
+const fastify_cookie = require('@fastify/cookie')
+const jwt = require('jsonwebtoken');
+
 
 
 // Temporary due to CORS sh!te
 fastify.addHook('preHandler', (req, res, next) => {
-console.log("hohohoho");
+console.log("preHandler-CORS-tmp");
 //  req.jwt = fastify.jwt
 
 	res.header("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -82,6 +87,17 @@ console.log("hahaha");
   return next()
 })
 */
+
+
+// fastify.register(fastify_cookie, {
+//   secret: process.env.JWT_SECRET,
+//   hook: 'preHandler',
+// })
+
+fastify.register(fastify_cookie, {})
+
+fastify.register(protected_routes)
+
 
 
 
@@ -246,3 +262,69 @@ console.log(user)
 // 		throw new Error(error);
 // 	}
 };
+
+
+
+
+function protected_routes(fastify_instance, options, next) {
+
+// JWT verification function
+const verifyJWT = async (req, res) => {
+console.log("PreHandler verifyJWT");
+
+	req.user = undefined
+	try {
+console.log(req.cookies);
+		if (!req.cookies)
+			return
+
+		const token = req.cookies['ft_transcendence_jwt'];
+console.log("upr verifyJWT 1");
+//console.log("token: " + token + "\n");
+console.log(token);
+		if (!token)
+			return;
+
+		const decoded = jwt.decode(token);
+console.log("upr verifyJWT 2");
+console.log(decoded);
+		req.user = {userId: decoded.userId}
+	}
+	catch(error) {
+		console.error(error);
+	}
+};
+
+
+fastify_instance.get('/api/user/getloggeduser', { preHandler: [verifyJWT] }, async function (req, res) {
+
+//	const value = req.params.id;
+
+console.log("/api/user/getloggeduser");
+console.log(req.user);
+
+	try {
+		var user = await prisma.user.findUnique({
+			where: { 
+				id: req.user.userId
+			}
+		})
+		return res.status(200).send(
+			{
+			id: user.id,
+			name: user.name, email: user.email,
+			language: user.language, rank: user.rank, keymap: user.keymap
+			}
+
+
+		);
+	}
+	catch (error) {
+		res.status(500)
+	}
+
+
+})
+
+	next()
+}

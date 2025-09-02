@@ -69,7 +69,7 @@ const urlRoutes = {
 		description: "Online game page",
 	},
 	"/game_tournament": {
-		template: "/public/templates/game.html",
+		template: "/public/templates/game_tournament.html",
 		title: "Tournament | " + urlPageTitle,
 		description: "Tournament page",
 	},
