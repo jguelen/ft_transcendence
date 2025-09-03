@@ -387,17 +387,49 @@ console.log(newName);
 
 	fastify_instance.put('/api/user/updatepw/:pw/:newpw', { preHandler: [verifyJWT] }, async function (req, res) {
 
+		const pw = req.params.pw;
 		const newPw = req.params.newpw;
 
 console.log("/api/user/updatepw");
+console.log(pw);
 console.log(newPw);
-console.log(newPw);
-
 
 var hashedPassword = "132"
 
-
 		try {
+			var user = await prisma.user.findUnique({
+				where: { 
+					id: req.user.userId
+				}
+			})
+console.log(user);
+			if (!user)
+				return res.status(500).send()			
+
+console.log("uu");
+			const response = await fetch(`http://localhost:3001/api/auth/changepw`,
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					pw: pw,
+					pwhash: user.password,
+					newpw: newPw
+				})
+			})
+
+//console.log(response);
+console.log("response received");
+			if (response.status == 401)
+				return res.status(401).send();
+			if (response.status == 500)
+				return res.status(500).send();
+
+			const userData = await response.json();
+
+//console.log("Bord d'aile de merle");
+console.log(userData);
+
 			var user = await prisma.user.update({
 				where: { 
 					id: req.user.userId
@@ -406,15 +438,12 @@ var hashedPassword = "132"
                     password: hashedPassword
                 }
 			})
-			return res.status(200).send( {ok: true} );
 
+			return res.status(200).send();
 		}
 		catch (error) {
-			res.status(500)
+			res.status(500).send()
 		}
-
-
-
 	})
 
 	next()
