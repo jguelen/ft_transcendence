@@ -10,8 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.8.2"
   },
   "devDependencies": {
     "@types/react": "^18.3.24",
@@ -21,6 +23,6 @@
     "postcss": "^8.4.27",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.9.2",
-    "vite": "^4.4.9"
+    "vite": "^7.1.4"
   }
 }
