@@ -229,17 +229,17 @@ function validatePassword(password) {
 
 async function checkUserNameDuplicate(userName) {
 console.log("checkUserNameDuplicate")
-
+console.log(userName)
 //	try {
 		var user = await prisma.user.findMany({
 			where: { 
 				name: userName
 			}
 		})
+console.log("checkUserNameDuplicate: 1")		
 console.log(user)
 		if (user.length == 0)
 			return userName
-
 
 		const altSuffixes = ["-1", "-2", "-3"]
 
@@ -250,11 +250,11 @@ console.log(user)
 					name: alternateName
 				}
 			})
+console.log(`checkUserNameDuplicate: 2 - ${index}`)
 console.log(user)
 			if (user.length == 0)
 				return alternateName
 		}
-
 		return ""
 //	}
 // 	catch (error) {
@@ -314,8 +314,6 @@ console.log(req.user);
 				name: user.name, email: user.email,
 				language: user.language, rank: user.rank, keymap: user.keymap
 				}
-
-
 			);
 		}
 		catch (error) {
@@ -341,14 +339,83 @@ console.log(keymap);
                     keymap: keymap
                 }
 			})
-			return res.status(200).send({keymap: keymap}
-			);
+			return res.status(200).send( {keymap: keymap} );
 		}
 		catch (error) {
 			res.status(500)
 		}
 	})
 
+
+	fastify_instance.put('/api/user/updateusername/:newusername', { preHandler: [verifyJWT] }, async function (req, res) {
+
+		const newName = req.params.newusername;
+
+console.log("/api/user/updateusername");
+console.log(newName);
+
+		try {
+			var user = await prisma.user.findUnique({
+				where: { 
+					id: req.user.userId
+				}
+			})
+			if (user.name == newName)
+				res.status(200).send( {name: newName} )
+
+			var altName = await checkUserNameDuplicate(newName)
+			if (altName == "")
+				res.status(200).send( {name: ""} )
+
+			var user = await prisma.user.update({
+				where: { 
+					id: req.user.userId
+				},
+    			data: {
+                    name: altName
+                }
+			})
+
+			return res.status(200).send( {name: altName} );
+		}
+		catch (error) {
+			res.status(500)
+		}
+
+	})
+
+
+	fastify_instance.put('/api/user/updatepw/:pw/:newpw', { preHandler: [verifyJWT] }, async function (req, res) {
+
+		const newPw = req.params.newpw;
+
+console.log("/api/user/updatepw");
+console.log(newPw);
+console.log(newPw);
+
+
+var hashedPassword = "132"
+
+
+		try {
+			var user = await prisma.user.update({
+				where: { 
+					id: req.user.userId
+				},
+    			data: {
+                    password: hashedPassword
+                }
+			})
+			return res.status(200).send( {ok: true} );
+
+		}
+		catch (error) {
+			res.status(500)
+		}
+
+
+
+	})
 
 	next()
 }

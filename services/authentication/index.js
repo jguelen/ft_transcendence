@@ -130,9 +130,6 @@ console.error(error);
 
 
 
-
-
-
 // Run the serveur!
 fastify.listen({ port: 3001 }, (err) => {
 	if (err) {
