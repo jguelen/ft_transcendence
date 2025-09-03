@@ -14,12 +14,12 @@ document.getElementById("keybinds_submitbutton").addEventListener("click", (e) =
 console.log('clicked Save')
 	e.preventDefault();
 
-	const keymap = document.getElementById("keyb_p1_up").value
+	const newKeymap = document.getElementById("keyb_p1_up").value
 	+ document.getElementById("keyb_p1_dn").value
 	+ document.getElementById("keyb_p2_up").value
 	+ document.getElementById("keyb_p2_dn").value
 
-	fetch(`http://localhost:3002/api/user/updatekeybinds/${keymap}`, {
+	fetch(`http://localhost:3002/api/user/updatekeybinds/${newKeymap}`, {
 		method: 'PUT',
 		credentials: 'include'
 	})
@@ -30,7 +30,7 @@ console.log('clicked Save')
 	})
 	.then( function(data) {
 console.log("UserData")
-		loggedUser = data;
+		loggedUser.keymap = data.keymap;
 	})
 	.catch( function(error) { console.error(error) })
 
