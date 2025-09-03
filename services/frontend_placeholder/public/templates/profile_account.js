@@ -44,7 +44,26 @@ console.log(returnedData)
 
 	document.getElementById("chgpw_submitbutton").addEventListener("click", (e) => {
 console.log('changepwbtn')
-	e.preventDefault();
+		e.preventDefault();
+
+		const currentPw = document.getElementById("input_pw").value
+		const newPw = document.getElementById("input_newpw").value
+
+		fetch(`http://localhost:3002/api/user/updatepw/${currentPw}/${newPw}`, {
+			method: 'PUT',
+			credentials: 'include'
+		})
+		.then( function(response) { 
+			alert(response.status)
+			if (response.status == 401)
+				return alert("Password mismatch")
+			if (response.status == 200)
+				return alert("Password changed")
+			alert("Cannot change password")
+		})
+		.catch( function(error) { console.error(error) })
+
+
 
 	})
 

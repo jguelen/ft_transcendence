@@ -91,9 +91,9 @@ console.log(req.body);
 	const name = req.body.username
 	const password = req.body.password
 
-	const pwHash = await bcrypt.hash(password, 12);
-
 	try {
+		const pwHash = await bcrypt.hash(password, 12);
+		
 		const response = await fetch(`http://localhost:3002/api/user_newuser`,
         {
             method: 'POST',
@@ -102,7 +102,7 @@ console.log(req.body);
                 email: email,
                 name: name,
                 password: pwHash
-            }),
+            })
         }
 
 		);
@@ -129,6 +129,55 @@ console.error(error);
 })
 
 
+/*
+//fastify.get('/api/auth/changepw', async (req, res) => { 
+//fastify.get('/api/auth/changepw/:pw/:pwhash/:newpw', async (req, res) => { 
+fastify.get('/api/auth/changepw/:pw/:pwhash', async (req, res) => { 
+console.log('# /api/auth/changepw');
+
+	const pw = req.params.pw
+	const pwHash = req.params.pwhash
+	// const newPw = req.params.newpw
+
+console.log(pw);
+console.log(pwHash);
+
+
+	res.status(200).send( {uuu: iii} );
+
+})
+*/
+
+fastify.post('/api/auth/changepw', async (req, res) => { 
+console.log('# /api/auth/changepw');
+
+//	const pw = req.params.pw
+//	const pwHash = req.params.pwhash
+// const newPw = req.params.newpw
+
+	const pw = req.body.pw;
+	const pwHash = req.body.pwhash;
+	const newPw = req.body.newpw;
+
+console.log(pw);
+console.log(pwHash);
+console.log(newPw);
+
+	try {
+		if (!await bcrypt.compare(pw, pwHash))
+			return res.status(401).send();
+
+		const newPwHash = await bcrypt.hash(newPw, 12);
+
+console.log(newPwHash);
+
+		return res.status(200).send( {newpwhash: newPwHash} );
+	} catch (error) {
+		return res.status(500).send();
+	}
+})
+
+
 
 // Run the serveur!
 fastify.listen({ port: 3001 }, (err) => {
@@ -137,4 +186,3 @@ fastify.listen({ port: 3001 }, (err) => {
 		process.exit(1)
 	}
 })
-
