@@ -1,12 +1,12 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 
-function MainLayout() {
+function GameLayout() {
   return (
-    <div className="main-layout">
+    <div className="h-full main-layout">
       {/* Votre navigation, header, etc */}
       
-      <main className="content">
+      <main className="h-full content">
         <Outlet />
       </main>
       
@@ -15,4 +15,4 @@ function MainLayout() {
   );
 }
 
-export default MainLayout;
+export default GameLayout;
