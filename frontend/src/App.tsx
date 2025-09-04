@@ -15,8 +15,11 @@ import Parameters from './pages/Parameters';
 import Profil from './pages/Profil';
 import NotFound from './pages/NotFound';
 
+import PongGame from './pages/PongGame';
+
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
+// import Card from './components/Card';
 
 const ROUTES = {
   HOME: '/',
@@ -32,6 +35,9 @@ function App() {
   return (
     <div className="w-full bg-[#060919] bg-[url('./assets/background-clear.svg')] bg-cover bg-center bg-no-repeat">
       <div className="relative z-10">
+        <PongGame>
+          <h1>test</h1>
+        </PongGame>
         <BrowserRouter>
           <Routes>
             {/* Routes d'authentification */}
