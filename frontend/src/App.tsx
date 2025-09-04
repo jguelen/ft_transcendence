@@ -4,53 +4,66 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 // Layouts
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
+import GridLayout from './layouts/GridLayout';
+import GameLayout from './layouts/GameLayout';
 
 // Pages
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
-import LocalPong from './pages/LocalPong';
-import OnlinePong from './pages/OnlinePong';
-import Parameters from './pages/Parameters';
-import Profil from './pages/Profil';
+import Tournament from './pages/game/local/Tournament';
+import LocalPong from './pages/game/local/LocalPong';
+import OnlinePong from './pages/game/online/OnlinePong';
+import Parameters from './pages/settings/Parameters';
+import Profile from './pages/settings/Profile';
+import Account from './pages/settings/Account';
 import NotFound from './pages/NotFound';
-
-import PongGame from './pages/PongGame';
+import Local1v1 from './pages/game/local/Local1v1';
+import Ai1v1 from './pages/game/local/Ai1v1';
+import Online1v1 from './pages/game/online/Online1v1';
+import Online2v2 from './pages/game/online/Online2v2';
+import TournamentGame from './pages/game/local/TournamentGame'
 
 // Components
 import ProtectedRoute from './components/ProtectedRoute';
-// import Card from './components/Card';
 
 const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
-  LOCAL_PONG: '/local-pong',
-  ONLINE_PONG: '/online-pong',
-  PARAMETERS: '/parameters',
-  PROFILE: '/profile',
+
+  SETTINGS: {
+    PARAMETERS: 'settings/parameters',
+    PROFILE: 'settings/profile',
+    ACCOUNT: 'settings/account',
+  },
+  CONTEST: {
+    TOURNAMENT: '/tournament',
+    GAME: '/tournament/game',
+  },
+  LOCAL: {
+    INDEX: '/local-pong',
+    PLAY_1V1: '/local-pong/1v1',
+    PLAY_AI: '/local-pong/ai',
+  },
+  ONLINE: {
+    INDEX: '/online-pong',
+    PLAY_1V1: '/online-pong/1v1',
+    PLAY_2V2: '/online-pong/2v2',
+  },
 };
 
 function App() {
   return (
     <div className="w-full bg-[#060919] bg-[url('./assets/background-clear.svg')] bg-cover bg-center bg-no-repeat">
       <div className="relative z-10">
-        <PongGame>
-          <h1>test</h1>
-        </PongGame>
         <BrowserRouter>
           <Routes>
             {/* Routes d'authentification */}
-            <Route path={ROUTES.LOGIN} element={
-              <AuthLayout>
-                <Login />
-              </AuthLayout>
-            } />
-            <Route path={ROUTES.REGISTER} element={
-              <AuthLayout>
-                <Register />
-              </AuthLayout>
-            } />
+            <Route element={ <AuthLayout/> }>
+                <Route path={ROUTES.LOGIN} element={ <Login/> } />
+                <Route path={ROUTES.REGISTER} element={ <Register/> } />
+            </Route>
 
             {/* Routes protégées avec MainLayout */}
             <Route element={
@@ -58,19 +71,28 @@ function App() {
                 <MainLayout />
               </ProtectedRoute>
             }>
-              <Route path={ROUTES.HOME} element={<Home />} />
-              <Route path={ROUTES.LOCAL_PONG} element={<LocalPong />} />
-              <Route path={ROUTES.ONLINE_PONG} element={<OnlinePong />} />
-              <Route path={ROUTES.PARAMETERS} element={<Parameters />} />
-              <Route path={ROUTES.PROFILE} element={<Profil />} />
+              <Route path={ROUTES.HOME} element={<Home />}/>
+              <Route path={ROUTES.LOCAL.INDEX} element={ <LocalPong/> }/>
+              <Route path={ROUTES.ONLINE.INDEX} element={ <OnlinePong />}/>
+              <Route path={ROUTES.CONTEST.TOURNAMENT} element={ <Tournament/> }/>
+              <Route element={ <GameLayout/> }>
+                <Route path={ROUTES.LOCAL.PLAY_1V1} element={ <Local1v1/> }/>
+                <Route path={ROUTES.LOCAL.PLAY_AI} element={ <Ai1v1/> }/>
+                <Route path={ROUTES.ONLINE.PLAY_1V1} element={<Online1v1 />}/>
+                <Route path={ROUTES.ONLINE.PLAY_2V2} element={<Online2v2 />}/>
+                <Route path={ROUTES.CONTEST.GAME} element={ <TournamentGame/> }/>
+              </Route>
+
+              <Route element={<GridLayout/>} >
+                <Route path={ROUTES.SETTINGS.PROFILE} element={<Profile />} />
+                <Route path={ROUTES.SETTINGS.PARAMETERS} element={<Parameters />} />
+                <Route path={ROUTES.SETTINGS.ACCOUNT} element={ <Account/> } />
+              </Route>
             </Route>
 
             {/* Route 404 - avec un layout minimal */}
-            <Route path="*" element={
-              <AuthLayout>
-                <NotFound />
-              </AuthLayout>
-            } />
+            <Route path="*" element={ <NotFound/> } />
+
           </Routes>
         </BrowserRouter>
       </div>

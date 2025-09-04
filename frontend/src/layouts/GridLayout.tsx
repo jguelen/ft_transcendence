@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 
-function MainLayout() {
+function GridLayout() {
   return (
     <div className="main-layout">
       {/* Votre navigation, header, etc */}
@@ -15,4 +15,4 @@ function MainLayout() {
   );
 }
 
-export default MainLayout;
+export default GridLayout;
