@@ -8,21 +8,34 @@ export default {
   
   theme: {
     extend: {
-      // Étendre ou personnaliser le thème Tailwind par défaut
       colors: {
-        // Exemple: Ajoutez vos couleurs personnalisées
-        'primary': '#3B82F6',      // Un bleu pour les éléments primaires
-        'primary-dark': '#2563EB', // Version plus foncée pour hover
-        'secondary': '#10B981',    // Un vert pour les éléments secondaires
-        'accent': '#F59E0B',       // Une couleur d'accent
-        'background': '#F3F4F6',   // Couleur de fond
+        'main-background': 'rgba(27,28,47,0.7)',
+        'accent': '#00F9EC',
+        'text': '#A5BAD0',
+        'second-accent': '#275F99',
+        'stroke': '#424354',
       },
       fontFamily: {
-        // Exemple: Configurez des polices personnalisées
-        'sans': ['Inter', 'system-ui', 'sans-serif'],
+        'inter': ['Inter', 'system-ui', 'sans-serif'],
+        'orbitron': ['Orbitron', 'monospace'],
       },
-      // Vous pouvez aussi personnaliser d'autres aspects comme:
-      // borderRadius, spacing, fontSize, etc.
+      borderRadius: {
+        'small': '18px',
+        'big': '28px'
+      },
+      backgroundColor: {
+        'main': 'rgba(27,28,47,0.7)',
+      },
+      boxShadow: {
+        'card': '0 0 10.2px 2px rgba(0, 249, 236, 0.3)',
+      },
+      backdropBlur: {
+        'card': '3px',
+      },
+      fontSize: {
+        'title': '48px',
+        'subtitle': '24px',
+      }
     },
   },
   
