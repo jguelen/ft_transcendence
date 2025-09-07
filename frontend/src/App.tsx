@@ -56,7 +56,7 @@ const ROUTES = {
 function App() {
   return (
     <div className="w-full bg-[#060919] bg-[url('./assets/background-clear.svg')] bg-cover bg-center bg-no-repeat">
-      <div className="relative z-10">
+      <div className="h-full w-full relative z-10">
         <BrowserRouter>
           <Routes>
             {/* Routes d'authentification */}
