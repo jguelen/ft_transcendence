@@ -35,7 +35,7 @@ console.log(data)
 		if (data)
 			alert(data.msg)
 		else {
-			location.href = '/';
+			location.href = '/'
 		} 
 	})
 	.catch( function(error) { console.error(error) })
