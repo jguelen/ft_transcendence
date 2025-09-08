@@ -178,6 +178,13 @@ console.log(newPwHash);
 })
 
 
+fastify.delete('/api/auth/logout', async (req, res) => { 
+console.log('# /api/auth/logout');
+
+	return res.status(200).clearCookie('ft_transcendence_jwt', {}).send();
+
+})
+
 
 // Run the serveur!
 fastify.listen({ port: 3001 }, (err) => {
