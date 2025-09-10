@@ -43,7 +43,5 @@ export default {
     // Ajoutez ici des plugins Tailwind si nécessaire
     // Par exemple: require('@tailwindcss/forms'),
   ],
-  
-  // Options supplémentaires
-  darkMode: 'class', // Permet le mode sombre via la classe 'dark'
+
 }

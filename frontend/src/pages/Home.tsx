@@ -1,7 +1,19 @@
+import Card from '../components/Card'
+
 function Home()
 {
   return (
-    <div className="bg-red-500"> Home </div>
+    <div className="">
+      <Card maxWidth="400px" maxHeight="504px">
+        <div/>
+      </Card>
+      <Card maxWidth="400px" maxHeight="504px">
+        <div/>
+      </Card>
+      <Card maxWidth="400px" maxHeight="504px">
+        <div/>
+      </Card>
+    </div>
   )
 }
 
