@@ -1,9 +1,166 @@
+import Card from '../../components/Card'
+import {useState} from 'react'
+import Button from '../../components/Button'
+import Input from '../../components/Input'
+import clsx from 'clsx'
+
 function Register()
 {
-  console.log('Register component rendered');
+  const [isLoadingSubmit, setLoadingSubmit] = useState<boolean>(false)
+  const [passwordError, setPasswordError] = useState<string>("")
+  const [email, setEmail] = useState<string>("")
+  const [password, setPassword] = useState<string>("")
+  const [repassword, setRepassword] = useState<string>("")
+  const [username, setUsername] = useState<string>("")
+  const [isCheckingUsername, setCheckingUsername] = useState<boolean>(false)
+  const [usernameError, setUsernameError] = useState<string>("")
+
+  function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>)
+  {
+    setUsername(event.target.value)
+    if (usernameError)
+      setUsernameError("");
+  }
+
+  async function handleUsernameBlur()
+  {
+    setCheckingUsername(true);
+    setUsernameError('');
+    if (!username)
+    {
+      setCheckingUsername(false);
+      return;
+    }
+    else if (username.length < 3)
+    {
+      setCheckingUsername(false);
+      setUsernameError("incorrect username");
+      return;
+    }
+    try
+    {
+       // const response = await fetch(`/api/check-username?username=${username}`);
+       // const data = await response.json();
+       // if (!data.isAvailable)
+        setUsernameError("This username has already been taken.");
+    }
+    catch (apiError)
+    {
+      console.error("Error during username verification", apiError);
+    }
+    finally
+    {
+      setCheckingUsername(false);
+    }
+  }
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>)
+  {
+    event.preventDefault();
+    setLoadingSubmit(true);
+    setPasswordError('');
+    if (!email || !password)
+    {
+      setPasswordError("incorrect email/password");
+      setLoadingSubmit(false);
+      return;
+    }
+
+    const passwordErrors = validatePassword(password);
+
+    if (passwordErrors.length > 0)
+    {
+      console.log({passwordErrors})
+      setPasswordError(passwordErrors.join(' ')); 
+      setLoadingSubmit(false);
+      return;
+    }
+
+    if (password != repassword)
+    {
+      console.log("password not equal to repassword");
+      setPasswordError("both password need to be equal.");
+      setLoadingSubmit(false);
+      return;
+    }
+    
+    try
+    {
+      console.log("initializing connexion with:", {email, password});
+      await new Promise(r => setTimeout(r, 2000));
+      // throw new Error("invalid identifiers");
+      alert("Connexion succeed !");
+    }
+    catch (apiError)
+    {
+      setPasswordError("incorrect email or password.")
+    }
+    finally
+    {
+      setLoadingSubmit(false);
+    }
+  }
+
   return (
-    <div className="bg-red-500"> Register </div>
+    <form onSubmit={handleSubmit} action="/register" method="POST" className="flex flex-col
+      items-center justify-center gap-5 w-full h-full">
+
+      <h1 className="font-orbitron text-title text-white break-all">Register</h1>
+
+        <Input type="email" name="email" id="email" placeholder="Email"
+          required value={email} onChange={(e) => setEmail(e.target.value)} iconSrc={'/icons/mail.svg'}/>
+
+      <div className="w-full flex flex-col items-center justify-center">
+        <Input type="text" name="username" id="username" placeholder="Username"
+          required value={username} onChange={handleUsernameChange}
+          iconSrc={'/icons/user.svg'} onBlur={handleUsernameBlur}/>
+
+        {isCheckingUsername && <p className="text-gray-400 text-xs mt-1">Verification...</p>}
+          {usernameError && <p className="text-red-500 text-xs mt-1 flex-initial">{usernameError}</p>}
+      </div>
+
+        <Input type="password" name="password" id="password" placeholder="Password"
+          required value={password} onChange={(e) => setPassword(e.target.value)} iconSrc={'/icons/lock.svg'}/>
+
+      <div className={clsx(
+            "w-full flex flex-col items-center justify-center",
+            {
+              "flex-grow h-0": passwordError,
+            }
+      )}>
+        <Input type="password" name="repassword" id="repassword" placeholder="Repeat password"
+          required value={repassword} onChange={(e) => setRepassword(e.target.value)} iconSrc={'/icons/lock.svg'}/>
+      
+        {passwordError && <p className="text-red-500 text-center font-inter text-sm w-full max-h-[25%] overflow-y-auto">{passwordError}</p>}
+      </div>
+
+      <Button gradientBorder={true} type='submit' disabled={isLoadingSubmit || !!usernameError} hoverColor="rgba(39, 95, 153, 0.4)">
+        {isLoadingSubmit ? "Connexion..." : "Sign Up"}
+      </Button>
+
+    </form>
   )
 }
 
+function validatePassword(password: string): string[] {
+  const errors: string[] = [];
+  if (password.length < 12) {
+    errors.push(" Your password needs to be at least 12 characters.");
+  }
+  if (!/[a-z]/.test(password)) {
+    errors.push("Your password needs to have at least one minuscule letter.");
+  }
+  if (!/[A-Z]/.test(password)) {
+    errors.push("Your password needs to have at least one majuscule letter.");
+  }
+  if (!/[0-9]/.test(password)) {
+    errors.push("Your password needs to contain at least one number.");
+  }
+  if (!/[!@#$%^&*]/.test(password)) {
+    errors.push("Your password needs to contain at least one of those special characters (!@#$%^&*).");
+  }
+  return errors;
+}
+
 export default Register
+

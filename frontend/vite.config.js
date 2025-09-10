@@ -10,7 +10,7 @@ export default defineConfig({
     react(),
   ],
 
-  root: 'src',
+  // root: 'src',
   // Configuration du serveur de développement
   server:
   {

@@ -1,0 +1,25 @@
+.gradient-ring {
+  position: relative;
+  overflow: hidden;
+}
+
+.gradient-ring::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #275F99, #00F9EC);
+
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  pointer-events: none;
+}
+
+.dynamic-hover:hover {
+  background-color: var(--hover-bg-color);
+}

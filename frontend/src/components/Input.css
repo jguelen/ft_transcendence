@@ -1,0 +1,12 @@
+.with-icon {
+  padding-left: 40px;
+  background-image: var(--icon-url);
+  background-repeat: no-repeat;
+  background-position: 12px center;
+  background-size: 20px;
+}
+
+.with-icon.has-value {
+  background-image: none;
+  padding-left: 20px;
+}

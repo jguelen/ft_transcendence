@@ -3,7 +3,7 @@ import React, {ReactNode} from 'react'
 function ProtectedRoute({children}: {children: ReactNode})
 {
   return (
-    <div className="bg-red-500"> {children} </div>
+    <div className="h-full w-full"> {children} </div>
   )
 }
 
