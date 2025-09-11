@@ -32,7 +32,7 @@ document.getElementById('suf_submitbutton').addEventListener('click', function(e
 	// if (password.length > 24 ) validLogin = false;
 
 	if (validLogin) {
-		fetch('http://localhost:3001/api/auth_signup', {
+		fetch('http://localhost:3001/api/auth/signup', {
 			method: 'POST',
 			credentials: 'include', // This sends cookies and other credentials
 			headers: {'Content-Type': 'application/json'},

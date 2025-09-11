@@ -38,17 +38,15 @@ console.log("hohohoho");
 })
 
 
-
-
-fastify.post('/api/auth_login', async (req, res) => { 
-console.log('# /auth_login');
+fastify.post('/api/auth/login', async (req, res) => { 
+console.log('# /auth/login');
 console.log(req.body);
 
-	const email = req.body.useremail
+	const email = req.body.userlogin
 	const password = req.body.password
 
 	try {
-		const response = await fetch(`${USER_SERVICE_URL}/api/user_getbyemail/${email}`);
+		const response = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${email}`);
 console.log(response);
 
 		const userData = await response.json();
@@ -61,10 +59,6 @@ console.log(userData);
 		if (!await bcrypt.compare(password, userData.password))
 			return res.status(401).send( {msg: "Invalid user or password"} );
 
-//		if (userByEmail.password != password)
-//			return res.status(401).send("invalid user or password(pw)");
-
-//                              VVV
 		const token = jwt.sign( { userId: userData.id }, process.env.JWT_SECRET );
 
 console.log(token)
@@ -81,14 +75,12 @@ console.log(token)
 console.error(error);
 		return res.status(500).send( {msg: "Internal error"} );
 	}
-
 })
 
 
 
-
-fastify.post('/api/auth_signup', async (req, res) => { 
-console.log('# /auth_signup');
+fastify.post('/api/auth/signup', async (req, res) => { 
+console.log('# /auth/signup');
 console.log(req.body);
 
 	const email = req.body.useremail
@@ -98,7 +90,7 @@ console.log(req.body);
 	try {
 		const pwHash = await bcrypt.hash(password, 12);
 
-		const response = await fetch(`${USER_SERVICE_URL}/api/user_newuser`,
+		const response = await fetch(`${USER_SERVICE_URL}/api/user/newuser`,
         {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -122,7 +114,16 @@ console.log(req.body);
 console.log(userData);
 
 
-		res.status(200).send();
+		const token = jwt.sign( { userId: userData.id }, process.env.JWT_SECRET );
+
+console.log(token)
+
+		res.status(200).cookie("ft_transcendence_jwt", token, {
+			path: "/",
+			httpOnly: true,
+			sameSite: "none",
+			secure: true
+		}).send();
 	}
 	catch (error) {
 console.error(error);

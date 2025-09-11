@@ -24,22 +24,16 @@ fastify.register(fastify_cookie, {
 
 
 fastify.addHook('preHandler', (req, res, next) => {
-//console.log("hihihihihi");
-//  req.jwt = fastify.jwt
+	res.header("Access-Control-Allow-Origin", "http://localhost:3002")
+	res.header("Access-Control-Allow-Credentials", true)
 
-res.header("Access-Control-Allow-Origin", "http://localhost:3002")
-res.header("Access-Control-Allow-Credentials", true)
-
-
-  const isPreflight = /options/i.test(req.method);
-  if (isPreflight) {
-	res.header("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST, OPTIONS")
-	res.header("Access-Control-Allow-Headers",  'Content-Type, Authorization')
-
-    return res.send();
-  }
-
-  return next()
+	const isPreflight = /options/i.test(req.method);
+	if (isPreflight) {
+		res.header("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST, OPTIONS")
+		res.header("Access-Control-Allow-Headers",  'Content-Type, Authorization')
+		return res.send();
+	}
+	return next()
 })
 
 

@@ -6,7 +6,7 @@ document.getElementById('sif_submitbutton').addEventListener('click', function(e
   event.preventDefault();
   console.log('text was inputed');
 
-  var userEmail = document.getElementById('userEmailInput').value; userEmail = userEmail.trim();
+  var userLogin = document.getElementById('userLoginInput').value; userLogin = userLogin.trim();
   var password = document.getElementById('passwordInput').value; password = password.trim();
 
 	let validLogin = true;
@@ -19,11 +19,11 @@ document.getElementById('sif_submitbutton').addEventListener('click', function(e
 		return
 	}
 
-	fetch('http://localhost:3001/api/auth_login', {
+	fetch('http://localhost:3001/api/auth/login', {
 		method: 'POST',
 		credentials: 'include',
 		headers: {'Content-Type': 'application/json'},
-		body: JSON.stringify( { useremail:userEmail, password:password } )
+		body: JSON.stringify( { userlogin:userLogin, password:password } )
 	})
 	.then( function(response) {
 		if (response.status != 200)

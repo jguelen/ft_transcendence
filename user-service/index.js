@@ -105,13 +105,11 @@ fastify.register(protected_routes)
 
 
 
-fastify.get('/api/user_getbyemail/:email', {}, async function (req, res) {
-
-console.log("/api/user_getbyemail/:email");	
+fastify.get('/api/user/getbyemail/:email', {}, async function (req, res) {
+console.log("/api/user/getbyemail/:email");	
 console.log(req.params);
 
 	const value = req.params.email;
-console.log(value);
 	try {
 		var user = await prisma.user.findUnique({
 			where: { 
@@ -123,13 +121,32 @@ console.log(value);
 	catch (error) {
 		res.status(500).send()
 	}
+})
 
+fastify.get('/api/user/getbyname/:name', {}, async function (req, res) {
+console.log("/api/user/getbyname/:name");	
+console.log(req.params);
 
+	const value = req.params.name;
+	try {
+		var user = await prisma.user.findUnique({
+			where: { 
+				name: value
+			}
+		})
+		return res.send(user);
+	}
+	catch (error) {
+		res.status(500).send()
+	}
 })
 
 
-fastify.get('/api/user_getbyid/:id', {}, async function (req, res) {
 
+
+
+fastify.get('/api/user/getbyid/:id', {}, async function (req, res) {
+console.log("/api/user/getbyid/:id");	
 console.log(req.params);
 
 	const value = req.params.id;
@@ -148,11 +165,8 @@ console.log(req.params);
 
 
 })
-
-
-//0123456789012345678901234567890123456789
  
-fastify.post('/api/user_newuser', {}, async function (req, res) {
+fastify.post('/api/user/newuser', {}, async function (req, res) {
 
 console.log('# /newuser');
 console.log(req.body);
@@ -167,16 +181,16 @@ console.log(req.body);
 //			return res.status(404).send( {} );
 
 		if (!validatePassword(password))
-		 	return res.status(404).send( {} );
+		 	return res.status(404).send();
 
 		if (!validateUserName(name))
-			return res.status(404).send( {} );
+			return res.status(404).send();
 
 		uniqueUserName = await checkUserNameDuplicate(name)
 console.log("uniqueUserName");
 console.log(uniqueUserName);
 		if (uniqueUserName == "")
-			return res.status(404).send( {} );
+			return res.status(404).send();
 
 			let user = await prisma.user.create({
 				data: { name: uniqueUserName, email, password }
@@ -189,10 +203,9 @@ console.log('newuser created');
 	catch (error) {
 console.error('newuser pancarte');
 		console.error(error);
-		res.status(500).send( {} );
+		res.status(500).send();
 	}
 })
-
 
 
 // Run the serveur!

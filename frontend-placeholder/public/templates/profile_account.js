@@ -63,9 +63,5 @@ console.log('changepwbtn')
 		})
 		.catch( function(error) { console.error(error) })
 
-
-
 	})
-
-
 })
