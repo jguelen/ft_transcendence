@@ -37,6 +37,10 @@ const prisma = new PrismaClient()
 
 */
 
+const { AUTH_SERVICE_URL } = process.env;
+if (!AUTH_SERVICE_URL) {
+	throw new Error("Missing AUTH_SERVICE_URL env var");
+}
 
 const fastify = require('fastify')({ logger: false })
 
@@ -103,10 +107,11 @@ fastify.register(protected_routes)
 
 fastify.get('/api/user_getbyemail/:email', {}, async function (req, res) {
 
+console.log("/api/user_getbyemail/:email");	
 console.log(req.params);
 
 	const value = req.params.email;
-
+console.log(value);
 	try {
 		var user = await prisma.user.findUnique({
 			where: { 
@@ -116,12 +121,11 @@ console.log(req.params);
 		return res.send(user);
 	}
 	catch (error) {
-		res.status(500).send("")
+		res.status(500).send()
 	}
 
 
 })
-
 
 
 fastify.get('/api/user_getbyid/:id', {}, async function (req, res) {
@@ -192,7 +196,7 @@ console.error('newuser pancarte');
 
 
 // Run the serveur!
-fastify.listen({ port: 3002 }, (err) => {
+fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3000 }, (err) => {
 	if (err) {
 		fastify.log.error(err)
 		process.exit(1)
@@ -408,7 +412,7 @@ console.log(user);
 				return res.status(500).send()			
 
 console.log("uu");
-			const response = await fetch(`http://localhost:3001/api/auth/changepw`,
+			const response = await fetch(`${AUTH_SERVICE_URL}/api/auth/changepw`,
 			{
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },

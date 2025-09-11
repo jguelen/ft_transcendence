@@ -1,4 +1,11 @@
 {
+  "name": "user-service",
+	"description": "User service",
+	"version": "0.0.1",
+	"author": "cguilber",
+	"license": "UNLICENSED",
+	"type": "commonjs",
+	"main": "index.js",
   "dependencies": {
     "@fastify/cookie": "^11.0.2",
     "@fastify/jwt": "^10.0.0",
