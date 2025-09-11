@@ -1,6 +1,10 @@
 // npm i fastify @fastify/cookie @fastify/jwt
 // npm i bcrypt jsonwebtoken
 
+const { USER_SERVICE_URL } = process.env;
+if (!USER_SERVICE_URL) {
+	throw new Error("Missing USER_SERVICE_URL env var");
+}
 
 const fastify = require('fastify')({ logger: false })
 const fastify_cookie = require('@fastify/cookie')
@@ -44,7 +48,7 @@ console.log(req.body);
 	const password = req.body.password
 
 	try {
-		const response = await fetch(`http://localhost:3002/api/user_getbyemail/${email}`);
+		const response = await fetch(`${USER_SERVICE_URL}/api/user_getbyemail/${email}`);
 console.log(response);
 
 		const userData = await response.json();
@@ -93,8 +97,8 @@ console.log(req.body);
 
 	try {
 		const pwHash = await bcrypt.hash(password, 12);
-		
-		const response = await fetch(`http://localhost:3002/api/user_newuser`,
+
+		const response = await fetch(`${USER_SERVICE_URL}/api/user_newuser`,
         {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -185,9 +189,8 @@ console.log('# /api/auth/logout');
 
 })
 
-
 // Run the serveur!
-fastify.listen({ port: 3001 }, (err) => {
+fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3000 }, (err) => {
 	if (err) {
 		fastify.log.error(err)
 		process.exit(1)

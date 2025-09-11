@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Transcendence Test Page HTML</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+
+		<script type="text/javascript">
+			var loggedUser = null
+
+			const getUserData = async function () {
+
+if (!loggedUser) {
+console.log("main/ loggedUser is null")
+
+	await fetch('http://localhost:3002/api/user/getloggeduser', {
+		method: 'GET',
+		credentials: 'include',
+		headers: {'Content-Type': 'application/json'},
+	})
+	.then( function(response) { 
+		if (response.status == 200)
+			return response.json()
+		else alert("User data error")
+	})
+	.then( function(data) {
+console.log("UserData")
+		loggedUser = data;
+	})
+	.catch( function(error) { console.error(error) })
+}
+			}
+		</script>
+	</head>
+	<body>
+
+	<div id="langselector">
+		<button id="lang_en">English</button>
+		<button id="lang_fr">Français</button>
+	</div>
+
+		<div id="navdiv" display="none">
+			<a href="/home" style="text-decoration:none" >
+				<h2>ft_transcendence frontend placeholder</h2>
+			</a>
+			<a href="/profile_profile">Profile</a>
+		</div>
+
+		<div id="pagemaincontent"></div>
+
+		<script type="module" src="/public/index.js"></script>
+
+	</body>
+</html>
