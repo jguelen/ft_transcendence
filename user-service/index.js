@@ -129,14 +129,24 @@ console.log(req.params);
 
 	const value = req.params.name;
 	try {
-		var user = await prisma.user.findUnique({
+		var user = await prisma.user.findMany({
 			where: { 
 				name: value
 			}
 		})
-		return res.send(user);
+
+console.log("result");
+		if (user.length == 0)
+			return res.status(200).send({});
+
+console.log(user[0]);
+
+		const userData = {id:user[0].id, name:value, rank:user[0].rank}
+
+		return res.status(200).send(userData);
 	}
 	catch (error) {
+console.error(error);
 		res.status(500).send()
 	}
 })
@@ -144,7 +154,7 @@ console.log(req.params);
 
 
 
-
+//!!
 fastify.get('/api/user/getbyid/:id', {}, async function (req, res) {
 console.log("/api/user/getbyid/:id");	
 console.log(req.params);
