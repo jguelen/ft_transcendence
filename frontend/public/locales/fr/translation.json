@@ -1,0 +1,40 @@
+{
+  "login": {
+    "title": "Connexion",
+    "mail": "Email",
+    "password": "Mot de passe",
+    "loading": "Connexion...",
+    "button": "Entrer",
+    "text": "Pas membre ?",
+    "link": "Inscription"
+  },
+  "register": {
+    "title": "Inscription",
+    "mail": "Email",
+    "username": "Pseudo",
+    "check_username": "Vérif",
+    "password": "Mot de passe",
+    "repassword": "Répéter mot de passe",
+    "loading": "Connexion...",
+    "sign_up": "S'inscrire",
+    "alert": "Connexion réussie !",
+    "error": {
+      "username": "pseudo incorrect",
+      "mail/password": "email/mot de passe incorrect",
+      "repassword": "les deux mots de passe doivent être identiques"
+    }
+  },
+  "home": {
+    "local": "LOCALE",
+    "online": "EN LIGNE",
+    "cup": "TOURNOI",
+    "button": "JOUER"
+  },
+  "error": {
+    "length": "Votre mot de passe doit avoir au moins 12 caractères.",
+    "minuscule": "Votre mot de passe doit contenir au moins une lettre minuscule.",
+    "majuscule": "Votre mot de passe doit contenir au moins une lettre majuscule.",
+    "number": "Votre mot de passe doit contenir au moins un chiffre.",
+    "special": "Votre mot de passe doit contenir au moins un de ces caractères spéciaux (!@#$%^&*)."
+  }
+}

@@ -3,29 +3,27 @@ import clsx from 'clsx';
 import './Button.css';
 
 type ButtonProps = {
-  children: ReactNode;
   gradientBorder?: boolean;
-  className?: string;
-  type?: 'button' | 'submit' | 'reset';
-  disabled?: boolean;
   hoverColor?: string;
   maxWidth?: string;
-};
+} & React.ComponentPropsWithoutRef<'button'>;
 
 function Button({
   children,
   gradientBorder = false,
   className = '',
   type = 'button',
-  disabled = false,
   hoverColor,
-  maxWidth = '252px'
+  maxWidth = '252px',
+  ...rest
 }: ButtonProps) {
 
   const dynamicStyle = {
     ...(hoverColor && { '--hover-bg-color': hoverColor }),
     '--input-max-width': maxWidth,
   };
+
+  const disabled = rest.disabled;
 
   return (
     <button
@@ -43,6 +41,7 @@ function Button({
         },
         className
       )}
+      {...rest}
     >
       {children}
     </button>

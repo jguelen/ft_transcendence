@@ -4,8 +4,8 @@ import Header from '../components/Header'
 
 function MainLayout() {
   return (
-    <div className="h-full w-full flex flex-col items-center justify-center p-2.5 border border-blue-500
-      gap-32">
+    <div className="h-full w-full flex flex-col items-center justify-start px-1
+     py-7 gap-32">
       <Header/>
       <Outlet />
     </div>
