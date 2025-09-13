@@ -1,0 +1,40 @@
+{
+  "login": {
+    "title": "Acceso",
+    "mail": "Correo",
+    "password": "Clave",
+    "loading": "Conectando...",
+    "button": "Entrar",
+    "text": "¿No eres miembro?",
+    "link": "Registro"
+  },
+  "register": {
+    "title": "Registro",
+    "mail": "Correo",
+    "username": "Usuario",
+    "check_username": "Verif",
+    "password": "Clave",
+    "repassword": "Repetir clave",
+    "loading": "Conectando...",
+    "sign_up": "Registrar",
+    "alert": "¡Conexión exitosa!",
+    "error": {
+      "username": "usuario incorrecto",
+      "mail/password": "correo/clave incorrectos",
+      "repassword": "las dos claves deben ser iguales"
+    }
+  },
+  "home": {
+    "local": "LOCAL",
+    "online": "EN LÍNEA",
+    "cup": "COPA",
+    "button": "JUGAR"
+  },
+  "error": {
+    "length": "Tu clave debe tener al menos 12 caracteres.",
+    "minuscule": "Tu clave debe tener al menos una letra minúscula.",
+    "majuscule": "Tu clave debe tener al menos una letra mayúscula.",
+    "number": "Tu clave debe tener al menos un número.",
+    "special": "Tu clave debe tener al menos uno de estos caracteres especiales (!@#$%^&*)."
+  }
+}

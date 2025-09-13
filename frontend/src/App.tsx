@@ -38,8 +38,8 @@ const ROUTES = {
     ACCOUNT: 'settings/account',
   },
   CONTEST: {
-    TOURNAMENT: '/tournament',
-    GAME: '/tournament/game',
+    TOURNAMENT: '/cup',
+    GAME: '/cup/game',
   },
   LOCAL: {
     INDEX: '/local-pong',
@@ -59,13 +59,11 @@ function App() {
       <div className="h-full w-full relative z-10">
         <BrowserRouter>
           <Routes>
-            {/* Routes d'authentification */}
             <Route element={ <AuthLayout/> }>
                 <Route path={ROUTES.LOGIN} element={ <Login/> } />
                 <Route path={ROUTES.REGISTER} element={ <Register/> } />
             </Route>
 
-            {/* Routes protégées avec MainLayout */}
             <Route element={
               <ProtectedRoute>
                 <MainLayout />
@@ -90,7 +88,6 @@ function App() {
               </Route>
             </Route>
 
-            {/* Route 404 - avec un layout minimal */}
             <Route path="*" element={ <NotFound/> } />
 
           </Routes>

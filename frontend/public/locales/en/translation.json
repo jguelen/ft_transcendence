@@ -1,0 +1,40 @@
+{
+  "login": {
+    "title": "Login",
+    "mail": "Email",
+    "password": "Password",
+    "loading": "Connecting...",
+    "button": "Sign In",
+    "text": "Not a member?",
+    "link": "Sign Up"
+  },
+  "register": {
+    "title": "Register",
+    "mail": "Email",
+    "username": "Username",
+    "check_username": "Verification...",
+    "password": "Password",
+    "repassword": "Repeat Password",
+    "loading": "Signing up...",
+    "sign_up": "Sign Up",
+    "alert": "Registration successful!",
+    "error": {
+      "username": "Incorrect username",
+      "mail/password": "Incorrect email/password",
+      "repassword": "Both passwords need to be equal"
+    }
+  },
+  "home": {
+    "local": "LOCAL",
+    "online": "ONLINE",
+    "cup": "CUP",
+    "button": "PLAY"
+  },
+  "error": {
+    "length": "Your password needs to be at least 12 characters.",
+    "minuscule": "Your password needs to have at least one lowercase letter.",
+    "majuscule": "Your password needs to have at least one uppercase letter.",
+    "number": "Your password needs to contain at least one number.",
+    "special": "Your password needs to contain at least one of these special characters (!@#$%^&*)."
+  }
+}
