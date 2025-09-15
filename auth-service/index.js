@@ -193,6 +193,7 @@ console.log('# /api/auth/logout');
 // Run the serveur!
 fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3000 }, (err) => {
 	if (err) {
+		console.error(err)
 		fastify.log.error(err)
 		process.exit(1)
 	}

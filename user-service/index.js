@@ -406,9 +406,61 @@ console.log(newName);
 			return res.status(200).send( {name: altName} );
 		}
 		catch (error) {
-			res.status(500)
+			res.status(500).send()
 		}
 
+	})
+
+
+	fastify_instance.put('/api/user/requestfriendship/:userid', { preHandler: [verifyJWT] }, async function (req, res) {
+console.log("/api/user/requestfriendship/:userid");
+
+		const requesteduserid = req.params.userid
+console.log(requesteduserid);
+//res.status(200).send({uu:ii});
+//return 
+
+		try {
+			let friendshiprequest = await prisma.friendshipRequest.create({
+
+			data: { requesterId: req.user.userId,
+					requestedId: Number(requesteduserid)
+			}
+		})
+console.log(friendshiprequest);
+console.log('new friendshiprequest created');
+
+			res.status(200).send();
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500).send()
+		}
+	})
+
+
+	fastify_instance.get('/api/user/getyourfriendshiprequests', { preHandler: [verifyJWT] }, async function (req, res) {
+
+console.log("/api/user/getyourfriendshiprequests");
+console.log(req.user);
+
+		try {
+			var yourfriendshiprequests = await prisma.$queryRawUnsafe(`
+			SELECT friendshipRequest.*, user.name
+			FROM friendshipRequest
+			JOIN user ON friendshipRequest.requesterId = user.id
+			WHERE requesterId = $1`,
+			Number(req.user.userId)
+			)
+
+console.log(yourfriendshiprequests);
+
+			return res.status(200).send(yourfriendshiprequests);
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500)
+		}
 	})
 
 
@@ -432,7 +484,7 @@ console.log(newPw);
 			})
 console.log(user);
 			if (!user)
-				return res.status(500).send()			
+				return res.status(500).send()
 
 console.log("uu");
 			const response = await fetch(`${AUTH_SERVICE_URL}/api/auth/changepw`,
