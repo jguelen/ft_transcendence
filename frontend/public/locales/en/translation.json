@@ -21,7 +21,8 @@
     "error": {
       "username": "Incorrect username",
       "mail/password": "Incorrect email/password",
-      "repassword": "Both passwords need to be equal"
+      "repassword": "Both passwords need to be equal",
+      "taken": "This username has already been taken."
     }
   },
   "home": {

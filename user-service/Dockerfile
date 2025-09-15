@@ -1,10 +1,17 @@
 FROM node:20-alpine
 
-COPY . /app
 WORKDIR /app
+
+COPY package*.json ./
 
 RUN npm install
 
-EXPOSE 3000
+COPY schema.prisma ./
 
-CMD ["node", "."]
+RUN npx prisma generate
+
+COPY . .
+
+EXPOSE 3002
+
+CMD ["node", "index.js"]

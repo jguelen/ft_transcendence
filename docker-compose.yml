@@ -1,77 +1,37 @@
 services:
-  # Frontend Service (React + Vite + TS + Tailwind)
-  # frontend:
-  #   build: 
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8080:80"
-  #   networks:
-  #     - ft_network
-  #   restart: unless-stopped
-
-  # Service d'authentification (Fastify + SQLite)
-  auth-service:
-    build: ./auth-service
-    environment:
-      - NODE_ENV=development
-      - JWT_SECRET=your_jwt_secret_key_change_this_in_production
-      - USER_SERVICE_URL=http://user-service:3000
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
-      - "3001:3000"
-    volumes:
-      - auth_data:/app/data
-    networks:
-      - ft_network
-    restart: unless-stopped
+      - "8443:443"
+    container_name: frontend
 
-  # Service de jeu (Fastify + SQLite)
-  # game-service:
-  #   build: ./game-service
-  #   environment:
-  #     - NODE_ENV=development
-  #   ports:
-  #     - "3003:3000"
-  #   volumes:
-  #     - game_data:/app/data
-  #   networks:
-  #     - ft_network
-  #   restart: unless-stopped
+  auth_services:
+    build:
+      context: ./auth-service
+    container_name: auth_service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - JWT_SECRET="your_jwt_secret_key_change_this_in_production"
+      - USER_SERVICE_URL=http://user-service:3002
+    depends_on:
+      - user-service
 
-  # Service utilisateur (Fastify + SQLite)
   user-service:
-    build: ./user-service
-    environment:
-      - NODE_ENV=development
-      - AUTH_SERVICE_URL=http://auth-service:3000
-      - DATABASE_URL=file:./users_db.db
+    build:
+      context: ./user-service
+    container_name: user_service
     ports:
-      - "3002:3000"
+      - "3002:3002"
+    environment:
+      - DATABASE_URL=file:./data/users_db.db
+      - AUTH_SERVICE_URL=http://auth_services:3001
+      - PORT=3002
     volumes:
-      - user_data:/app/data
-    networks:
-      - ft_network
-    restart: unless-stopped
-
-  # Service de chat (Fastify + SQLite)
-  # chat-service:
-  #   build: ./chat-service
-  #   environment:
-  #     - NODE_ENV=development
-  #   ports:
-  #     - "3004:3000"
-  #   volumes:
-  #     - chat_data:/app/data
-  #   networks:
-  #     - ft_network
-  #   restart: unless-stopped
-
-networks:
-  ft_network:
-    driver: bridge
+      - user-data:/app/data
 
 volumes:
-  auth_data:
-  # game_data:
-  user_data:
-  # chat_data:
+  user-data:

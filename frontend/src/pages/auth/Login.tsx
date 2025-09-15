@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../context/AuthContext'
 
 function Login()
 {
@@ -10,6 +11,7 @@ function Login()
   const [error, setError] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const { login } = useAuth();
   const { t } = useTranslation();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>)
@@ -23,25 +25,15 @@ function Login()
       setLoading(false);
       return;
     }
-
-    const passwordErrors = validatePassword(password, t);
-
-    if (passwordErrors.length > 0) {
-      setError(passwordErrors.join(' ')); 
-      setLoading(false);
-      return;
-    }
-    
     try
     {
       console.log("initializing connexion with:", {email, password});
-      await new Promise(r => setTimeout(r, 2000));
-      // throw new Error("invalid identifiers");
+      await login({ email, password });
       alert("Connexion succeed !");
     }
-    catch (apiError)
+    catch (err)
     {
-      setError("incorrect email or password.")
+      setError("invalid password or email");
     }
     finally
     {
@@ -76,27 +68,6 @@ function Login()
       </div>
     </div>
   )
-}
-
-function validatePassword(password: string, t: Function): string[] {
-  const errors: string[] = [];
-
-  if (password.length < 12) {
-    errors.push(t("error.length"));
-  }
-  if (!/[a-z]/.test(password)) {
-    errors.push(t("error.minuscule"));
-  }
-  if (!/[A-Z]/.test(password)) {
-    errors.push(t("error.majuscule"));
-  }
-  if (!/[0-9]/.test(password)) {
-    errors.push(t("error.number"));
-  }
-  if (!/[!@#$%^&*]/.test(password)) {
-    errors.push(t("error.special"));
-  }
-  return errors;
 }
 
 export default Login
