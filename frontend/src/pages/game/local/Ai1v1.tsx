@@ -1,7 +1,9 @@
+import PongGame from '../../../components/PongGame'
+
 function Ai1v1()
 {
   return (
-    <div className="bg-red-500"> Ai </div>
+    <div> <PongGame/> </div>
   )
 }
 
