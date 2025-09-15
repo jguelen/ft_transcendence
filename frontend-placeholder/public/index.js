@@ -62,6 +62,12 @@ const urlRoutes = {
 		title: "chat | " + urlPageTitle,
 		description: "chat page",
 	},
+	"/userprofile": {
+		template: "/public/templates/userprofile.html",
+		title: "User profile | " + urlPageTitle,
+		description: "User profile page",
+	},
+
 	"/settings": {
 		template: "/public/templates/settings.html",
 		title: "settings | " + urlPageTitle,
@@ -120,12 +126,20 @@ console.log('root page req2')
 	if (location == '/signup') show_nav = "none"
 
 	// get the route object from the urlRoutes object
-	const route = urlRoutes[location] || urlRoutes["404"]
+	if (location.startsWith("/userprofile/")) {
+		var route = urlRoutes["/userprofile"]
+	}
+	else
+		var route = urlRoutes[location] || urlRoutes["404"]
 
 console.log(route)
 
 	// get the html from the template
+//if (route.template == "/userprofile")
+//	var html = await fetch(route.template).then((response) => response.text());
+//else
 	const html = await fetch(route.template).then((response) => response.text());
+
 
 	// show/hide nav
 	document.getElementById("navdiv").style.display = show_nav

@@ -21,7 +21,11 @@ console.log('Enter key pressed!');
 		})
 		.then( function(data) {
 console.log(data)
-		
+			if (loggedUser.name == data.name) {
+				location.href = '/';
+				return
+			}
+			putResult(data)
 		})
 		.catch( function(error) { console.error(error) })
 	}
@@ -33,3 +37,27 @@ console.log(data)
 .catch( function(error) { console.error(error) })
 
 
+function putResult(userData) {
+	
+	if (userData.id == null) {
+		document.getElementById('searchResult').textContent = "User not found."
+		return
+	}
+
+	document.getElementById('searchResult').innerHTML = `<a href="/userprofile/${userData.name}">${userData.name}</a>  <button id="askfriendship">Ask for friend</button>`
+
+	document.getElementById('askfriendship').addEventListener('click', askFriend)
+
+}
+
+function askFriend(event) {
+	
+	event.preventDefault();
+
+//	alert("huhuhuhihi")
+
+
+
+
+
+}

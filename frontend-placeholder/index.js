@@ -86,6 +86,8 @@ fastify.get('/profile_profile', { preHandler: [verifyJWT] }, sendAppPage_protect
 fastify.get('/profile_settings', { preHandler: [verifyJWT] }, sendAppPage_protected)
 fastify.get('/profile_account', { preHandler: [verifyJWT] }, sendAppPage_protected)
 
+fastify.get('/userprofile/:name', { preHandler: [verifyJWT] }, sendAppPage_protected)
+
 
 
 
