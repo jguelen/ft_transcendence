@@ -40,8 +40,8 @@ console.log("hohohoho");
 
 
 
-fastify.post('/api/auth_login', async (req, res) => { 
-console.log('# /auth_login');
+fastify.post('/login', async (req, res) => { 
+console.log('# /login');
 console.log(req.body);
 
 	const email = req.body.useremail
@@ -87,7 +87,7 @@ console.error(error);
 
 
 
-fastify.post('/api/auth_signup', async (req, res) => { 
+fastify.post('/signup', async (req, res) => { 
 console.log('# /auth_signup');
 console.log(req.body);
 
@@ -152,8 +152,8 @@ console.log(pwHash);
 })
 */
 
-fastify.post('/api/auth/changepw', async (req, res) => { 
-console.log('# /api/auth/changepw');
+fastify.post('/changepw', async (req, res) => { 
+console.log('# /changepw');
 
 //	const pw = req.params.pw
 //	const pwHash = req.params.pwhash

@@ -105,7 +105,7 @@ fastify.register(protected_routes)
 
 
 
-fastify.get('/api/user_getbyemail/:email', {}, async function (req, res) {
+fastify.get('/getbyemail/:email', {}, async function (req, res) {
 
 console.log(req.params);
 
@@ -126,8 +126,22 @@ console.log(req.params);
 
 })
 
+fastify.get('/check-username/:username', async (req, res) => {
+  try {
+    const { username } = req.params;
+    const user = await prisma.user.findUnique({
+      where: { name: username },
+    });
+    
+    return res.send({ isAvailable: !user });
 
-fastify.get('/api/user_getbyid/:id', {}, async function (req, res) {
+  } catch (error) {
+    console.error("Error checking username:", error);
+    return res.status(500).send({ msg: "Internal server error" });
+  }
+});
+
+fastify.get('/user_getbyid/:id', {}, async function (req, res) {
 
 console.log(req.params);
 

@@ -1,28 +1,20 @@
 FROM node:20-alpine AS build
 
-WORKDIR /app
+COPY package*.json ./
 
-# Copie des fichiers de configuration
-COPY package.json ./
-COPY vite.config.js ./
-COPY postcss.config.js ./
-COPY tailwind.config.js ./
-COPY index.html ./
-COPY src ./src
-
-# Installation des dépendances et build
 RUN npm install
-RUN npm run install
 
-# Image finale avec Nginx
-FROM nginx:alpine
+COPY . .
 
-# Copie des fichiers buildés vers Nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+RUN npm run build
 
-# Configuration Nginx pour SPA React
+FROM nginx:1.25-alpine
+
+COPY --from=build /dist/ /usr/share/nginx/html
+
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+COPY nginx/ssl/cert.pem /etc/nginx/ssl/cert.pem
+COPY nginx/ssl/key.pem /etc/nginx/ssl/key.pem
 
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 443 

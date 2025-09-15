@@ -2,7 +2,9 @@ import {useState} from 'react';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import clsx from 'clsx';
-import { useTranslation } from 'react-i18next'; 
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { checkUsernameAvailability, signup, login } from '../../services/authService';
 
 function Register()
 {
@@ -15,6 +17,7 @@ function Register()
   const [isCheckingUsername, setCheckingUsername] = useState<boolean>(false)
   const [usernameError, setUsernameError] = useState<string>("")
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>)
   {
@@ -40,14 +43,14 @@ function Register()
     }
     try
     {
-       // const response = await fetch(`/api/check-username?username=${username}`);
-       // const data = await response.json();
-       // if (!data.isAvailable)
-        // setUsernameError("This username has already been taken.");
+       const data = await checkUsernameAvailability(username);
+       if (!data.isAvailable)
+        setUsernameError(t("register.error.taken"));
     }
     catch (apiError)
     {
       console.error("Error during username verification", apiError);
+      setUsernameError("network error");
     }
     finally
     {
@@ -87,14 +90,18 @@ function Register()
     
     try
     {
-      console.log("initializing connexion with:", {email, password});
-      await new Promise(r => setTimeout(r, 2000));
-      // throw new Error("invalid identifiers");
-      alert(t("register.alert"));
+       // 1. On tente d'inscrire l'utilisateur
+      await signup({ useremail: email, username, password });
+
+      // 2. Si ça réussit, on le connecte automatiquement
+      await login({ useremail: email, password });
+      navigate('/', { replace: true });
     }
-    catch (apiError)
+    catch (apiError: any)
     {
-      setPasswordError(t("register.error.mail/password"))
+      // On extrait le message d'erreur spécifique du backend s'il existe,
+      const errorMessage = apiError.response?.data?.msg;
+      setPasswordError(errorMessage);
     }
     finally
     {
