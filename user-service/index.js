@@ -448,7 +448,7 @@ console.log(req.user);
 			var yourfriendshiprequests = await prisma.$queryRawUnsafe(`
 			SELECT friendshipRequest.*, user.name
 			FROM friendshipRequest
-			JOIN user ON friendshipRequest.requesterId = user.id
+			JOIN user ON friendshipRequest.requestedId = user.id
 			WHERE requesterId = $1`,
 			Number(req.user.userId)
 			)
@@ -456,6 +456,34 @@ console.log(req.user);
 console.log(yourfriendshiprequests);
 
 			return res.status(200).send(yourfriendshiprequests);
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500)
+		}
+	})
+
+
+
+	fastify_instance.delete('/api/user/delyourfriendshiprequest/:requestedid', { preHandler: [verifyJWT] }, async function (req, res) {
+
+console.log("/api/user/delyourfriendshiprequest");
+console.log(req.user);
+
+		const requestedId = Number(req.params.requestedid)
+console.log(req.params);
+
+		try {
+            await prisma.friendshipRequest.delete({
+                where: {
+				requesterId_requestedId: {
+					requesterId: req.user.userId,
+					requestedId: requestedId
+				}         
+				}
+			})
+
+			return res.status(200).send();
 		}
 		catch (error) {
 			console.error(error);
@@ -525,6 +553,164 @@ console.log(userData);
 			res.status(500).send()
 		}
 	})
+
+
+
+	fastify_instance.get('/api/user/getfriendshiprequests', { preHandler: [verifyJWT] }, async function (req, res) {
+
+console.log("/api/user/getfriendshiprequests");
+console.log(req.user);
+
+		try {
+			var yourfriendshiprequests = await prisma.$queryRawUnsafe(`
+			SELECT friendshipRequest.*, user.name
+			FROM friendshipRequest
+			JOIN user ON friendshipRequest.requesterId = user.id
+			WHERE requestedId = $1`,
+			Number(req.user.userId)
+			)
+
+console.log(yourfriendshiprequests);
+
+			return res.status(200).send(yourfriendshiprequests);
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500)
+		}
+	})
+
+
+	fastify_instance.put('/api/user/acceptfriendshiprequest/:requesterid', { preHandler: [verifyJWT] }, async function (req, res) {
+
+console.log("/api/user/acceptfriendshiprequest");
+console.log(req.user);
+
+		try {
+
+
+		const requesterId = Number(req.params.requesterid)
+console.log(requesterId)
+
+		await prisma.$transaction([
+			prisma.friendship.create({
+				data: { user1Id: req.user.userId,
+					user2Id: Number(requesterId)
+				}
+			}),
+
+			prisma.friendshipRequest.delete({
+				where: {
+				requesterId_requestedId: {
+					requesterId: requesterId,
+					requestedId: req.user.userId
+					}         
+				}
+			})
+		])
+
+console.log("ok");
+
+			return res.status(200).send();
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500)
+		}
+	})
+
+
+	fastify_instance.put('/api/user/declinefriendshiprequest/:requesterid', { preHandler: [verifyJWT] }, async function (req, res) {
+
+console.log("/api/user/declinefriendshiprequest");
+console.log(req.user);
+
+		const requesterId = Number(req.params.requesterid)
+
+		try {
+			await prisma.friendshipRequest.update({
+			where: {
+				requesterId_requestedId: {
+					requesterId: requesterId,
+					requestedId: req.user.userId
+				}        
+			},
+			data: {
+				declined: 1
+			},
+			})
+console.log("ok");
+			return res.status(200).send();
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500)
+		}
+	})
+
+
+	fastify_instance.get('/api/user/getfriends', { preHandler: [verifyJWT] }, async function (req, res) {
+
+console.log("/api/user/getfriends");
+console.log(req.user);
+
+		try {
+
+			var friends = await prisma.$queryRawUnsafe(`
+			SELECT friendship.user2Id AS id, user.name, friendship.createdAt
+			FROM friendship
+			JOIN user ON friendship.user2Id = user.id
+				WHERE user1Id = $1
+			UNION
+			SELECT friendship.user1Id AS id, user.name, friendship.createdAt
+			FROM friendship
+			JOIN user ON friendship.user1Id = user.id
+				WHERE user2Id = $1`,
+			Number(req.user.userId)
+			)
+
+console.log(friends);
+
+			return res.status(200).send(friends);
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500)
+		}
+	})
+
+
+	fastify_instance.delete('/api/user/unfriend/:friendid', { preHandler: [verifyJWT] }, async function (req, res) {
+
+console.log("/api/user/unfriend");
+console.log(req.user);
+
+		const friendId = Number(req.params.friendid)
+console.log(req.params);
+/*
+		try {
+            await prisma.friendshipRequest.delete({
+                where: {
+OR:[]
+
+
+
+				requesterId_requestedId: {
+					requesterId: req.user.userId,
+					requestedId: friendId
+				}         
+				}
+			})
+
+			return res.status(200).send();
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500)
+		}
+*/
+		})
+
 
 	next()
 }
