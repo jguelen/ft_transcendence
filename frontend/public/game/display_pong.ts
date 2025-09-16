@@ -284,13 +284,6 @@ function draw_background(blur : boolean){
 	ctx.setLineDash([]);
 }
 
-// function hexToRgbArray(hex : string) {
-// 	hex = hex.replace(/^#/, "");
-// 	const r = parseInt(hex.substring(0,2), 16);
-// 	const g = parseInt(hex.substring(2,4), 16);
-// 	const b = parseInt(hex.substring(4,6), 16);
-// 	return [r, g, b];
-// }
 
 function drawColorImage(img : HTMLImageElement | HTMLCanvasElement, x : number, y : number, w : number, h : number, color : string, scaleX = 1, scaleY = 1) {
 	if (choose_color == true){
