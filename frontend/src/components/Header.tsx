@@ -60,7 +60,7 @@ function Header({disabled = false}: HeaderProps)
       <div ref={dropdownRef} className="flex justify-center items-center min-w-fit">
 
         {!disabled && <Link to="/settings/profile">
-        <img src='./futuristic-avatar.svg' alt="User icon" className="w-[50px] h-[50px] shrink-0"/>
+        <img src='/futuristic-avatar.svg' alt="User icon" className="w-[50px] h-[50px] shrink-0"/>
         </Link>}
 
         <div className="flex flex-col justify-center items-center relative

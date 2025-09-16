@@ -51,9 +51,9 @@ export class ImageSrc {
 		this.top_img.src = "/game/image/neonside.png";
 		
 		this.start_img = new Image();
-		this.start_img.src = "/game/image/start.png";
+		this.start_img.src = "/game/image/WaitingRoom.png";
 		this.startcustom_img = new Image();
-		this.startcustom_img.src = "/game/image/startcustom.png";
+		this.startcustom_img.src = "/game/image/WaitingRoom.png";
 		
 		//Font
 		this.font0 = new Image();
