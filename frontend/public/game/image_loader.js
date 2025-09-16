@@ -37,7 +37,7 @@ export class ImageSrc {
     constructor() {
         //Player image
         this.playerImg = new Image();
-        this.playerImg.src = "game/image/player.png";
+        this.playerImg.src = "/game/image/player.png";
         // //Ball image
         // this.ballImg = new Image();
         // this.ballImg.src = "game/image/newball.png";
@@ -49,14 +49,14 @@ export class ImageSrc {
         // this.kill_ballImg.src = "game/image/kill_ball.png";
         //IA image
         this.ai_target = new Image();
-        this.ai_target.src = "game/image/IA_target.png";
+        this.ai_target.src = "/game/image/IA_target.png";
         //Custom
         this.powerupImg = new Image();
-        this.powerupImg.src = "game/image/neonpowerup.png";
+        this.powerupImg.src = "/game/image/neonpowerup.png";
         this.obstacleImg = new Image();
-        this.obstacleImg.src = "game/image/neonobstacle.png";
+        this.obstacleImg.src = "/game/image/neonobstacle.png";
         this.meteorImg = new Image();
-        this.meteorImg.src = "game/image/meteorneon.png";
+        this.meteorImg.src = "/game/image/meteorneon.png";
         // this.snakeImg = new Image();
         // this.snakeImg.src = "game/image/neonobstacle.png";
         // this.portaltop_img = new Image();
@@ -67,7 +67,7 @@ export class ImageSrc {
         // this.goldbackground_img.src = "game/image/goldbackground.png";
         //Game
         this.top_img = new Image();
-        this.top_img.src = "game/image/neonside.png";
+        this.top_img.src = "/game/image/neonside.png";
         // this.bottom_img = new Image();
         // this.bottom_img.src = "game/image/neonside.png";
         // this.center_img = new Image();
@@ -75,30 +75,30 @@ export class ImageSrc {
         // this.background_img = new Image();
         // this.background_img.src = "game/image/background.png";
         this.start_img = new Image();
-        this.start_img.src = "game/image/start.png";
+        this.start_img.src = "/game/image/start.png";
         this.startcustom_img = new Image();
-        this.startcustom_img.src = "game/image/startcustom.png";
+        this.startcustom_img.src = "/game/image/startcustom.png";
         //Font
         this.font0 = new Image();
-        this.font0.src = "game/image/font/0.png";
+        this.font0.src = "/game/image/font/0.png";
         this.font1 = new Image();
-        this.font1.src = "game/image/font/1.png";
+        this.font1.src = "/game/image/font/1.png";
         this.font2 = new Image();
-        this.font2.src = "game/image/font/2.png";
+        this.font2.src = "/game/image/font/2.png";
         this.font3 = new Image();
-        this.font3.src = "game/image/font/3.png";
+        this.font3.src = "/game/image/font/3.png";
         this.font4 = new Image();
-        this.font4.src = "game/image/font/4.png";
+        this.font4.src = "/game/image/font/4.png";
         this.font5 = new Image();
-        this.font5.src = "game/image/font/5.png";
+        this.font5.src = "/game/image/font/5.png";
         this.font6 = new Image();
-        this.font6.src = "game/image/font/6.png";
+        this.font6.src = "/game/image/font/6.png";
         this.font7 = new Image();
-        this.font7.src = "game/image/font/7.png";
+        this.font7.src = "/game/image/font/7.png";
         this.font8 = new Image();
-        this.font8.src = "game/image/font/8.png";
+        this.font8.src = "/game/image/font/8.png";
         this.font9 = new Image();
-        this.font9.src = "game/image/font/9.png";
+        this.font9.src = "/game/image/font/9.png";
         this.nbrfont = [this.font0, this.font1, this.font2, this.font3, this.font4, this.font5, this.font6, this.font7, this.font8, this.font9];
     }
     reloadColorImage(main_color) {

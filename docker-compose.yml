@@ -33,5 +33,19 @@ services:
     volumes:
       - user-data:/app/data
 
+  game-service:
+    build:
+      context: ./game-service
+    container_name: game_service
+    ports:
+      - "3000:3000"
+    environment:
+      # - DATABASE_URL=file:./data/users_db.db
+      # - AUTH_SERVICE_URL=http://auth_services:3001
+      - PORT=3000
+    restart: unless-stopped
+    # volumes:
+    #   - user-data:/app/data
+
 volumes:
   user-data:

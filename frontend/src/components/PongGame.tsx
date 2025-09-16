@@ -6,11 +6,11 @@ export default function PongGame() {
 
   useEffect(() => {
     const imageLoaderScript = document.createElement('script');
-    imageLoaderScript.src = './game/image_loader.js';
+    imageLoaderScript.src = '/game/image_loader.js';
     imageLoaderScript.type = 'module';
 
     const displayPongScript = document.createElement('script');
-    displayPongScript.src = './game/display_pong.js';
+    displayPongScript.src = '/game/display_pong.js';
     displayPongScript.type = 'module';
 
     document.body.appendChild(imageLoaderScript);
