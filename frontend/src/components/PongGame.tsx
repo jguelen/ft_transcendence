@@ -1,157 +1,152 @@
 import React, { useRef, useState, useEffect } from 'react';
+import Button from '../components/Button';
+import Card from '../components/Card';
+import ArrowInput from '../components/ArrowInput';
 import {PongGameService} from '../game/display_pong';
 import './pong.css';
 
-// const defaultConfig = {
-//   IA: true,
-//   local: true,
-//   tournament: false,
-//   player_nbr: 2,
-//   custom_mode: true,
-//   speeding_mode: false,
-//   IA_diff: 1,
-//   player1: "",
-//   player2: "",
-//   player3: "",
-//   player4: "",
-//   start: false
-// };
-
-
 export default function PongGame({config}: {config : any}) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const serviceRef = useRef<PongGameService>();
-  const [pongConfig, setPongConfig] = useState({ ...config });
+	const canvasRef = useRef<HTMLCanvasElement>(null);
+	const serviceRef = useRef<PongGameService>();
+	const [pongConfig, setPongConfig] = useState({ ...config });
+	const [msg, setMsg] = useState<string>("");
+	const [playerKeysup, setPlayerKeysup] = useState<{ p1: string; p2?: string }>({
+		p1: "w",
+		p2: pongConfig.local && !pongConfig.IA ? "ArrowUp" : "",
+	});
+	const [playerKeysdown, setPlayerKeysdown] = useState<{ p1: string; p2?: string }>({
+		p1: "s",
+		p2: pongConfig.local && !pongConfig.IA ? "ArrowDown" : "",
+	});
 
-  useEffect(() => {
-    if (canvasRef.current) {
-      serviceRef.current = new PongGameService(canvasRef.current);
-      serviceRef.current.enableKeyboardListeners();
-    }
-    return () => {
-      if (serviceRef.current?.ws) {
-        serviceRef.current?.disableKeyboardListeners();
-        serviceRef.current?.cleanup(); 
-        serviceRef.current.ws.close();
-      }
-    };
-  }, []);
+	const keys = {
+		keysup: playerKeysup,
+		keysdown: playerKeysdown
+	};
 
-  useEffect(() => {
-    if (serviceRef.current?.ws) {
-      const onMessage = (event: any) => {
-        const data = JSON.parse(event.data);
-        if (data.type === 'end') {
-          setPongConfig((cfg : any) => ({ ...cfg, start: false }));
-        }
-      };
-      serviceRef.current.ws.addEventListener("message", onMessage);
-      return () => {
-        serviceRef.current?.ws.removeEventListener("message", onMessage);
-      };
-    }
-  }, [serviceRef.current?.ws]);
+	useEffect(() => {
+		if (canvasRef.current) {
+			serviceRef.current = new PongGameService(canvasRef.current);
+			serviceRef.current.enableKeyboardListeners();
+		}
+		return () => {
+			if (serviceRef.current?.ws) {
+				serviceRef.current?.disableKeyboardListeners();
+				serviceRef.current?.cleanup(); 
+				serviceRef.current.ws.close();
+			}
+		};
+	}, []);
 
-  function handleStart() {
-    if (!pongConfig.start) {
+	useEffect(() => {
+		if (serviceRef.current?.ws) {
+			const onMessage = (event: any) => {
+				const data = JSON.parse(event.data);
+				if (data.type === 'end') {
+					setPongConfig((cfg : any) => ({ ...cfg, start: false }));
+					setMsg((msg : string) => (data.msg));
+				}
+			};
+			serviceRef.current.ws.addEventListener("message", onMessage);
+			return () => {
+				serviceRef.current?.ws.removeEventListener("message", onMessage);
+			};
+		}
+	}, [serviceRef.current?.ws]);
 
-      setPongConfig((cfg : any) => ({ ...cfg, start: true }));
+	function handleStart() {
+		if (!pongConfig.start) {
 
-      if (serviceRef.current) {
-        serviceRef.current.ball_trail = [];
-        serviceRef.current.shadow_color = "#00F9EC";
+			setPongConfig((cfg : any) => ({ ...cfg, start: true }));
 
-        serviceRef.current.draw_start(pongConfig.custom_mode);
+			if (serviceRef.current) {
+				serviceRef.current.ball_trail = [];
+				serviceRef.current.shadow_color = "#00F9EC";
 
-        serviceRef.current.ws.send(
-          JSON.stringify({ type: "gamesearch", gameparam: pongConfig })
-        );
-      }
-    }
-  }
-  
-  return (
-    <div>
-      <h1>Pong JS</h1>
-      <div id="score"> Team 1 &mdash; Team 2 </div>
-      <div id="pong-config">
-        <button id="iaBtn">IA : OFF</button>
-        <button id="localBtn">Local : ON</button>
-        <button id="tournamentBtn">Tournoi : OFF</button>
-        <button id="playerNbrBtn">4 joueurs : OFF</button>
-        <button id="customModeBtn">Custom Mode : OFF</button>
-        <button id="speedingModeBtn">Speeding Mode : OFF</button>
-        <label htmlFor="iaDiff">Difficulté IA :</label>
-		<select id="iaDiff">
-          <option value="0">Impossible</option>
-          <option value="1">Hard</option>
-          <option value="2">Medium</option>
-          <option value="3">Easy</option>
-          <option value="4">Joke</option>
-        </select>
-        <div>
-          <input type="text" id="player1" placeholder="Joueur 1"/>
-          <input type="text" id="player2" placeholder="Joueur 2"/>
-        </div>
-        <button id="startBtn" onClick={handleStart}>
-          START : {pongConfig.start ? "ON" : "OFF"}
-        </button>
-      </div>
-      <canvas ref={canvasRef} id="pong" width={800} height={600}></canvas>
-    </div>
-  );
+				serviceRef.current.draw_start(pongConfig.custom_mode);
+
+				serviceRef.current.ws.send(
+					JSON.stringify({ type: "gamesearch", gameparam: pongConfig, keys: keys })
+				);
+			}
+		}
+	}
+
+	function handleCustom() {
+		if (!pongConfig.custom_mode)
+			setPongConfig((cfg : any) => ({ ...cfg, custom_mode: true }));
+		else
+			setPongConfig((cfg : any) => ({ ...cfg, custom_mode: false }));
+	}
+	
+	function handleSpeedingMode() {
+		if (!pongConfig.speeding_mode)
+			setPongConfig((cfg : any) => ({ ...cfg, speeding_mode: true }));
+		else
+			setPongConfig((cfg : any) => ({ ...cfg, speeding_mode: false }));
+	}
+
+	return (
+		<div>
+			{!pongConfig.start && (
+				<>
+					<Card maxWidth="1200px" maxHeight="400px" className="flex align-center justify-center gap-1">
+						<Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.4)" id="customModeBtn" onClick={handleCustom}>
+							Custom mode : {pongConfig.custom_mode ? "ON" : "OFF"}
+						</Button>
+						<Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.4)" id="speedingModeBtn"onClick={handleSpeedingMode}>
+							Speeding mode : {pongConfig.speeding_mode ? "ON" : "OFF"}
+						</Button>
+						{pongConfig.IA && (
+							<>
+								<label htmlFor="iaDiff">Difficulté IA :</label>
+								<select id="iaDiff" value={pongConfig.IA_diff}
+									onChange={e => setPongConfig((cfg : any) => ({
+										...cfg, IA_diff: parseInt(e.target.value)}))}>
+									<option value="0">Impossible</option>
+									<option value="1">Hard</option>
+									<option value="2">Medium</option>
+									<option value="3">Easy</option>
+									<option value="4">Joke</option>
+								</select>
+							</>
+						)}
+					</Card>
+					<h1>{msg}</h1>
+					<div style={{ display: "flex", gap: "1em" }}>
+						<ArrowInput
+							value={playerKeysup.p1}
+							onChange={val => setPlayerKeysup(keys => ({ ...keys, p1: val }))}
+							placeholder="Up Key player 1"
+						/>
+						<ArrowInput
+							value={playerKeysdown.p1}
+							onChange={val => setPlayerKeysdown(keys => ({ ...keys, p1: val }))}
+							placeholder="Down Key player 1"
+						/>
+						{pongConfig.local && !pongConfig.IA && (
+							<ArrowInput
+								value={String(playerKeysup.p2)}
+								onChange={val => setPlayerKeysup(keys => ({ ...keys, p2: val }))}
+								placeholder="Up Key player 2"
+							/>
+						)}
+						{pongConfig.local && !pongConfig.IA && (
+							<ArrowInput
+								value={String(playerKeysdown.p2)}
+								onChange={val => setPlayerKeysdown(keys => ({ ...keys, p2: val }))}
+								placeholder="Down Key player 1"
+							/>
+						)}
+					</div>
+					<Card maxWidth="1200px" maxHeight="400px" className="flex align-center justify-center gap-1">
+						<Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.4)" id="startBtn" onClick={handleStart}>
+							START : {pongConfig.start ? "ON" : "OFF"}
+						</Button>
+					</Card>
+				</>
+			)}
+			<canvas ref={canvasRef} id="pong" width={800} height={600} style={{ display: pongConfig.start ? "block" : "none" }}></canvas>
+		</div>
+	);
 }
-
-// import React, { useRef, useEffect } from 'react';
-// import './pong.css';
-
-// export default function PongGame() {
-//   const canvasRef = useRef(null);
-
-//   useEffect(() => {
-//     const imageLoaderScript = document.createElement('script');
-//     imageLoaderScript.src = '/game/image_loader.js';
-//     imageLoaderScript.type = 'module';
-
-//     const displayPongScript = document.createElement('script');
-//     displayPongScript.src = '/game/display_pong.js';
-//     displayPongScript.type = 'module';
-
-//     document.body.appendChild(imageLoaderScript);
-//     document.body.appendChild(displayPongScript);
-
-//     return () => {
-//       document.body.removeChild(imageLoaderScript);
-//       document.body.removeChild(displayPongScript);
-//     };
-//   }, []);
-
-//   return (
-//     <div>
-//       <h1>Pong JS</h1>
-//       <div id="score"> Team 1 &mdash; Team 2 </div>
-//       <div id="pong-config">
-//         <button id="iaBtn">IA : OFF</button>
-//         <button id="localBtn">Local : ON</button>
-//         <button id="tournamentBtn">Tournoi : OFF</button>
-//         <button id="playerNbrBtn">4 joueurs : OFF</button>
-//         <button id="customModeBtn">Custom Mode : OFF</button>
-//         <button id="speedingModeBtn">Speeding Mode : OFF</button>
-//         <label htmlFor="iaDiff">Difficulté IA :</label>
-// 		<select id="iaDiff">
-//           <option value="0">Impossible</option>
-//           <option value="1">Hard</option>
-//           <option value="2">Medium</option>
-//           <option value="3">Easy</option>
-//           <option value="4">Joke</option>
-//         </select>
-//         <div>
-//           <input type="text" id="player1" placeholder="Joueur 1"/>
-//           <input type="text" id="player2" placeholder="Joueur 2"/>
-//         </div>
-//         <button id="startBtn">START : OFF</button>
-//       </div>
-//       <canvas ref={canvasRef} id="pong" width={800} height={600}></canvas>
-//     </div>
-//   );
-// }
