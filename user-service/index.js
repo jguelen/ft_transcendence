@@ -767,20 +767,21 @@ console.log(relationship);
 
 	fastify_instance.get('/api/user/getblockeds', { preHandler: [verifyJWT] }, async function (req, res) {
 
-console.log("/api/user/getfriends");
+console.log("/api/user/getblockeds");
 console.log(req.user);
 
 		try {
-
-			var blockeds = await prisma.blockedUser.findMany({
-				where: { 
-					blockerId: req.user.userId
-				}
-			})
-
+			var blockeds = await prisma.$queryRawUnsafe(`
+			SELECT blockedUser.blockedId AS id, user.name
+			FROM blockedUser
+			JOIN user ON blockedUser.blockedId = user.id
+				WHERE blockerId = $1`,
+			Number(req.user.userId)
+			)
+console.log("blockeds");
 console.log(blockeds);
 
-			return res.status(200).send(friends);
+			return res.status(200).send(blockeds);
 		}
 		catch (error) {
 			console.error(error);
@@ -789,7 +790,57 @@ console.log(blockeds);
 	})
 
 
+	fastify_instance.put('/api/user/block/:usertoblockid', { preHandler: [verifyJWT] }, async function (req, res) {
 
+console.log("/api/user/block");
+console.log(req.user);
+
+		const usertoblockId = Number(req.params.usertoblockid)
+
+		try {
+			await prisma.blockedUser.create({
+
+			data: { blockerId: req.user.userId,
+					blockedId: usertoblockId
+			}
+			})
+
+		console.log("ok");
+			return res.status(200).send();
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500)
+		}
+	})
+
+
+	fastify_instance.delete('/api/user/unblock/:blockedid', { preHandler: [verifyJWT] }, async function (req, res) {
+
+console.log("/api/user/unblock");
+console.log(req.user);
+
+		const blockedId = Number(req.params.blockedid)
+
+console.log(req.params);
+
+		try {
+            await prisma.blockedUser.delete({
+                where: {
+				blockerId_blockedId: {
+					blockerId: req.user.userId,
+					blockedId: blockedId
+				}         
+				}
+			})
+
+			return res.status(200).send();
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500)
+		}
+	})
 
 
 	next()

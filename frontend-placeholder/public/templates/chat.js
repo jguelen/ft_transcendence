@@ -40,6 +40,7 @@ console.log(sh_friends)
 	refresh_yourfriendshiprequests()
 	refresh_friendshiprequests()
 	refresh_friends()
+	refresh_blockeds()
 })
 .catch( function(error) { console.error(error) })
 
@@ -66,20 +67,33 @@ function putSearchResult(userData) {
 console.log("getrelationship")
 console.log(relationship)
 
+const addAskFriendshipButton = (!relationship.isfriend && !relationship.isblockedbyyou && !relationship.hasblockedyou)
+const addBlacklistButton = (!relationship.isfriend && !relationship.isblockedbyyou)
+
+
 innerHTML = `<a href="/userprofile/${userData.name}">${userData.name}</a>`
 //isfriend: true, isblockedbyyou: false, hasblockedyou
-if (!relationship.isfriend && !relationship.isblockedbyyou
-	&& !relationship.hasblockedyou) {
+if (addAskFriendshipButton)
 	innerHTML = innerHTML + ` <button id="askfriendshipBtn">Ask for friend</button>`
 
-}
+if (addBlacklistButton)
+	innerHTML = innerHTML + ` <button id="blacklistBtn">Block</button>`
 
 
 document.getElementById('searchResult').innerHTML = innerHTML
 
+if (addAskFriendshipButton) {
 	const askfriendshipBtn = document.getElementById('askfriendshipBtn')
 	askfriendshipBtn.setAttribute('requserid',userData.id);
 	askfriendshipBtn.addEventListener('click', askFriendship)
+}
+
+if (addBlacklistButton) {
+	const blacklistBtn = document.getElementById('blacklistBtn')
+	blacklistBtn.setAttribute('requserid',userData.id);
+	blacklistBtn.addEventListener('click', click_blockuser)
+}
+
 
 		})
 		.catch( function(error) { console.error(error) })
@@ -213,7 +227,7 @@ function refresh_friendshiprequests() {
 
 
 function populate_friendshiprequests(array) {
-
+console.log("populate_friendshiprequests")
 	const frreqtoyou = document.getElementById('frreqtoyou')
 
 	while (frreqtoyou.lastElementChild) {
@@ -222,6 +236,9 @@ function populate_friendshiprequests(array) {
 
 	array.forEach( (item) => {
 console.log(item)
+
+	if (item.declined == 0) {
+
 		let new_y_fr = document.createElement("div");
 		var innerHTML = `<a href="/userprofile/${item.name}">${item.name}</a>`
 
@@ -237,6 +254,8 @@ console.log(item)
 		frreqtoyou.appendChild(new_y_fr)
 		document.getElementById(abuttonIdText).addEventListener('click', click_acceptfriendshiprequests)
 		document.getElementById(dbuttonIdText).addEventListener('click', click_declinefriendshiprequests)
+	}
+
 
 	})
 
@@ -377,16 +396,8 @@ function get_friends() {
 	return []
 }
 
-
-
-
-
-
-
-
-
-function refresh_friends() {
-	console.log("refresh_friends")
+function refresh_blockeds() {
+console.log("refresh_blockeds")
 
 		fetch(`http://localhost:3002/api/user/getblockeds`, {
 			method: 'GET',
@@ -407,26 +418,74 @@ console.log(data)
 
 }
 
-function populate_blockeds(array) {
 
+
+function populate_blockeds(array) {
+console.log("populate_blockeds")
 	const blacklist = document.getElementById('blacklist')
 
 	while (blacklist.lastElementChild) {
 		blacklist.removeChild(blacklist.lastElementChild);
 	}
-/*
+
 	array.forEach( (item) => {
 console.log(item)
 		let new_fr = document.createElement("div");
 		var innerHTML = `<a href="/userprofile/${item.name}">${item.name}</a>`
 		
-		let buttonIdText = `u${item.id}`
-		let buttonHTML = ` <button id="${buttonIdText}">Remove</button>`
+		let buttonIdText = `n${item.id}`
+		let buttonHTML = ` <button id="${buttonIdText}">Unblock</button>`
 
 		innerHTML = innerHTML + buttonHTML
 		new_fr.innerHTML = innerHTML
 
-		friends.appendChild(new_fr)
-		document.getElementById(buttonIdText).addEventListener('click', click_unfriend)
-	})*/
+		blacklist.appendChild(new_fr)
+		document.getElementById(buttonIdText).addEventListener('click', click_unblockuser)
+	})
+}
+
+
+function click_blockuser(event) {
+
+	event.preventDefault();
+
+console.log(event.target.id)
+
+	const blacklistBtn = document.getElementById('blacklistBtn')
+	const requestedUserId = blacklistBtn.getAttribute('requserid');
+
+	fetch(`http://localhost:3002/api/user/block/${requestedUserId}`, {
+		method: 'PUT',
+		credentials: 'include'
+	})
+	.then( function(response) {
+		if (response.status == 200) {
+			const blacklistBtn = document.getElementById('blacklistBtn')
+			if (blacklistBtn)
+				blacklistBtn.remove()
+
+			return refresh_blockeds()}
+		else return null
+	})
+	.catch( function(error) { console.error(error) })
+}
+
+
+function click_unblockuser(event) {
+
+	event.preventDefault();
+
+console.log(event.target.id)
+
+		fetch(`http://localhost:3002/api/user/unblock/${event.target.id.slice(1)}`, {
+			method: 'DELETE',
+			credentials: 'include'
+		})
+		.then( function(response) {
+			if (response.status == 200)
+				return refresh_blockeds()
+			else return null
+		})
+		.catch( function(error) { console.error(error) })
+
 }
