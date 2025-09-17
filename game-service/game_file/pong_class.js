@@ -44,6 +44,27 @@ export class Player{
 			this.player_vel = 1 * game.PLAYER_SPEED;
 			this.keyUp = false; this.keyDown = true;
 		}
+		if (key == "." && id == this.id && game.operator){
+			// this.posy = game.ball.y;
+			const arr = Array.from(game.ball_array_futur);
+			// console.log("arr :", arr);
+			// console.log("arr s:", arr.slice().reverse());
+			// for (let i = this.x - (this.hitbox + 6); i < this.x + (this.hitbox + 6); i++){
+			// 	console.log(i);
+			// }
+			let target = arr.slice().reverse().find(obj =>
+				obj.touch === false &&
+				obj.x < this.posx + (this.hitbox + 6) &&
+				obj.x > this.posx - (this.hitbox + 6)
+			);
+			if (target){
+				this.posy = target.y;
+				console.log("did");
+			}
+			else{
+				this.posy = game.ball.y;
+			}
+		}
 	}
 	release(game, key, id){
 		// console.log("id :", id, "player id :", this.id);
@@ -107,6 +128,7 @@ export class GameProject{
 		this.speeding_mode = speeding_mode;
 		this.player_array = [];
 		this.player_name_array = [];
+		this.player_case_array = [];
 		this.start = false;
 	}
 	checkGameProjectCondition(){
