@@ -1,4 +1,6 @@
 
+var sh_friends = null
+
 
 getUserData()
 .then( function() {
@@ -25,12 +27,15 @@ console.log(data)
 				location.href = '/';
 				return
 			}
-			putResult(data)
+			putSearchResult(data)
 		})
 		//.catch( function(error) { console.error(error) })
 
 	}
 });
+
+	sh_friends = get_friends()
+console.log(sh_friends)
 
 	refresh_yourfriendshiprequests()
 	refresh_friendshiprequests()
@@ -39,18 +44,45 @@ console.log(data)
 .catch( function(error) { console.error(error) })
 
 
-function putResult(userData) {
+function putSearchResult(userData) {
 	
 	if (userData.id == null) {
 		document.getElementById('searchResult').textContent = "User not found."
 		return
 	}
 
-	document.getElementById('searchResult').innerHTML = `<a href="/userprofile/${userData.name}">${userData.name}</a>  <button id="askfriendshipBtn">Ask for friend</button>`
+
+	fetch(`http://localhost:3002/api/user/getrelationship/${userData.id}`, {
+		method: 'GET',
+		credentials: 'include'
+	})
+	.then( function(response) {
+		if (response.status == 200)
+			return response.json()
+		else return null
+	})
+	.then( function(relationship) {
+
+console.log("getrelationship")
+console.log(relationship)
+
+innerHTML = `<a href="/userprofile/${userData.name}">${userData.name}</a>`
+//isfriend: true, isblockedbyyou: false, hasblockedyou
+if (!relationship.isfriend && !relationship.isblockedbyyou
+	&& !relationship.hasblockedyou) {
+	innerHTML = innerHTML + ` <button id="askfriendshipBtn">Ask for friend</button>`
+
+}
+
+
+document.getElementById('searchResult').innerHTML = innerHTML
 
 	const askfriendshipBtn = document.getElementById('askfriendshipBtn')
 	askfriendshipBtn.setAttribute('requserid',userData.id);
 	askfriendshipBtn.addEventListener('click', askFriendship)
+
+		})
+		.catch( function(error) { console.error(error) })
 
 }
 
@@ -183,7 +215,6 @@ function refresh_friendshiprequests() {
 function populate_friendshiprequests(array) {
 
 	const frreqtoyou = document.getElementById('frreqtoyou')
-	const statusText = ['pending', 'refused']
 
 	while (frreqtoyou.lastElementChild) {
 		frreqtoyou.removeChild(frreqtoyou.lastElementChild);
@@ -192,8 +223,7 @@ function populate_friendshiprequests(array) {
 	array.forEach( (item) => {
 console.log(item)
 		let new_y_fr = document.createElement("div");
-		var innerHTML = `<a href="/userprofile/${item.name}">${item.name}</a> Status:`
-		innerHTML = innerHTML + statusText[item.declined]
+		var innerHTML = `<a href="/userprofile/${item.name}">${item.name}</a>`
 
 		let abuttonIdText = `a${item.requesterId}`
 		let abuttonHTML = ` <button id="${abuttonIdText}">Accept</button>`
@@ -225,8 +255,11 @@ console.log(event.target.id)
 			credentials: 'include'
 		})
 		.then( function(response) {
-			if (response.status == 200)
-				return refresh_friendshiprequests()
+			if (response.status == 200) {
+				refresh_friendshiprequests()
+				refresh_friends()
+				return
+			}
 			else return null
 		})
 		.catch( function(error) { console.error(error) })
@@ -245,8 +278,10 @@ console.log(event.target.id)
 			credentials: 'include'
 		})
 		.then( function(response) {
-			if (response.status == 200)
-				return refresh_friendshiprequests()
+			if (response.status == 200) {
+				refresh_friendshiprequests()
+				return
+			}
 			else return null
 		})
 		.catch( function(error) { console.error(error) })
@@ -284,13 +319,12 @@ function populate_friends(array) {
 		friends.removeChild(friends.lastElementChild);
 	}
 
-
 	array.forEach( (item) => {
 console.log(item)
 		let new_fr = document.createElement("div");
 		var innerHTML = `<a href="/userprofile/${item.name}">${item.name}</a>`
 		
-		let buttonIdText = `f${item.id}`
+		let buttonIdText = `u${item.id}`
 		let buttonHTML = ` <button id="${buttonIdText}">Remove</button>`
 
 		innerHTML = innerHTML + buttonHTML
@@ -308,5 +342,91 @@ function click_unfriend(event) {
 
 console.log(event.target.id)
 
+		fetch(`http://localhost:3002/api/user/unfriend/${event.target.id.slice(1)}`, {
+			method: 'DELETE',
+			credentials: 'include'
+		})
+		.then( function(response) {
+			if (response.status == 200)
+				return refresh_friends()
+			else return null
+		})
+		.catch( function(error) { console.error(error) })
 
+
+}
+
+
+function get_friends() {
+	console.log("refresh_friends")
+
+		fetch(`http://localhost:3002/api/user/getfriends`, {
+			method: 'GET',
+			credentials: 'include'
+		})
+		.then( function(response) {
+			if (response.status == 200)
+				return response.json()
+			else return null
+		})
+		.then( function(data) {
+			return data
+		})
+		.catch( function(error) { console.error(error) })
+
+	return []
+}
+
+
+
+
+
+
+
+
+
+function refresh_friends() {
+	console.log("refresh_friends")
+
+		fetch(`http://localhost:3002/api/user/getblockeds`, {
+			method: 'GET',
+			credentials: 'include'
+		})
+		.then( function(response) {
+			if (response.status == 200)
+				return response.json()
+			else return null
+		})
+		.then( function(data) {
+console.log(data)
+
+			populate_blockeds(data)
+
+		})
+		.catch( function(error) { console.error(error) })
+
+}
+
+function populate_blockeds(array) {
+
+	const blacklist = document.getElementById('blacklist')
+
+	while (blacklist.lastElementChild) {
+		blacklist.removeChild(blacklist.lastElementChild);
+	}
+/*
+	array.forEach( (item) => {
+console.log(item)
+		let new_fr = document.createElement("div");
+		var innerHTML = `<a href="/userprofile/${item.name}">${item.name}</a>`
+		
+		let buttonIdText = `u${item.id}`
+		let buttonHTML = ` <button id="${buttonIdText}">Remove</button>`
+
+		innerHTML = innerHTML + buttonHTML
+		new_fr.innerHTML = innerHTML
+
+		friends.appendChild(new_fr)
+		document.getElementById(buttonIdText).addEventListener('click', click_unfriend)
+	})*/
 }

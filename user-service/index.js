@@ -679,25 +679,34 @@ console.log(friends);
 		}
 	})
 
-
 	fastify_instance.delete('/api/user/unfriend/:friendid', { preHandler: [verifyJWT] }, async function (req, res) {
 
 console.log("/api/user/unfriend");
 console.log(req.user);
 
 		const friendId = Number(req.params.friendid)
+
 console.log(req.params);
-/*
+
 		try {
-            await prisma.friendshipRequest.delete({
+			var friendship = await prisma.$queryRawUnsafe(`
+			SELECT friendship.user1Id, friendship.user2Id
+			FROM friendship
+				WHERE user1Id = $1 AND user2Id = $2
+					OR user1Id = $2 AND user2Id = $1`,
+			req.user.userId,
+			friendId
+			)
+
+console.log(friendship);
+			if (friendship.length == 0)
+				return res.status(200).send()
+
+            await prisma.friendship.delete({
                 where: {
-OR:[]
-
-
-
-				requesterId_requestedId: {
-					requesterId: req.user.userId,
-					requestedId: friendId
+				user1Id_user2Id: {
+					user1Id: friendship[0].user1Id,
+					user2Id: friendship[0].user2Id
 				}         
 				}
 			})
@@ -708,8 +717,79 @@ OR:[]
 			console.error(error);
 			res.status(500)
 		}
-*/
-		})
+
+	})
+
+
+	fastify.get('/api/user/getrelationship/:userid', { preHandler: [verifyJWT] },
+		async function (req, res) {
+console.log("/api/user/getrelationship/:name");	
+console.log(req.params);
+
+		const targetUserId = req.params.userid;
+
+		try {
+			var relationship = await prisma.$queryRawUnsafe(`
+SELECT CASE WHEN EXISTS ( SELECT * FROM friendship
+WHERE (user1Id = $1 AND user2Id = $2
+	OR user1Id = $2 AND user2Id = $1)
+)
+THEN TRUE ELSE FALSE END AS isfriend,
+
+CASE WHEN EXISTS ( SELECT * FROM blockeduser
+WHERE blockerId = $1 AND blockedId = $2
+)
+THEN TRUE ELSE FALSE END AS isblockedbyyou,
+
+CASE WHEN EXISTS ( SELECT * FROM blockeduser
+WHERE blockerId = $2 AND blockedId = $1
+)
+THEN TRUE ELSE FALSE END AS hasblockedyou`,
+			req.user.userId,
+			targetUserId)
+
+var relationship = {
+	isfriend: relationship[0].isfriend == 1,
+	isblockedbyyou: relationship[0].isblockedbyyou  == 1,
+	hasblockedyou: relationship[0].hasblockedyou  == 1
+}
+			
+console.log(relationship);
+
+			return res.status(200).send(relationship);
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500).send()
+		}
+	})
+
+
+	fastify_instance.get('/api/user/getblockeds', { preHandler: [verifyJWT] }, async function (req, res) {
+
+console.log("/api/user/getfriends");
+console.log(req.user);
+
+		try {
+
+			var blockeds = await prisma.blockedUser.findMany({
+				where: { 
+					blockerId: req.user.userId
+				}
+			})
+
+console.log(blockeds);
+
+			return res.status(200).send(friends);
+		}
+		catch (error) {
+			console.error(error);
+			res.status(500)
+		}
+	})
+
+
+
 
 
 	next()
