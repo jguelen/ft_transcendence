@@ -3,14 +3,8 @@ import { Outlet } from 'react-router-dom';
 
 function GridLayout() {
   return (
-    <div className="main-layout">
-      {/* Votre navigation, header, etc */}
-      
-      <main className="content">
+    <div className="grid gird-cols-2 gap-[20px] grid-rows-2">
         <Outlet />
-      </main>
-      
-      {/* Footer ou autres éléments */}
     </div>
   );
 }
