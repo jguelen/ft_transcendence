@@ -22,7 +22,6 @@ fastify.register(fastify_cookie, {
 // Temporary due to CORS sh!te
 fastify.addHook('preHandler', (req, res, next) => {
 console.log("hohohoho");
-//  req.jwt = fastify.jwt
 
 //res.header("Access-Control-Allow-Origin", "http://localhost:3000, http://localhost:3002")
 	res.header("Access-Control-Allow-Origin", "http://localhost:3000")
@@ -129,36 +128,11 @@ console.log(token)
 console.error(error);
 		return res.status(500).send( {msg: "Internal error"} );
 	}
-
-
 })
 
-
-/*
-//fastify.get('/api/auth/changepw', async (req, res) => { 
-//fastify.get('/api/auth/changepw/:pw/:pwhash/:newpw', async (req, res) => { 
-fastify.get('/api/auth/changepw/:pw/:pwhash', async (req, res) => { 
-console.log('# /api/auth/changepw');
-
-	const pw = req.params.pw
-	const pwHash = req.params.pwhash
-	// const newPw = req.params.newpw
-
-console.log(pw);
-console.log(pwHash);
-
-
-	res.status(200).send( {uuu: iii} );
-
-})
-*/
 
 fastify.post('/api/auth/changepw', async (req, res) => { 
 console.log('# /api/auth/changepw');
-
-//	const pw = req.params.pw
-//	const pwHash = req.params.pwhash
-// const newPw = req.params.newpw
 
 	const pw = req.body.pw;
 	const pwHash = req.body.pwhash;
