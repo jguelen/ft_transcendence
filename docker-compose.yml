@@ -40,12 +40,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # - DATABASE_URL=file:./data/users_db.db
-      # - AUTH_SERVICE_URL=http://auth_services:3001
       - PORT=3000
     restart: unless-stopped
-    # volumes:
-    #   - user-data:/app/data
 
 volumes:
   user-data:

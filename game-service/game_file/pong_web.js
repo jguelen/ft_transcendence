@@ -53,8 +53,6 @@ export class Game {
 		this.multiple_ball = false;
 		this.multiple_ball_array = [];
 		this.obstacle_array = [];
-		this.holes = false;
-		this.holes_array = [];
 		this.negative = false;
 		this.snake_mode = false;
 		this.snake_array = [];
@@ -274,25 +272,25 @@ export class Game {
 	}
 
 	isBallOnPaddle(obj_ball, player, post) {
-		if ((this.holes == false && post == "b") || post == "f"){
+		// if ((this.holes == false && post == "b") || post == "f"){
 			return (
 				obj_ball.x >= player.posx - player.hitbox &&
 				obj_ball.x <= player.posx + player.hitbox &&
 				obj_ball.y >= player.posy - (this.player_size + 0.5) &&
 				obj_ball.y <= player.posy + (this.player_size + 0.5)
 			);
-		} else {
-			const roundedOffset = Math.round(obj_ball.y - player.posy);
-			const isInHole = this.holes_array.includes(roundedOffset);
+		// } else {
+		// 	const roundedOffset = Math.round(obj_ball.y - player.posy);
+		// 	const isInHole = this.holes_array.includes(roundedOffset);
 
-			if (isInHole) return false;
-			return (
-				obj_ball.x >= player.posx - player.hitbox &&
-				obj_ball.x <= player.posx + player.hitbox &&
-				obj_ball.y >= player.posy - (this.player_size + 0.5) &&
-				obj_ball.y <= player.posy + (this.player_size + 0.5)
-			);
-		}
+		// 	if (isInHole) return false;
+		// 	return (
+		// 		obj_ball.x >= player.posx - player.hitbox &&
+		// 		obj_ball.x <= player.posx + player.hitbox &&
+		// 		obj_ball.y >= player.posy - (this.player_size + 0.5) &&
+		// 		obj_ball.y <= player.posy + (this.player_size + 0.5)
+		// 	);
+		// }
 			
 	}
 
@@ -505,7 +503,7 @@ export class Game {
 			bounce_nbr: this.bounce_nbr,
 			velocity_use: this.velocity_use,
 			obstacle_array: this.obstacle_array, 
-			holes_array: this.holes_array, 
+			// holes_array: this.holes_array, 
 			negative: this.negative,
 			snake_array: this.snake_array,
 			invisible_player: this.invisible_player,
@@ -620,10 +618,26 @@ export class Game {
 			else if (key === 'p' && this.pause == false) this.pause = true;
 			if (key === 'v' && this.vision == true) this.vision = false;
 			else if (key === 'v' && this.vision == false) this.vision = true;
-			if (key === ',' && this.vision == true) this.futur_vision -= 1;
-			if (key === '.' && this.vision == true) this.futur_vision += 1;
-			if (key === '[' && this.vision == true) this.error_margin -= 1;
-			if (key === ']' && this.vision == true) this.error_margin += 1; 
+			if (key === '8'){
+				this.ball.y = HEIGHT - this.ball.y;
+				this.ball.dy *= -1;
+			}
+			if (key === '7'){
+				this.ball.x = WIDTH - this.ball.x;
+				this.ball.dx *= -1;
+			}
+			if (key === '6'){
+				this.ball.x = WIDTH / 2;
+				this.ball.y = HEIGHT / 2;
+			}
+			if (key === '{'){
+				this.ball.dx *= 2;
+				this.ball.dy *= 2;
+			}
+			if (key === '}'){
+				this.ball.dx *= 0.5;
+				this.ball.dy *= 0.5;
+			}
 			if (key === '1' && this.ball_size < 15) this.ball_size += 1;
 			if (key === '2' && this.ball_size > 1) this.ball_size -= 1;
 			if (key === '3' && this.player_size < 15) this.player_size += 1;
@@ -636,18 +650,34 @@ export class Game {
 				let speed = Math.sqrt(this.ball.dx * this.ball.dx + this.ball.dy * this.ball.dy) || this.BALL_SPEED;
 				this.ball.dx = speed * Math.cos(angle * Math.PI / 180);
 				this.ball.dy = speed * Math.sin(angle * Math.PI / 180);
+				this.ball.touch = null;
 			}
-			if (key === '8'){
+			if (key === '9' || key === '0'){
+				let angle = Math.atan2(this.ball.dy, this.ball.dx) * 180 / Math.PI;
+				angle += (key === '9') ? 4 : -4;
+				let speed = Math.sqrt(this.ball.dx * this.ball.dx + this.ball.dy * this.ball.dy) || this.BALL_SPEED;
+				this.ball.dx = speed * Math.cos(angle * Math.PI / 180);
+				this.ball.dy = speed * Math.sin(angle * Math.PI / 180);
+				this.ball.touch = null;
+			}
+			if (key === 'b'){
 				this.game_color = BASE_COLOR;
 				this.game_sec_color = BASE_SECONDARY_COLOR;
 			}
-			if (key === '9'){
+			if (key === 'n'){
 				this.game_color = utils.nextColorHex(this.game_color, -10);
 				this.game_sec_color = utils.nextColorHex(this.game_sec_color, -10);
 			}
-			if (key === '0'){
+			if (key === 'm'){
 				this.game_color = utils.nextColorHex(this.game_color, 10);
 				this.game_sec_color = utils.nextColorHex(this.game_sec_color, 10);
+			}
+			if (key === ','){
+				for (let team of this.teams){
+					if (team.backplayer.id == id || team.frontplayer.id == id)
+						team.score = 10;
+					break ;
+				}
 			}
 		}
 		if (this.start == false && key === ' '){

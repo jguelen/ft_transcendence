@@ -17,10 +17,10 @@ import * as utils from './pong_web_utils.js';
 	It's just a break {6} : The game slow up before reaccelerating at a random moment
 	It's the silver ball {7} : The next point worth X2 (combo is possible) (until the next point)
 	Obstacles you say ? {8} : Obstacles appears on the field (until the next point)
-	 {9} : 
-	Some cheese ! {10} : The paddels got holes (until the next point)
+	{9} : 
+	{10} :
 	It's everywhere ! {11} : The .ball teleports everywhere for a few random seconds before going to the middle
-	 {12} : 
+	{12} : 
 	Negative mode {13} : The color are negative for 5sec
 	Snake mode {14} : The ball leave a trail and can bounce on it (until the next point)
 	Wait what ? {15} : The paddels teleports on the y axis randomly
@@ -130,19 +130,12 @@ async function effect8(game){ //done maybe ajust despawn after point
 }
 
 async function effect9(game){ //nothing
-	console.log("Nothing yet {9}");
+	console.log("Nothing {9}");
 	
 }
 
-async function effect10(game){ //done
-	if (game.holes == true)
-		return ;
-	console.log("Cheese {10}");
-	game.holes = true;
-	for (let i = -game.player_size; i <= game.player_size; i++){
-		if (Math.random() < 0.5 && game.holes_array.length <= game.player_size + game.player_size / 2)
-			game.holes_array.push(i);
-	}
+async function effect10(game){ //nothing
+	console.log("Nothing {10}");
 }
 
 async function effect11(game){ //done
@@ -162,7 +155,7 @@ async function effect11(game){ //done
 }
 
 async function effect12(game){ //nothing
-
+	console.log("Nothing {12}");
 }
 
 async function effect13(game){ //done
@@ -338,8 +331,6 @@ export function reset_effect(game){
 	})
 	game.point_value = 1;
 	game.obstacle_array = [];
-	game.holes = false;
-	game.holes_array = [];
 	game.negative = false;
 	game.snake_mode = false;
 	game.snake_array = [];
@@ -418,7 +409,7 @@ export async function custom_mode_func(game){
 			let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
 			while (game.box_array.includes(new_box) == true)
 				new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
-			// let nbr = 13;
+			// let nbr = 10;
 			// let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), nbr);
 			return (new_box);
 		}

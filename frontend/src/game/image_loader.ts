@@ -85,8 +85,6 @@ export class ImageSrc {
 		this.obstacleImg = returnColorImage(this.obstacleImg, main_color);
 		this.meteorImg = returnColorImage(this.meteorImg, main_color);
 		this.top_img = returnColorImage(this.top_img, main_color);
-		this.start_img = returnColorImage(this.start_img, main_color);
-		this.startcustom_img = returnColorImage(this.startcustom_img, main_color);
 	}
 }
 

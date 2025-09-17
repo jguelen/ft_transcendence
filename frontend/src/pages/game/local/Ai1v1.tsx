@@ -7,7 +7,7 @@ function Ai1v1()
 		local: true,
 		tournament: false,
 		player_nbr: 2,
-		custom_mode: true,
+		custom_mode: false,
 		speeding_mode: false,
 		IA_diff: 1,
 		player1: "",

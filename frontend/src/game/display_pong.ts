@@ -41,7 +41,9 @@ export class PongGameService
 		this.SCALE_X = canvas.width / this.WIDTH;
 		this.SCALE_Y = canvas.height / this.HEIGHT;
 		this.ctx = canvas.getContext("2d")!;
-		this.ws = new WebSocket("ws://localhost:3000/ws");
+		const wsUrl = `wss://${window.location.hostname}:8443/ws`;
+		console.log(wsUrl);
+		this.ws = new WebSocket(wsUrl);
 		this.myId = null;
 		this.ws.onmessage = (event : any) => {
 			const data = JSON.parse(event.data);
@@ -118,6 +120,10 @@ export class PongGameService
 	}
 
 	draw_start(state : any){
+		this.shadow_color = '#00F9EC';
+		this.ball_color = '#00f9ec';
+		this.ball_middle_color = '#66FF99';
+		this.imgsrc.reloadColorImage(this.shadow_color);
 		if (state == false){
 			this.ctx.drawImage(this.imgsrc.start_img, 0, 0, this.canvas.width, this.canvas.height);
 		}else {
@@ -392,12 +398,6 @@ export class PongGameService
 				this.ctx.shadowBlur = blur_size;
 				this.ctx.drawImage(this.imgsrc.playerImg, player.posx * this.SCALE_X, (player.posy - player.size) * this.SCALE_Y, this.SCALE_X * 2, this.SCALE_Y * player.size * 2);
 				this.ctx.shadowBlur = 0;
-				if (player.type == "b"){
-					for (let hole of screen.holes_array){
-						this.ctx.fillStyle = "rgba(23, 37, 42, 1)";
-						this.ctx.fillRect(player.posx * this.SCALE_X, (player.posy + hole) * this.SCALE_Y, this.SCALE_X * 2, this.SCALE_Y);
-					}
-				}
 			}
 		}
 
@@ -422,7 +422,7 @@ export class PongGameService
 		// 	if (screen.team2_score >= screen.MAX_SCORE)
 		// 		afficherMessage(screen, "Team 2" + " Wins !!!", 'l');
 		// }
-		this.write_score(2, this.fps, (this.WIDTH - 4) * this.SCALE_X, (this.HEIGHT - 4) * this.SCALE_Y);
+		// this.write_score(2, this.fps, (this.WIDTH - 4) * this.SCALE_X, (this.HEIGHT - 4) * this.SCALE_Y);
 	}
 }
 	// function afficherMessage(game_data : any, msg : string, side : string) {
