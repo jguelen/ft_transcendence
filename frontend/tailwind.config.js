@@ -25,9 +25,14 @@ export default {
       },
       backgroundColor: {
         'main': 'rgba(27,28,47,0.7)',
+        'cyan_card': 'rgba(0, 249, 236, 0.03)',
+        'blue_card': 'rgba(39, 95, 153, 0.06)'
       },
       boxShadow: {
         'card': '0 0 10.2px 2px rgba(0, 249, 236, 0.3)',
+        'primary': '0 0 10.2px 2px rgba(0, 249, 236, 0.8)',
+        'secondary': '0 0 10.2px 2px rgba(39, 95, 153, 1)',
+        'stroke': '0 0 0 1 rgba(66, 67, 84, 1)'
       },
       backdropBlur: {
         'card': '3px',

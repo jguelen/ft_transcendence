@@ -1,12 +1,46 @@
-import { Outlet } from "react-router-dom"
+import { Link } from "react-router-dom";
+import Card from "../../../components/Card";
 
 function OnlinePong()
 {
   return (
-    <div className="bg-red-500">
-      OnlinePong
-      <Outlet/>
+  <div className="flex flex-col items-center justify-center max-w-[1600px]
+    max-h-[555px] w-full h-full">
+    <h1 className="font-orbitron font-medium text-title text-white">CHOOSE A MODE</h1>
+    <div className="flex items-center justify-between max-w-[1440px] w-full
+      max-h-[485px] h-full gap-2">
+
+      <Link to="1v1" className="max-w-[670px] max-h-[465px] w-full h-full">
+        <div className="flex items-center justify-center max-h-[670px] max-w-[670px]
+           w-full h-full bg-transparent hover:bg-main rounded-big group">
+          <Card maxWidth="670px" maxHeight="465px"
+            className="flex flex-col gap-[20px] items-center justify-center
+            group-hover:shadow-primary border-2 border-stroke group-hover:bg-cyan_card" shadowColor="">
+            <img src="/icons/single-player.svg" className="w-[100px] h-[100px]"/>
+            <h1 className="font-inter font-semibold text-title text-white">1V1</h1>
+            <p className="font-inter font-semibold text-subtitle
+              text-text">Duel another player</p>
+          </Card>
+        </div>
+      </Link>
+
+      <Link to="2v2" className="max-w-[670px] max-h-[465px] w-full h-full">
+        <div className="flex items-center justify-center max-h-[670px] max-w-[670px]
+           w-full h-full bg-transparent hover:bg-main rounded-big group">
+          <Card maxWidth="670px" maxHeight="465px"
+            className="flex flex-col gap-[20px] items-center justify-center
+            border-2 border-stroke group-hover:shadow-secondary group-hover:bg-blue_card"
+            shadowColor="">
+            <img src="/icons/multi-player.svg" className="w-[200px] h-[100px]"/>
+            <h1 className="font-inter font-semibold text-title text-white">2V2</h1>
+            <p className="font-inter font-semibold text-subtitle
+              text-text">Duel a team of two other players</p>
+          </Card>
+        </div>
+      </Link>
+
     </div>
+  </div>
   )
 }
 
