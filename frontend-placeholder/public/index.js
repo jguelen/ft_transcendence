@@ -1,6 +1,6 @@
 // Placeholder site
 
-console.log("huhuuhaha")
+console.log("Start of index.js")
 console.log(window.location.pathname)
 
 
@@ -84,7 +84,7 @@ const urlRoutes = {
 		template: "/public/templates/signup.html",
 		title: "signup | " + urlPageTitle,
 		description: "signup page",
-	},
+	}
 
 };
 
@@ -106,6 +106,8 @@ console.log(event)
 const urlLocationHandler = async () => {
 console.log('popstate')
 
+//alert("Huhuhuhaha")
+
 	var location = window.location.pathname; // get the url path
 	// if the path length is 0, set it to primary page route
 console.log(location)
@@ -118,6 +120,13 @@ console.log('root page req')
 console.log('root page req2')
 		location = "/home";
 	}
+
+	if (location == '/login/github' ) {
+//alert("Hihihihihihi")
+		window.location.href = "http://localhost:3001/login/github";
+		return
+	}
+		
 
 	var show_nav = "block";
 	if (location == '/login' ) show_nav = "none"
@@ -138,7 +147,6 @@ console.log(route)
 //else
 	const html = await fetch(route.template).then((response) => response.text());
 
-
 	// show/hide nav
 	document.getElementById("navdiv").style.display = show_nav
 
@@ -153,7 +161,6 @@ console.log(arr[0].src)
 		newScript.src = arr[0].src;
 		my_div.appendChild(newScript);
 	}
-
 
 //	for (var n = 0; n < arr.length; n++)
 //		eval(arr[n].innerHTML)
@@ -170,6 +177,7 @@ window.onpopstate = urlLocationHandler;
 
 // call the urlLocationHandler function to handle the initial url
 window.route = urlRoute;
+
 // call the urlLocationHandler function to handle the initial url
 urlLocationHandler();
 

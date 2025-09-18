@@ -67,6 +67,12 @@ console.log(decoded);
 
 
 
+fastify.get('/login/github', {}, (req, res) => {
+
+res.sendFile('index.html')
+})
+
+
 
 fastify.get('/login', { preHandler: [verifyJWT] }, sendAppPage_unconnected)
 fastify.get('/signup', { preHandler: [verifyJWT] }, sendAppPage_unconnected)

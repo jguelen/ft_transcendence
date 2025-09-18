@@ -89,6 +89,30 @@ console.log(keymap);
 	})
 
 
+	fastify_instance.put('/api/user/updatelanguage/:language', { preHandler: [verifyJWT] }, async function (req, res) {
+
+		const language = req.params.language;
+
+console.log("/api/user/updatelanguage");
+console.log(language);
+
+		try {
+			var user = await prisma.user.update({
+				where: { 
+					id: req.user.userId
+				},
+    			data: {
+                    language: language
+                }
+			})
+			return res.status(200).send( {language: language} );
+		}
+		catch (error) {
+			res.status(500)
+		}
+	})
+
+
 	fastify_instance.put('/api/user/updateusername/:newusername', { preHandler: [verifyJWT] }, async function (req, res) {
 
 		const newName = req.params.newusername;

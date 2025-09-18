@@ -1,5 +1,7 @@
-// npm i fastify @fastify/cookie @fastify/jwt
+// npm i fastify @fastify/cookie @fastify/jwt @fastify/oauth2
 // npm i bcrypt jsonwebtoken
+// npm i @fastify/oauth2
+
 
 const { USER_SERVICE_URL } = process.env;
 if (!USER_SERVICE_URL) {
@@ -10,6 +12,10 @@ const fastify = require('fastify')({ logger: false })
 const fastify_cookie = require('@fastify/cookie')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const fastifyOauth2 = require("@fastify/oauth2");
+
+
+
 
 
 // cookies
@@ -19,11 +25,83 @@ fastify.register(fastify_cookie, {
 })
 
 
+
+
+
+  const startRedirectPath = `/login/github`;
+  // TODO understand why it is using a full URL
+  const callbackUri = `http://localhost:3001/login/github/callback`;
+
+fastify.register(fastifyOauth2, {
+  name: 'githubOAuth2',
+  scope: ["user:email", "read:user"],
+	credentials: {
+	  client: {
+		id: "id",
+		secret: "secret",
+	  },
+	  auth: fastifyOauth2.GITHUB_CONFIGURATION,    
+	},
+	startRedirectPath,
+	callbackUri,
+});
+
+
+async function getGitHubUserDetails(token) {
+//  const res = await fetch("https://api.github.com/user/emails", {	
+  const res = await fetch("https://api.github.com/user", {
+    headers: {
+      "User-Agent": "ft_transcendence-authentication-server",
+      Accept: "application/vnd.github+json",
+      Authorization: `Bearer ${token.access_token}`,
+      "X-GitHub-Api-Version": "2022-11-28"
+    },
+  });
+
+
+  const user = await res.json();
+ console.log(user);
+
+
+ return {
+     fullName: user.name,
+     email: user.email,
+   };
+
+
+}
+
+
+fastify.get(`/login/github/callback`, async function (request, reply) {
+
+	const { token } = await this.githubOAuth2.getAccessTokenFromAuthorizationCodeFlow(request);
+
+	console.log(`token.access_token`);
+
+//    const user = await this.githubOAuth2.userinfo(token.access_token); 
+//    if (!userinfo)
+ //       throw (Error("cannot_get_user_infos"));
+
+
+    const user = await getGitHubUserDetails(token)
+
+    console.log(user);
+
+
+	return { access_token: token.access_token };
+});
+
+
+
+
+
+
+
+
 // Temporary due to CORS sh!te
 fastify.addHook('preHandler', (req, res, next) => {
 console.log("hohohoho");
 
-//res.header("Access-Control-Allow-Origin", "http://localhost:3000, http://localhost:3002")
 	res.header("Access-Control-Allow-Origin", "http://localhost:3000")
 	res.header("Access-Control-Allow-Credentials", true)
 
@@ -90,15 +168,15 @@ console.log(req.body);
 		const pwHash = await bcrypt.hash(password, 12);
 
 		const response = await fetch(`${USER_SERVICE_URL}/api/user/newuser`,
-        {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: email,
-                name: name,
-                password: pwHash
-            })
-        }
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				email: email,
+				name: name,
+				password: pwHash
+			})
+		}
 
 		);
 //console.log(response);
@@ -164,11 +242,21 @@ console.log('# /api/auth/logout');
 
 })
 
+
+
+
+
+
+
+
+
 // Run the serveur!
 fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3000 }, (err) => {
 	if (err) {
 		console.error(err)
-		fastify.log.error(err)
 		process.exit(1)
 	}
 })
+
+
+//module.exports = async function (app, options) {
