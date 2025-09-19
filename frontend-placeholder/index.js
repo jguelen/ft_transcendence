@@ -73,6 +73,7 @@ res.sendFile('index.html')
 })
 
 
+fastify.get('/error', {}, sendAppPage_unconnected)
 
 fastify.get('/login', { preHandler: [verifyJWT] }, sendAppPage_unconnected)
 fastify.get('/signup', { preHandler: [verifyJWT] }, sendAppPage_unconnected)
@@ -117,10 +118,6 @@ function getUser(user) {
 
 
 function sendAppPage_unconnected(req, res) {
-
-	// const user = getUser(req.user);
-	// if(user)
-	// 	return res.redirect('/home')
 	
 	res.sendFile('index.html')
 }

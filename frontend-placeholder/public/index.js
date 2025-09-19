@@ -84,6 +84,12 @@ const urlRoutes = {
 		template: "/public/templates/signup.html",
 		title: "signup | " + urlPageTitle,
 		description: "signup page",
+	},
+
+	"/error": {
+		template: "/public/templates/error.html",
+		title: "error | " + urlPageTitle,
+		description: "error page",
 	}
 
 };
