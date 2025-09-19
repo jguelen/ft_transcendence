@@ -14,7 +14,7 @@ import { fileURLToPath } from 'url';
 import Database from 'better-sqlite3';
 
 //Database
-const database = new Database('./pong_database.db');
+const database = new Database('/app/data/pong_database.db');
 database.exec(`
 CREATE TABLE IF NOT EXISTS matches (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
