@@ -40,12 +40,26 @@ services:
     ports:
       - "3000:3000"
     environment:
-      # - DATABASE_URL=file:./data/users_db.db
-      # - AUTH_SERVICE_URL=http://auth_services:3001
+      - DATABASE_URL=file:./data/pong_database.db
       - PORT=3000
     restart: unless-stopped
-    # volumes:
-    #   - user-data:/app/data
+    volumes:
+      - ./game-service/game_file:/app/data
+
+  avatar-service:
+    build:
+      context: ./avatar-service
+    container_name: avatar_service
+    ports:
+      - "3003:3003"
+    environment:
+      - DATABASE_URL=file:./data/avatar_db.db
+      - PORT=3003
+    restart: unless-stopped
+    volumes:
+      - ./avatar-service/files:/app/data
+      - avatar-images:/app/avatars
 
 volumes:
   user-data:
+  avatar-images:

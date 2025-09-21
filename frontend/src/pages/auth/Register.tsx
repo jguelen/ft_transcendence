@@ -143,7 +143,7 @@ function Register()
   )
 }
 
-function validatePassword(password: string, t: Function): string[] {
+export function validatePassword(password: string, t: Function): string[] {
   const errors: string[] = [];
 
   if (password.length < 12) {

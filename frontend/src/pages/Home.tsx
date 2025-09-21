@@ -14,7 +14,7 @@ function Home()
         <h1 className="font-orbitron text-title text-white font-medium break-all">{t("home.local")}</h1>
         <Link to="/local-pong" className="flex justify-center items-center w-full
           max-w-[252px]">
-          <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.4)"
+          <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.13)"
             >{t("home.button")}</Button>
         </Link>
       </Card>
@@ -23,7 +23,7 @@ function Home()
         <h1 className="font-orbitron text-title text-white font-medium break-all">{t("home.online")}</h1>
         <Link to="/online-pong" className="flex justify-center items-center w-full
           max-w-[252px]">
-          <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.4)"
+          <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.13)"
             >{t('home.button')}</Button>
         </Link>
       </Card>
@@ -32,7 +32,7 @@ function Home()
         <h1 className="font-orbitron text-title text-white font-medium break-all">{t("home.cup")}</h1>
         <Link to="/cup" className="flex justify-center items-center max-w-[252px]
           w-full">
-          <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.4)"
+          <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.13)"
             >{t("home.button")}</Button>
         </Link>
       </Card>

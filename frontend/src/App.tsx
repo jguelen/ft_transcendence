@@ -14,7 +14,6 @@ import Register from './pages/auth/Register';
 import Tournament from './pages/game/local/Tournament';
 import LocalPong from './pages/game/local/LocalPong';
 import OnlinePong from './pages/game/online/OnlinePong';
-import Parameters from './pages/settings/Parameters';
 import Profile from './pages/settings/Profile';
 import Account from './pages/settings/Account';
 import NotFound from './pages/NotFound';
@@ -33,7 +32,6 @@ const ROUTES = {
   REGISTER: '/register',
 
   SETTINGS: {
-    PARAMETERS: 'settings/parameters',
     PROFILE: 'settings/profile',
     ACCOUNT: 'settings/account',
   },
@@ -83,7 +81,6 @@ function App() {
 
               <Route element={<GridLayout/>} >
                 <Route path={ROUTES.SETTINGS.PROFILE} element={<Profile />} />
-                <Route path={ROUTES.SETTINGS.PARAMETERS} element={<Parameters />} />
                 <Route path={ROUTES.SETTINGS.ACCOUNT} element={ <Account/> } />
               </Route>
             </Route>

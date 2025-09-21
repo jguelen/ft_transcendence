@@ -5,7 +5,7 @@ import Header from '../components/Header'
 function MainLayout() {
   return (
     <div className="h-full w-full flex flex-col items-center justify-start px-1
-     py-7 gap-32">
+     py-7 gap-24">
       <Header/>
       <Outlet />
     </div>

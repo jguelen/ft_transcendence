@@ -5,6 +5,7 @@ import './Input.css';
 type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   iconSrc?: string;
   className?: string;
+  border?: string;
   maxWidth?: string;
 };
 
@@ -12,6 +13,7 @@ function Input({
   iconSrc,
   maxWidth = '252px',
   className,
+  border = "border-stroke",
   ...rest
 }: InputProps) {
 
@@ -24,13 +26,14 @@ function Input({
     <input
       style={dynamicStyles}
       className={clsx(
-        "text-white rounded-small w-full h-[58px] bg-transparent border border-stroke",
+        "text-white rounded-small w-full h-[58px] bg-transparent border",
         "font-inter text-subtitle focus:outline-none focus:border-accent transition-colors duration-200",
         'max-w-[var(--input-max-width)]',
         {
           "with-icon": iconSrc,
           "has-value": iconSrc && rest.value && rest.value.toString().length > 0, 
         },
+        border,
         className
       )}
       {...rest}
