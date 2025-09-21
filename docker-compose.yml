@@ -6,6 +6,7 @@ services:
     ports:
       - "8443:443"
     container_name: frontend
+    restart: unless-stopped
 
   auth-service:
     build:
@@ -19,6 +20,7 @@ services:
       - USER_SERVICE_URL=http://user-service:3002
     depends_on:
       - user-service
+    restart: unless-stopped
 
   user-service:
     build:
@@ -30,6 +32,7 @@ services:
       - DATABASE_URL=file:./data/users_db.db
       - AUTH_SERVICE_URL=http://auth_service:3001
       - PORT=3002
+    restart: unless-stopped
     volumes:
       - user-data:/app/data
 
