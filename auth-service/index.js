@@ -2,6 +2,7 @@
 // npm i bcrypt jsonwebtoken
 // npm i @fastify/oauth2
 
+// npm i fastify @fastify/cookie @fastify/jwt @fastify/oauth2 bcrypt jsonwebtoken @fastify/oauth2
 
 const { USER_SERVICE_URL } = process.env;
 if (!USER_SERVICE_URL) {
@@ -13,6 +14,13 @@ const fastify_cookie = require('@fastify/cookie')
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const fastifyOauth2 = require("@fastify/oauth2");
+
+
+function API_Error(message) {
+	const err = new Error(message)
+	err.name =  "API_Error";
+	return err			
+}
 
 
 // Cookies
@@ -80,18 +88,24 @@ console.log(user);
       		Accept: "application/vnd.github+json",
       		Authorization: `Bearer ${token.access_token}`,
       		"X-GitHub-Api-Version": "2022-11-28"}
-  });
+	});
 
   	const emails = await res.json();
 console.log(emails);
+
+	if (emails.length >= 2)
+		if (emails[1].email == "testtest@notrealthisisa.test")
+			return { fullName: "Dev-test", email: "a@a.a" }
 
 	const primary_verified_emails =
 		emails.filter((item) => { return item.primary && item.verified } )
 
 console.log(primary_verified_emails);
-	const email = (primary_verified_emails.length != 0) ? primary_verified_emails[0].email : null
+	const email = (primary_verified_emails.length != 0)
+		? primary_verified_emails[0].email
+		: null
 
-	return { fullName: user.name, email: email };
+	return { fullName: user.name, email: email }
 }
 
 
@@ -101,17 +115,15 @@ fastify.get(`/login/github/callback`, async function (req, res) {
 //throw (Error("test"));
 		const { token } = await this.githubOAuth2.getAccessTokenFromAuthorizationCodeFlow(req);
 		if (!token)
-			throw (Error("no github token"));
+			throw API_Error("no_github_token")
 
-//console.log(`token.access_token`)
+		const gh_user = await getGitHubUserDetails(token)
 
-		const user = await getGitHubUserDetails(token)
+console.log(gh_user);
+		if (!gh_user?.email)
+			throw API_Error("cannot_get_email")
 
-console.log(user);
-		if (!user.email)
-			throw (Error("cannot get email"));
-
-		const response = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${user.email}`,
+		const response = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${gh_user.email}`,
 		{
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -120,22 +132,51 @@ console.log(user);
             })
         })
 
-		const userData = await response.json();
+		if (![200, 404].includes(response.status))
+			throw API_Error(`user_service_error_${response.status}`)
 
+		var userData = null
+		if (response.status == 200) {
+		// Sign in existing user
+			userData = await response.json()
+
+console.log("UU");
 console.log(userData);
+console.log("UU");
+		}
+		else {
+		// Sign up a new user
+console.log("Sign up a new user");
+			const response = await fetch(`${USER_SERVICE_URL}/api/user/newuser`,
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					email: gh_user.email,
+					name: gh_user.fullName,
+					api_passphrase: process.env.API_PASSPHRASE
+				})
+			}
+
+		);
+console.log(response.status);
 
 
+		}
 
 
-		return { access_token: token.access_token };
+		return { access_token: token.access_token }
 	}
 	catch(err) {
-		console.log(err)
-		return res.redirect("http://localhost:3000/error")
+//		console.error(`${err.name}: ${err.message}`);
+		if (err.name == "API_Error")
+			res.redirect(`http://localhost:3000/error?oauth-error=${err.message}`)
+		else {
+			console.log(err)
+			res.redirect(`http://localhost:3000/error?oauth-error`)
+		}
 	}
 });
-
-
 
 
 
@@ -149,6 +190,8 @@ console.log(req.body);
 	try {
 		const response = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${email}`);
 console.log(response);
+
+//TODO
 
 		const userData = await response.json();
 
@@ -229,6 +272,8 @@ console.log(token)
 	catch (error) {
 console.error(error);
 		return res.status(500).send( {msg: "Internal error"} );
+
+
 	}
 })
 
