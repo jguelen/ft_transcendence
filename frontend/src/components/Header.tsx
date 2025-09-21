@@ -68,7 +68,7 @@ function Header({disabled = false}: HeaderProps)
 
           <button onClick={() => isOpen ? setIsOpen(false) : setIsOpen(true)}
             className="flex justify-around items-center
-             hover:bg-second-accent w-full">
+             hover:bg-blue_darkend w-full rounded-small">
              {activeLanguage && (<img src={activeLanguage.flag}
                alt={activeLanguage.name} className="w-[50px] h-[50px] shrink-0"/>)}
             <img src="/icons/arrow.svg" alt="arrow div icon" className="w-[15px]

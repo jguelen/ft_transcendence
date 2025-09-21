@@ -14,6 +14,8 @@ export default {
         'text': '#A5BAD0',
         'second-accent': '#275F99',
         'stroke': '#424354',
+        'blue_darkend': 'rgba(39, 95, 153, 0.30)',
+        'cyan_darkend': 'rgba(0, 249, 236, 0.30)'
       },
       fontFamily: {
         'inter': ['Inter', 'system-ui', 'sans-serif'],
@@ -26,7 +28,7 @@ export default {
       backgroundColor: {
         'main': 'rgba(27,28,47,0.7)',
         'cyan_card': 'rgba(0, 249, 236, 0.03)',
-        'blue_card': 'rgba(39, 95, 153, 0.06)'
+        'blue_card': 'rgba(39, 95, 153, 0.06)',
       },
       boxShadow: {
         'card': '0 0 10.2px 2px rgba(0, 249, 236, 0.3)',
