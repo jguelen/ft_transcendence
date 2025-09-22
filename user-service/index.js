@@ -44,13 +44,13 @@ if (!AUTH_SERVICE_URL) {
 
 const fastify = require('fastify')({ logger: false })
 
-//const { prisma } = require('./index.js')
+
 
 const  { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 const fastify_cookie = require('@fastify/cookie')
-const jwt = require('jsonwebtoken');
+
 
 
 
@@ -66,7 +66,7 @@ console.log("preHandler-CORS-tmp");
 	if (isPreflight) {
 		res.header("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST, OPTIONS");
 		res.header("Access-Control-Allow-Headers", 'Content-Type, Authorization');
-		return next()
+		return res.send();
   }
 
 
@@ -100,17 +100,67 @@ console.log("hahaha");
 
 fastify.register(fastify_cookie, {})
 
+
+exports.prisma = prisma
+
+const {protected_routes} = require('./protected_routes.js')
+
+
 fastify.register(protected_routes)
 
 
 
+//exports.protected_routes = function(fastify_instance, options, next) {
+const api_private_routes = function(fastify_instance, options, next) {
 
-fastify.get('/getbyemail/:email', {}, async function (req, res) {
+    fastify_instance.addHook('preValidation', (req, res, done) =>  {
+console.log(req.body);	
 
+        if (req.body?.api_passphrase != process.env.API_PASSPHRASE) {
+console.log("api_private_routes");	
+            return res.status(404).send();
+		}
+		done()
+    })
+
+
+	fastify_instance.post('/api/user/getbyemail/:email', {}, async function (req, res) {
+console.log("POST /api/user/getbyemail/:email");
+console.log(req.params.email);
+
+		const value = req.params.email;
+		try {
+			var user = await prisma.user.findUnique({
+				where: { 
+					email: value
+				}
+			})
+console.log(user)
+			return res.send(user)
+		}
+		catch (error) {
+			console.log(error)
+			res.status(500).send()
+		}
+	})
+
+	next()
+}
+
+	// try {
+fastify.register(api_private_routes)
+	// }
+	// catch (error) {
+	// 	console.log(error)
+	// 	res.status(500).send()
+	// }
+
+
+fastify.get('/api/user/getbyemail/:email', {}, async function (req, res) {
+console.log("/api/user/getbyemail/:email");	
 console.log(req.params);
 
 	const value = req.params.email;
-
 	try {
 		var user = await prisma.user.findUnique({
 			where: { 
@@ -120,29 +170,44 @@ console.log(req.params);
 		return res.send(user);
 	}
 	catch (error) {
-		res.status(500).send("")
+		res.status(500).send()
 	}
-
-
 })
 
-fastify.get('/check-username/:username', async (req, res) => {
-  try {
-    const { username } = req.params;
-    const user = await prisma.user.findUnique({
-      where: { name: username },
-    });
-    
-    return res.send({ isAvailable: !user });
+fastify.get('/api/user/getbyname/:name', {}, async function (req, res) {
+console.log("/api/user/getbyname/:name");	
+console.log(req.params);
 
-  } catch (error) {
-    console.error("Error checking username:", error);
-    return res.status(500).send({ msg: "Internal server error" });
-  }
-});
+	const value = req.params.name;
+	try {
+		var user = await prisma.user.findMany({
+			where: { 
+				name: value
+			}
+		})
 
-fastify.get('/user_getbyid/:id', {}, async function (req, res) {
+console.log("result");
+		if (user.length == 0)
+			return res.status(200).send({});
 
+console.log(user[0]);
+
+		const userData = {id:user[0].id, name:value, rank:user[0].rank}
+
+		return res.status(200).send(userData);
+	}
+	catch (error) {
+console.error(error);
+		res.status(500).send()
+	}
+})
+
+
+
+
+//!!
+fastify.get('/api/user/getbyid/:id', {}, async function (req, res) {
+console.log("/api/user/getbyid/:id");	
 console.log(req.params);
 
 	const value = req.params.id;
@@ -159,13 +224,10 @@ console.log(req.params);
 		res.status(500).send("")
 	}
 
-
 })
 
 
-//0123456789012345678901234567890123456789
- 
-fastify.post('/api/user_newuser', {}, async function (req, res) {
+fastify.post('/api/user/newuser', {}, async function (req, res) {
 
 console.log('# /newuser');
 console.log(req.body);
@@ -179,23 +241,17 @@ console.log(req.body);
 //		if (!validateEmail(email))
 //			return res.status(404).send( {} );
 
-		if (!validatePassword(password)) {
-			console.log('invalid password');
-		 	return res.status(404).send( {} );
-		}
+		if (!validatePassword(password))
+		 	return res.status(404).send();
 
-		if (!validateUserName(name)) {
-			console.log('invalid username');
-			return res.status(404).send( {} );
-		}
+		if (!validateUserName(name))
+			return res.status(404).send();
 
 		uniqueUserName = await checkUserNameDuplicate(name)
 console.log("uniqueUserName");
 console.log(uniqueUserName);
-		if (uniqueUserName == "") {
-			console.log('invalid unique username');
-			return res.status(404).send( {} );
-		}
+		if (uniqueUserName == "")
+			return res.status(404).send();
 
 			let user = await prisma.user.create({
 				data: { name: uniqueUserName, email, password }
@@ -208,10 +264,9 @@ console.log('newuser created');
 	catch (error) {
 console.error('newuser pancarte');
 		console.error(error);
-		res.status(500).send( {} );
+		res.status(500).send();
 	}
 })
-
 
 
 // Run the serveur!
@@ -288,187 +343,3 @@ console.log(user)
 
 
 
-
-function protected_routes(fastify_instance, options, next) {
-
-// JWT verification function
-const verifyJWT = async (req, res) => {
-console.log("PreHandler verifyJWT");
-
-
-	req.user = undefined
-	try {
-console.log(req.cookies);
-		if (!req.cookies)
-			return
-
-		const token = req.cookies['ft_transcendence_jwt'];
-console.log("upr verifyJWT 1");
-//console.log("token: " + token + "\n");
-console.log(token);
-		if (!token)
-			return;
-
-		const decoded = jwt.decode(token);
-console.log("upr verifyJWT 2");
-console.log(decoded);
-		req.user = {userId: decoded.userId}
-	}
-	catch(error) {
-		console.error(error);
-	}
-};
-
-
-	fastify_instance.get('/api/user/getloggeduser', { preHandler: [verifyJWT] }, async function (req, res) {
-
-console.log("/api/user/getloggeduser");
-console.log(req.user);
-
-		try {
-			var user = await prisma.user.findUnique({
-				where: { 
-					id: req.user.userId
-				}
-			})
-			return res.status(200).send(
-				{
-				id: user.id,
-				name: user.name, email: user.email,
-				language: user.language, rank: user.rank, keymap: user.keymap
-				}
-			);
-		}
-		catch (error) {
-			res.status(500)
-		}
-	})
-
-
-
-	fastify_instance.put('/api/user/updatekeybinds/:keymap', { preHandler: [verifyJWT] }, async function (req, res) {
-
-		const keymap = req.params.keymap;
-
-console.log("/api/user/updatekeybinds");
-console.log(keymap);
-
-		try {
-			var user = await prisma.user.update({
-				where: { 
-					id: req.user.userId
-				},
-    			data: {
-                    keymap: keymap
-                }
-			})
-			return res.status(200).send( {keymap: keymap} );
-		}
-		catch (error) {
-			res.status(500)
-		}
-	})
-
-
-	fastify_instance.put('/api/user/updateusername/:newusername', { preHandler: [verifyJWT] }, async function (req, res) {
-
-		const newName = req.params.newusername;
-
-console.log("/api/user/updateusername");
-console.log(newName);
-
-		try {
-			var user = await prisma.user.findUnique({
-				where: { 
-					id: req.user.userId
-				}
-			})
-			if (user.name == newName)
-				res.status(200).send( {name: newName} )
-
-			var altName = await checkUserNameDuplicate(newName)
-			if (altName == "")
-				res.status(200).send( {name: ""} )
-
-			var user = await prisma.user.update({
-				where: { 
-					id: req.user.userId
-				},
-    			data: {
-                    name: altName
-                }
-			})
-
-			return res.status(200).send( {name: altName} );
-		}
-		catch (error) {
-			res.status(500)
-		}
-
-	})
-
-
-
-	fastify_instance.put('/api/user/updatepw/:pw/:newpw', { preHandler: [verifyJWT] }, async function (req, res) {
-
-		const pw = req.params.pw;
-		const newPw = req.params.newpw;
-
-console.log("/api/user/updatepw");
-console.log(pw);
-console.log(newPw);
-
-//var hashedPassword = "132"
-
-		try {
-			var user = await prisma.user.findUnique({
-				where: { 
-					id: req.user.userId
-				}
-			})
-console.log(user);
-			if (!user)
-				return res.status(500).send()			
-
-console.log("uu");
-			const response = await fetch(`${AUTH_SERVICE_URL}/api/auth/changepw`,
-			{
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					pw: pw,
-					pwhash: user.password,
-					newpw: newPw
-				})
-			})
-
-//console.log(response);
-console.log("response received");
-			if (response.status == 401)
-				return res.status(401).send();
-			if (response.status == 500)
-				return res.status(500).send();
-
-			const userData = await response.json();
-
-
-console.log(userData);
-
-			var user = await prisma.user.update({
-				where: {  
-					id: req.user.userId
-				},
-    			data: {
-                    password: userData.newpwhash
-                }
-			})
-
-			return res.status(200).send();
-		}
-		catch (error) {
-			res.status(500).send()
-		}
-	})
-
-	next()
-}
