@@ -1,15 +1,9 @@
-<<<<<<< HEAD
 import { Link } from "react-router-dom"
 import Card from '../../../components/Card'
-=======
-import ImageLoader from '../../../avatar/ImageLoader'
-import { Outlet } from "react-router-dom"
->>>>>>> 4764653 (avatar)
 
 function LocalPong()
 {
   return (
-<<<<<<< HEAD
   <div className="flex flex-col items-center justify-center max-w-[1600px]
     max-h-[555px] w-full h-full">
     <h1 className="font-orbitron font-medium text-title text-white">CHOOSE A MODE</h1>
@@ -47,12 +41,6 @@ function LocalPong()
 
     </div>
   </div>
-=======
-    // <div className="bg-red-500">
-    //   LocalPong
-    // </div>
-    <ImageLoader/>
->>>>>>> 4764653 (avatar)
   )
 }
 

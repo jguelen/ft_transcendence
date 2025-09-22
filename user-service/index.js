@@ -66,7 +66,7 @@ console.log("preHandler-CORS-tmp");
 	if (isPreflight) {
 		res.header("Access-Control-Allow-Methods", "GET, PUT, DELETE, POST, OPTIONS");
 		res.header("Access-Control-Allow-Headers", 'Content-Type, Authorization');
-		return res.send();
+		return next()
   }
 
 
@@ -179,17 +179,23 @@ console.log(req.body);
 //		if (!validateEmail(email))
 //			return res.status(404).send( {} );
 
-		if (!validatePassword(password))
+		if (!validatePassword(password)) {
+			console.log('invalid password');
 		 	return res.status(404).send( {} );
+		}
 
-		if (!validateUserName(name))
+		if (!validateUserName(name)) {
+			console.log('invalid username');
 			return res.status(404).send( {} );
+		}
 
 		uniqueUserName = await checkUserNameDuplicate(name)
 console.log("uniqueUserName");
 console.log(uniqueUserName);
-		if (uniqueUserName == "")
+		if (uniqueUserName == "") {
+			console.log('invalid unique username');
 			return res.status(404).send( {} );
+		}
 
 			let user = await prisma.user.create({
 				data: { name: uniqueUserName, email, password }
