@@ -6,10 +6,11 @@ services:
     ports:
       - "8443:443"
     container_name: frontend_service
+    restart: unless-stopped
     volumes:
       - avatar-images:/usr/share/nginx/html/avatars
 
-  auth_services:
+  auth-service:
     build:
       context: ./auth-service
     container_name: auth_service
@@ -21,6 +22,7 @@ services:
       - USER_SERVICE_URL=http://user-service:3002
     depends_on:
       - user-service
+    restart: unless-stopped
 
   user-service:
     build:
@@ -30,8 +32,9 @@ services:
       - "3002:3002"
     environment:
       - DATABASE_URL=file:./data/users_db.db
-      - AUTH_SERVICE_URL=http://auth_services:3001
+      - AUTH_SERVICE_URL=http://auth_service:3001
       - PORT=3002
+    restart: unless-stopped
     volumes:
       - user-data:/app/data
 
@@ -65,4 +68,3 @@ services:
 volumes:
   user-data:
   avatar-images:
-

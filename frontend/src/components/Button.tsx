@@ -1,4 +1,3 @@
-import React, { ReactNode } from 'react';
 import clsx from 'clsx';
 import './Button.css';
 

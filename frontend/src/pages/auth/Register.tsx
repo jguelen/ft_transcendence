@@ -4,68 +4,66 @@ import Input from '../../components/Input';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { checkUsernameAvailability, signup, login } from '../../services/authService';
+import { signup, login } from '../../services/authService';
 
 function Register()
 {
   const [isLoadingSubmit, setLoadingSubmit] = useState<boolean>(false)
-  const [passwordError, setPasswordError] = useState<string>("")
+  const [error, setError] = useState<string>("")
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
   const [repassword, setRepassword] = useState<string>("")
   const [username, setUsername] = useState<string>("")
-  const [isCheckingUsername, setCheckingUsername] = useState<boolean>(false)
-  const [usernameError, setUsernameError] = useState<string>("")
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>)
-  {
-    setUsername(event.target.value)
-    if (usernameError)
-      setUsernameError("");
-  }
+  // function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>)
+  // {
+  //   setUsername(event.target.value)
+  //   if (usernameError)
+  //     setUsernameError("");
+  // }
 
-  async function handleUsernameBlur()
-  {
-    setCheckingUsername(true);
-    setUsernameError('');
-    if (!username)
-    {
-      setCheckingUsername(false);
-      return;
-    }
-    else if (username.length < 3)
-    {
-      setCheckingUsername(false);
-      setUsernameError(t("register.error.username"));
-      return;
-    }
-    try
-    {
-       const data = await checkUsernameAvailability(username);
-       if (!data.isAvailable)
-        setUsernameError(t("register.error.taken"));
-    }
-    catch (apiError)
-    {
-      console.error("Error during username verification", apiError);
-      setUsernameError("network error");
-    }
-    finally
-    {
-      setCheckingUsername(false);
-    }
-  }
+  // async function handleUsernameBlur()
+  // {
+  //   setCheckingUsername(true);
+  //   setUsernameError('');
+  //   if (!username)
+  //   {
+  //     setCheckingUsername(false);
+  //     return;
+  //   }
+  //   else if (username.length < 3)
+  //   {
+  //     setCheckingUsername(false);
+  //     setUsernameError(t("register.error.username"));
+  //     return;
+  //   }
+  //   try
+  //   {
+  //      const data = await checkUsernameAvailability(username);
+  //      if (!data.isAvailable)
+  //       setUsernameError(t("register.error.taken"));
+  //   }
+  //   catch (apiError)
+  //   {
+  //     console.error("Error during username verification", apiError);
+  //     setUsernameError("network error");
+  //   }
+  //   finally
+  //   {
+  //     setCheckingUsername(false);
+  //   }
+  // }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>)
   {
     event.preventDefault();
     setLoadingSubmit(true);
-    setPasswordError('');
+    setError('');
     if (!email || !password)
     {
-      setPasswordError(t("register.error.mail/password"));
+      setError(t("register.error.mail/password"));
       setLoadingSubmit(false);
       return;
     }
@@ -75,7 +73,7 @@ function Register()
     if (passwordErrors.length > 0)
     {
       console.log({passwordErrors})
-      setPasswordError(passwordErrors.join(' ')); 
+      setError(passwordErrors.join(' ')); 
       setLoadingSubmit(false);
       return;
     }
@@ -83,7 +81,7 @@ function Register()
     if (password != repassword)
     {
       console.log("password not equal to repassword");
-      setPasswordError("both password need to be equal.");
+      setError("both password need to be equal.");
       setLoadingSubmit(false);
       return;
     }
@@ -101,7 +99,7 @@ function Register()
     {
       // On extrait le message d'erreur spécifique du backend s'il existe,
       const errorMessage = apiError.response?.data?.msg;
-      setPasswordError(errorMessage);
+      setError(errorMessage);
     }
     finally
     {
@@ -118,14 +116,9 @@ function Register()
         <Input type="email" name="email" id="email" placeholder={t("register.mail")}
           required value={email} onChange={(e) => setEmail(e.target.value)} iconSrc={'/icons/mail.svg'}/>
 
-      <div className="w-full flex flex-col items-center justify-center">
         <Input type="text" name="username" id="username" placeholder={t("register.username")}
-          required value={username} onChange={handleUsernameChange}
-          iconSrc={'/icons/user.svg'} onBlur={handleUsernameBlur}/>
-
-        {isCheckingUsername && <p className="text-gray-400 text-xs mt-1">{t("register.check_username")}</p>}
-          {usernameError && <p className="text-red-500 text-xs mt-1 flex-initial">{usernameError}</p>}
-      </div>
+          required value={username} onChange={(e) => setUsername(e.target.value)}
+          iconSrc={'/icons/user.svg'}/>
 
         <Input type="password" name="password" id="password" placeholder={t("register.password")}
           required value={password} onChange={(e) => setPassword(e.target.value)} iconSrc={'/icons/lock.svg'}/>
@@ -133,16 +126,16 @@ function Register()
       <div className={clsx(
             "w-full flex flex-col items-center justify-center",
             {
-              "flex-grow h-0": passwordError,
+              "flex-grow h-0": error,
             }
       )}>
         <Input type="password" name="repassword" id="repassword" placeholder={t("register.repassword")}
           required value={repassword} onChange={(e) => setRepassword(e.target.value)} iconSrc={'/icons/lock.svg'}/>
       
-        {passwordError && <p className="text-red-500 text-center font-inter text-sm w-full max-h-[25%] overflow-y-auto">{passwordError}</p>}
+        {error && <p className="text-red-500 text-center font-inter text-sm w-full max-h-[25%] overflow-y-auto">{error}</p>}
       </div>
 
-      <Button gradientBorder={true} type='submit' disabled={isLoadingSubmit || !!usernameError} hoverColor="rgba(39, 95, 153, 0.4)">
+      <Button gradientBorder={true} type='submit' disabled={isLoadingSubmit} hoverColor="rgba(39, 95, 153, 0.4)">
         {isLoadingSubmit ? t("register.loading") : t("register.sign_up")}
       </Button>
 
@@ -150,7 +143,7 @@ function Register()
   )
 }
 
-function validatePassword(password: string, t: Function): string[] {
+export function validatePassword(password: string, t: Function): string[] {
   const errors: string[] = [];
 
   if (password.length < 12) {
