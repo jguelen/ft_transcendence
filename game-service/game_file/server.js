@@ -39,7 +39,7 @@ let operator = true;
 
 //Websocket
 let clients = [];
-let id = 0;
+let id = 1;
 let projectsArray = [];
 let gameInstance_array = [];
 let tournamentInstance_array = [];
@@ -187,34 +187,56 @@ function saveMatch({ mode, player1, player2, player3, player4,
 			details ? JSON.stringify(details) : null);
 }
 
+/* Here are what each parameer stan for :
+local : Is the game local ?
+tournament : Is it a tournament ?
+IA : Is their a IA with IA_diff difficulty
+player_nbr : The number of player 2, 4
+custom : Is the custom mode active ?
+speeding_mode : Is the speedind mode active ?
+game_players : clients list
+players_name : The list of the names of the players
+players_keys : The list of the keys of the playes
+*/
 async function create_game(local, tournament, IA, IA_diff,
 							player_nbr, custom, speeding_mode, 
 							game_players, players_name, players_keys){
 	// console.log("new Game");
 	if (local){
 		if (tournament == true){
+			// {name : players_name[0], rank : 0}, 
+			// {name : players_name[1], rank : 0},
+			// {name : players_name[2], rank : 0},
+			// {name : players_name[3], rank : 0}, 
+			// {name : players_name[4], rank : 0},
+			// {name : players_name[5], rank : 0},
+			// {name : players_name[6], rank : 0},
+			// {name : players_name[7], rank : 0}];
 			let player_list = [
-			{name : "Ness", rank : 0}, 
-			{name : "Lucas", rank : 0},
-			{name : "Wolf", rank : 0},
-			{name : "Amphinobi", rank : 0}, 
-			{name : "Mewtwo", rank : 0},
-			{name : "Mario", rank : 0},
-			{name : "Kirby", rank : 0},
-			{name : "Shulk", rank : 0},
-			{name : "Pikachu", rank : 0}, 
-			{name : "Link", rank : 0},
-			{name : "Zelda", rank : 0},
-			{name : "Mr.Game and Watch", rank : 0}, 
-			{name : "Ike", rank : 0},
-			{name : "Chrom", rank : 0},
-			{name : "Luigi", rank : 0},
-			{name : "Bowser", rank : 0}];
+				{name : "Ness", rank : 0}, 
+				{name : "Lucas", rank : 0},
+				{name : "Wolf", rank : 0},
+				{name : "Amphinobi", rank : 0}, 
+				{name : "Mewtwo", rank : 0},
+				{name : "Mario", rank : 0},
+				{name : "Kirby", rank : 0},
+				{name : "Shulk", rank : 0}];
+				// {name : "Pikachu", rank : 0}, 
+				// {name : "Link", rank : 0},
+				// {name : "Zelda", rank : 0},
+				// {name : "Mr.Game and Watch", rank : 0}, 
+				// {name : "Ike", rank : 0},
+				// {name : "Chrom", rank : 0},
+				// {name : "Luigi", rank : 0},
+				// {name : "Bowser", rank : 0}];
 	
+			console.log("game_players", game_players);
 			let n = player_list.length;
-			if (n > 0 && (n & (n - 1)) === 0)
+			if (player_list.length != 8){
 				console.log("Tournament don't have enough player");
-			let tournamentInstance = new Tournament(game_players, operator, player_list, custom, IA_diff);
+				return ;
+			}
+			let tournamentInstance = new Tournament(game_players, operator, player_list, players_keys, custom, IA_diff);
 			tournamentInstance_array.push(tournamentInstance);
 			let winner = await tournamentInstance.tournament();
 			if (winner != null)
@@ -266,12 +288,8 @@ async function create_game(local, tournament, IA, IA_diff,
 		
 		let players = [];
 		for (let i = 0; i < game_players.length; i++){
-			players.push(new Player(game_players[i].id, players_name[i], pos[i], 'w', 's', game_players[i].connection))
+			players.push(new Player(game_players[i].id, players_name[i], pos[i], players_keys[0].keyup, players_keys[0].keydown, game_players[i].connection))
 		}
-		// game_players.map(player => {
-		// 	const tmp_pos = (client.id < 4) ? pos[client.id] : 0;
-		// 	return new Player(client.id, tmp_pos, 'w', 's', client.connection);
-		// });
 	
 		let gameInstance = new Game(operator, IA, players, custom, IA_diff, speeding_mode);
 		gameInstance_array.push(gameInstance);
