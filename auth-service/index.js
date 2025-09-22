@@ -184,8 +184,8 @@ fastify.post('/api/auth/signup', async (req, res) => {
 console.log('# /auth/signup');
 console.log(req.body);
 
-	const email = req.body.useremail
-	const name = req.body.username
+	const email = req.body.email
+	const name = req.body.name
 	const password = req.body.password
 
 	try {
