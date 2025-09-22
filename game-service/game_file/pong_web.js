@@ -171,22 +171,22 @@ export class Game {
 				let duration = utils.getDuration(this.timestart, this.timeend);
 				this.over = true;
 				this.sendInfoToFront();
-				let player1_name = this.teams[0].backplayer.name;
-				let player2_name = this.teams[1].backplayer.name;
-				let player3_name = (this.teams[0].frontplayer) ? this.teams[0].frontplayer.name : "";
-				let player4_name = (this.teams[1].frontplayer) ? this.teams[1].frontplayer.name : "";
+				let player1 = {id : this.teams[0].backplayer.global_id, name : this.teams[0].backplayer.name};
+				let player2 = {id : this.teams[1].backplayer.global_id, name : this.teams[1].backplayer.name};
+				let player3 = (this.teams[0].frontplayer) ? {id : this.teams[0].frontplayer.global_id, name : this.teams[0].frontplayer.name} : null;
+				let player4 = (this.teams[1].frontplayer) ? {id : this.teams[1].frontplayer.global_id, name : this.teams[1].frontplayer.name} : null;
 				if (this._gameOverResolver) {
 					this._gameOverResolver({
-						player1 : player1_name,
-						player2 : player2_name,
-						player3 : player3_name,
-						player4 : player4_name,
-						winner : (team === this.teams[0]) ? "team1" : "team2",
-						winner_player1 : (team === this.teams[0]) ? player1_name : player2_name,
-						winner_player2 : (team === this.teams[0]) ? player3_name : player4_name,
-						looser: (team === this.teams[0]) ? "team2" : "team1",
-						looser_player1: (team === this.teams[0]) ? player2_name : player1_name,
-						looser_player2: (team === this.teams[0]) ? player4_name : player3_name,
+						player1 : player1,
+						player2 : player2,
+						player3 : player3,
+						player4 : player4,
+						winner_team : (team === this.teams[0]) ? "team1" : "team2",
+						winner1 : (team === this.teams[0]) ? player1 : player2,
+						winner2 : (team === this.teams[0]) ? player3 : player4,
+						looser_team: (team === this.teams[0]) ? "team2" : "team1",
+						looser1: (team === this.teams[0]) ? player2 : player1,
+						looser2: (team === this.teams[0]) ? player4 : player3,
 						duration : duration,
 						team1_score : this.teams[0].score,
 						team2_score : this.teams[1].score,

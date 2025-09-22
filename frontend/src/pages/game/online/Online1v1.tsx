@@ -10,10 +10,6 @@ function Online1v1()
     custom_mode: false,
     speeding_mode: false,
     IA_diff: 1,
-    player1: "",
-    player2: "",
-    player3: "",
-    player4: "",
     start: false
   };
   return (
