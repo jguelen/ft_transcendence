@@ -26,12 +26,12 @@ CREATE TABLE IF NOT EXISTS matches (
     player4 TEXT,
     team1_score INTEGER,
     team2_score INTEGER,
-    winner TEXT,
-	winner_player1 TEXT,
-	winner_player2 TEXT,
-	looser TEXT,
-	looser_player1 TEXT,
-	looser_player2 TEXT,
+    winner_team TEXT,
+	winner1 TEXT,
+	winner2 TEXT,
+	looser_team TEXT,
+	looser1 TEXT,
+	looser2 TEXT,
     details TEXT -- JSON
 )`);
 
@@ -100,8 +100,8 @@ fastify.register(async function (fastify){
 							projects.player_array.length < projects.player_nbr
 						)
 						projects.player_array.push(actual_client);
-						projects.player_name_array.push(data.gameparam.player1);
-						
+						projects.player_name_array.push(data.name);
+						projects.player_id_array.push(data.id);
 						projects.player_case_array.push({keyup: data.keys.keysup.p1, keydown: data.keys.keysdown.p1});
 						// console.log("project", projects);
 						return ;
@@ -117,16 +117,22 @@ fastify.register(async function (fastify){
 						data.gameparam.speeding_mode
 					);
 					newProject.player_array.push(actual_client);
-					newProject.player_name_array.push(data.gameparam.player1); 
+					if (newProject.tournament){
+						newProject.player_name_array = data.tournament_players;
+						newProject.player_id_array = data.ids;
+					} else {
+						projects.player_name_array.push(data.name);
+						projects.player_id_array.push(data.id);
+					}
 					newProject.player_case_array.push({keyup: data.keys.keysup.p1, keydown: data.keys.keysdown.p1});
 					if (newProject.local)
 						newProject.player_case_array.push({keyup: data.keys.keysup.p2, keydown: data.keys.keysdown.p2});
-					if (newProject.local && !newProject.IA)
-						newProject.player_name_array.push(data.gameparam.player2);
-					else if (newProject.local && newProject.IA)
+					if (newProject.local && newProject.IA)
 						newProject.player_name_array.push(String('IA') + IA_DIFF_NAME[data.gameparam.IA_diff]);
+					else if (newProject.local && !newProject.IA){
+						newProject.player_name_array.push("Local player");
+					}
 					projectsArray.push(newProject);
-					// console.log("new project", newProject);
 				}
 			} catch (e) {}
 		});
@@ -146,15 +152,6 @@ fastify.listen({ port: 3000, host: '0.0.0.0' }, err => {
 process.on('uncaughtException', console.error);
 process.on('unhandledRejection', console.error);
 
-
-/*Game
-let tournament = false;
-let local = true;
-let IA = true;
-let custom = true;
-let IA_diff = 1;
-let player_nbr = 4;
-*/
 setInterval(() => {
 	const index = projectsArray.findIndex(project => project.checkGameProjectCondition() == true);
 	if (index != -1){
@@ -168,23 +165,22 @@ setInterval(() => {
 	}
 }, 1000);
 
-function saveMatch({ mode, player1, player2, player3, player4,
+function saveMatch(mode, data) {
+	let details = { custom : data.custom, duration: data.duration};
+	const stmt = database.prepare(`
+		INSERT INTO matches (mode,
+			player1, player2, player3, player4,
 			team1_score, team2_score, 
-			winner, winner_player1, winner_player2,
-			looser, looser_player1, looser_player2,
-			details }) {
-    const stmt = database.prepare(`
-        INSERT INTO matches (mode, player1, player2, player3, player4,
-			team1_score, team2_score, 
-			winner, winner_player1, winner_player2,
-			looser, looser_player1, looser_player2, details)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-    stmt.run(mode, player1, player2, player3, player4,
-			team1_score, team2_score, 
-			winner, winner_player1, winner_player2,
-			looser, looser_player1, looser_player2,
-			details ? JSON.stringify(details) : null);
+			winner_team, winner1, winner2,
+			looser_team, looser1, looser2, details)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	`);
+	stmt.run(mode,
+		data.player1, data.player2, data.player3, data.player4,
+		data.team1_score, data.team2_score, 
+		data.winner_team, data.winner1, data.winner2,
+		data.looser_team, data.looser1, data.looser2,
+		details);	
 }
 
 /* Here are what each parameer stan for :
@@ -194,33 +190,37 @@ IA : Is their a IA with IA_diff difficulty
 player_nbr : The number of player 2, 4
 custom : Is the custom mode active ?
 speeding_mode : Is the speedind mode active ?
-game_players : clients list
+players_list : clients list
 players_name : The list of the names of the players
+players_id : The list of the names of the players
 players_keys : The list of the keys of the playes
 */
 async function create_game(local, tournament, IA, IA_diff,
 							player_nbr, custom, speeding_mode, 
-							game_players, players_name, players_keys){
+							players_list,
+							players_name,
+							players_id,
+							players_keys){
 	// console.log("new Game");
 	if (local){
 		if (tournament == true){
-			// {name : players_name[0], rank : 0}, 
-			// {name : players_name[1], rank : 0},
-			// {name : players_name[2], rank : 0},
-			// {name : players_name[3], rank : 0}, 
-			// {name : players_name[4], rank : 0},
-			// {name : players_name[5], rank : 0},
-			// {name : players_name[6], rank : 0},
-			// {name : players_name[7], rank : 0}];
-			let player_list = [
-				{name : "Ness", rank : 0}, 
-				{name : "Lucas", rank : 0},
-				{name : "Wolf", rank : 0},
-				{name : "Amphinobi", rank : 0}, 
-				{name : "Mewtwo", rank : 0},
-				{name : "Mario", rank : 0},
-				{name : "Kirby", rank : 0},
-				{name : "Shulk", rank : 0}];
+			let tournament_players = [
+				{name : players_name[0], rank : 0, id : players_id[0]}, 
+				{name : players_name[1], rank : 0, id : players_id[1]}, 
+				{name : players_name[2], rank : 0, id : players_id[2]}, 
+				{name : players_name[3], rank : 0, id : players_id[3]},  
+				{name : players_name[4], rank : 0, id : players_id[4]}, 
+				{name : players_name[5], rank : 0, id : players_id[5]}, 
+				{name : players_name[6], rank : 0, id : players_id[6]}, 
+				{name : players_name[7], rank : 0, id : players_id[7]}];
+				// {name : "Ness", rank : 0}, 
+				// {name : "Lucas", rank : 0},
+				// {name : "Wolf", rank : 0},
+				// {name : "Amphinobi", rank : 0}, 
+				// {name : "Mewtwo", rank : 0},
+				// {name : "Mario", rank : 0},
+				// {name : "Kirby", rank : 0},
+				// {name : "Shulk", rank : 0}];
 				// {name : "Pikachu", rank : 0}, 
 				// {name : "Link", rank : 0},
 				// {name : "Zelda", rank : 0},
@@ -230,51 +230,37 @@ async function create_game(local, tournament, IA, IA_diff,
 				// {name : "Luigi", rank : 0},
 				// {name : "Bowser", rank : 0}];
 	
-			console.log("game_players", game_players);
-			let n = player_list.length;
-			if (player_list.length != 8){
+			if (tournament_players.length != 8){
 				console.log("Tournament don't have enough player");
 				return ;
 			}
-			let tournamentInstance = new Tournament(game_players, operator, player_list, players_keys, custom, IA_diff);
+			let tournamentInstance = new Tournament(
+					players_list, tournament_players, players_keys,
+					operator, custom, IA_diff, speeding_mode);
 			tournamentInstance_array.push(tournamentInstance);
 			let winner = await tournamentInstance.tournament();
 			if (winner != null)
 				console.log("Winner is :", winner);
 			else
 				console.log("Tournament crash");
-			for (let player of game_players){
+			for (let player of players_list){
 				player.connection.send(JSON.stringify({ type: 'end', msg: String("Winner is :" + winner)}));
 			}
 			let idx = tournamentInstance_array.indexOf(tournamentInstance);
 			tournamentInstance_array.splice(idx, 1);
 		} else {
+			players_list[0].connection.send(JSON.stringify({ type: 'matchtitle', msg: String(players_name[0] + " VS " + players_name[1]) }));
 			const players = [
-				new Player(game_players[0].id, players_name[0], pos[0], players_keys[0].keyup, players_keys[0].keydown, game_players[0].connection),
-				new Player(game_players[0].id, players_name[1], pos[1], (IA) ? "" : players_keys[1].keyup, (IA) ? "" : players_keys[1].keydown, game_players[0].connection)
+				new Player(players_list[0].id, players_id[0], players_name[0], pos[0], players_keys[0].keyup, players_keys[0].keydown, players_list[0].connection),
+				new Player(players_list[0].id, players_id[1], players_name[1], pos[1], (IA) ? "" : players_keys[1].keyup, (IA) ? "" : players_keys[1].keydown, players_list[0].connection)
 			];
 	
 			let gameInstance = new Game(operator, IA, players, custom, IA_diff, speeding_mode);
 			gameInstance_array.push(gameInstance);
 			let data = await gameInstance.startGame();
 			console.log("Winner is :", data.winner);
-			saveMatch({
-				mode: "1v1 Local",
-				player1: data.player1,
-				player2: data.player2,
-				player3: null,
-				player4: null,
-				team1_score: data.team1_score,
-				team2_score: data.team2_score,
-				winner: data.winner,
-				winner_player1: data.winner_player1,
-				winner_player2: null,
-				looser: data.looser,
-				looser_player1: data.looser_player1,
-				looser_player2: null,
-				details: { customMode: true, duration: data.duration}
-			});
-			for (let player of game_players){
+			saveMatch("1v1 Local", data);
+			for (let player of players_list){
 				player.connection.send(JSON.stringify({ type: 'end', msg : String("Winner is :" + data.winner)}));
 			}
 			let idx = gameInstance_array.indexOf(gameInstance);
@@ -286,32 +272,26 @@ async function create_game(local, tournament, IA, IA_diff,
 			await utils.sleep(1000);
 		}
 		
+		let message = "";
+		if (player_nbr == 2){
+			message = String(players_name[0] + " VS " + players_name[1]);
+		} else if (player_nbr == 4){
+			message = String(players_name[0] + " and " + players_name[2] + " VS " + players_name[1] + " and " + players_name[3]);
+		}
+
 		let players = [];
-		for (let i = 0; i < game_players.length; i++){
-			players.push(new Player(game_players[i].id, players_name[i], pos[i], players_keys[0].keyup, players_keys[0].keydown, game_players[i].connection))
+		for (let i = 0; i < players_list.length; i++){
+			players.push(new Player(players_list[i].id, players_id[i], players_name[i], pos[i], players_keys[0].keyup, players_keys[0].keydown, players_list[i].connection))
+			players_list[i].connection.send(JSON.stringify({ type: 'matchtitle', msg: message }));
 		}
 	
+		
 		let gameInstance = new Game(operator, IA, players, custom, IA_diff, speeding_mode);
 		gameInstance_array.push(gameInstance);
 		let data = await gameInstance.startGame();
 		console.log("Winner is :", data.winner);
-		saveMatch({
-			mode: (player_nbr == 4) ? "2v2 Online" : "1v1 Online",
-			player1: data.player1,
-			player2: data.player2,
-			player3: data.player3,
-			player4: data.player4,
-			team1_score: data.team1_score,
-			team2_score: data.team2_score,
-			winner: data.winner,
-			winner_player1: data.winner_player1,
-			winner_player2: data.winner_player2,
-			looser: data.looser,
-			looser_player1: data.looser_player1,
-			looser_player2: data.looser_player2,
-			details: { customMode: true, duration: data.duration }
-		});
-		for (let player of game_players){
+		saveMatch((player_nbr == 4) ? "2v2 Online" : "1v1 Online" , data);
+		for (let player of players_list){
 			player.connection.send(JSON.stringify({ type: 'end', msg : String("Winner is :" + data.winner)}));
 		}
 		let idx = gameInstance_array.indexOf(gameInstance);

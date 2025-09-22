@@ -2,7 +2,60 @@ import React, { useRef, useState, useEffect } from 'react';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import ArrowInput from '../components/ArrowInput';
+import Input from '../components/Input';
 import {PongGameService} from '../game/display_pong';
+
+const player_id = 0;
+const player_name = "";
+
+class MokeUser{
+	name : string;
+	id : number;
+	constructor(name : string, id : number){
+		this.name = name;
+		this.id = id;
+	}
+}
+
+let moke_users = [
+	new MokeUser("Ness", 0),
+	new MokeUser("Lucas", 1),
+	new MokeUser("Wolf", 2),
+	new MokeUser("Amphinobi", 3),
+	new MokeUser("Shulk", 4),
+	new MokeUser("Mario", 5),
+	new MokeUser("Yoshi", 6),
+	new MokeUser("Luigi", 7)
+];
+
+function isNameInMokeUsers(name : string) {
+	return moke_users.some(user => user.name === name);
+}
+
+function isDuplicate(name :string , idx : number, arr : any[]) {
+	return arr.filter((n, i) => n === name && i !== idx).length > 0;
+}
+
+function getTournamentPlayerIds(names: string[], userList: MokeUser[]) {
+  let errors : any[] = [];
+  let ids: number[] = [];
+  let uniqueNames = new Set<string>();
+
+  names.forEach((name, idx) => {
+    if (name.length > 15) {
+      errors.push(`Le nom "${name}" dépasse 15 caractères.`);
+    }
+    if (uniqueNames.has(name)) {
+      errors.push(`Le nom "${name}" est utilisé plusieurs fois.`);
+    }
+    uniqueNames.add(name);
+
+    const found = userList.find(u => u.name === name);
+    ids[idx] = found ? found.id : -1;
+  });
+
+  return { ids, errors };
+}
 
 export default function PongGame({config}: {config : any}) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,6 +70,9 @@ export default function PongGame({config}: {config : any}) {
 		p1: "s",
 		p2: pongConfig.local && !pongConfig.IA ? "ArrowDown" : "",
 	});
+	const [tournamentPlayers, setTournamentPlayers] = useState(
+		Array.from({ length: 8 }, (_, idx) => `Player${idx + 1}`)
+	);
 
 	const keys = {
 		keysup: playerKeysup,
@@ -60,6 +116,12 @@ export default function PongGame({config}: {config : any}) {
 
 	function handleStart() {
 		if (!pongConfig.start) {
+			const { ids, errors } = getTournamentPlayerIds(tournamentPlayers, moke_users);
+
+			if (errors.length > 0) {
+			setMsg(errors.join("\n"));
+			return;
+			}
 
 			setPongConfig((cfg : any) => ({ ...cfg, start: true }));
 
@@ -72,7 +134,10 @@ export default function PongGame({config}: {config : any}) {
 				const trySend = () => {
 					if (serviceRef.current.myId) {
 						serviceRef.current.ws.send(
-							JSON.stringify({ type: "gamesearch", gameparam: pongConfig, keys: keys })
+							JSON.stringify({ type: "gamesearch",
+								gameparam: pongConfig, keys: keys,
+								tournament_players: tournamentPlayers,
+								ids: ids, name : player_name, id : player_id})
 						);
 					} else {
 						setTimeout(trySend, 50);
@@ -108,18 +173,7 @@ export default function PongGame({config}: {config : any}) {
 						<Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.4)" id="speedingModeBtn"onClick={handleSpeedingMode}>
 							Speeding mode : {pongConfig.speeding_mode ? "ON" : "OFF"}
 						</Button>
-						{pongConfig.IA && (
-							<>
-								<input style={{ width: "8em", textAlign: "center" }} >Player 1</input>
-								<input style={{ width: "8em", textAlign: "center" }} >Player 2</input>
-								<input style={{ width: "8em", textAlign: "center" }} >Player 3</input>
-								<input style={{ width: "8em", textAlign: "center" }} >Player 4</input>
-								<input style={{ width: "8em", textAlign: "center" }} >Player 5</input>
-								<input style={{ width: "8em", textAlign: "center" }} >Player 6</input>
-								<input style={{ width: "8em", textAlign: "center" }} >Player 7</input>
-								<input style={{ width: "8em", textAlign: "center" }} >Player 8</input>
-							</>
-						)}
+						
 						{pongConfig.IA && (
 							<>
 								<label htmlFor="iaDiff">Difficulté IA :</label>
@@ -135,33 +189,65 @@ export default function PongGame({config}: {config : any}) {
 							</>
 						)}
 					</Card>
-					<h1>{msg}</h1>
-					<div style={{ display: "flex", gap: "1em" }}>
-						<ArrowInput
-							value={playerKeysup.p1}
-							onChange={val => setPlayerKeysup(keys => ({ ...keys, p1: val }))}
-							placeholder="Up Key player 1"
-						/>
-						<ArrowInput
-							value={playerKeysdown.p1}
-							onChange={val => setPlayerKeysdown(keys => ({ ...keys, p1: val }))}
-							placeholder="Down Key player 1"
-						/>
-						{pongConfig.local && !pongConfig.IA && (
-							<ArrowInput
-								value={String(playerKeysup.p2)}
-								onChange={val => setPlayerKeysup(keys => ({ ...keys, p2: val }))}
-								placeholder="Up Key player 2"
-							/>
+					<Card maxWidth="1200px" maxHeight="400px" className="flex align-center justify-center gap-1">
+						{pongConfig.tournament && (
+							<div style={{ display: "flex", gap: "1em", flexWrap: "wrap" }}>
+								{tournamentPlayers.map((name, idx) => {
+									const isInMoke = isNameInMokeUsers(name);
+									const isDup = isDuplicate(name, idx, tournamentPlayers);
+
+									let bgColor = "bg-white";
+									if (isDup) bgColor = "bg-red-200";
+									else if (isInMoke) bgColor = "bg-green-200";
+
+									return (
+										<input
+											key={idx}
+											className={`w-32 text-center border rounded ${bgColor} border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400`}
+											placeholder={`Player ${idx + 1}`}
+											value={name}
+											maxLength={15}
+											onChange={e => {
+												const updated = [...tournamentPlayers];
+												updated[idx] = e.target.value;
+												setTournamentPlayers(updated);
+											}}
+										/>
+									);
+								})}
+							</div>
 						)}
-						{pongConfig.local && !pongConfig.IA && (
+					</Card>
+					<Card maxWidth="1200px" maxHeight="400px" className="flex align-center justify-center gap-1">
+						<h1>{msg}</h1></Card>
+					<Card maxWidth="1200px" maxHeight="400px" className="flex align-center justify-center gap-1">
+						<div style={{ display: "flex", gap: "1em" }}>
 							<ArrowInput
-								value={String(playerKeysdown.p2)}
-								onChange={val => setPlayerKeysdown(keys => ({ ...keys, p2: val }))}
+								value={playerKeysup.p1}
+								onChange={val => setPlayerKeysup(keys => ({ ...keys, p1: val }))}
+								placeholder="Up Key player 1"
+							/>
+							<ArrowInput
+								value={playerKeysdown.p1}
+								onChange={val => setPlayerKeysdown(keys => ({ ...keys, p1: val }))}
 								placeholder="Down Key player 1"
 							/>
-						)}
-					</div>
+							{pongConfig.local && !pongConfig.IA && (
+								<ArrowInput
+									value={String(playerKeysup.p2)}
+									onChange={val => setPlayerKeysup(keys => ({ ...keys, p2: val }))}
+									placeholder="Up Key player 2"
+								/>
+							)}
+							{pongConfig.local && !pongConfig.IA && (
+								<ArrowInput
+									value={String(playerKeysdown.p2)}
+									onChange={val => setPlayerKeysdown(keys => ({ ...keys, p2: val }))}
+									placeholder="Down Key player 1"
+								/>
+							)}
+						</div>
+					</Card>
 					<Card maxWidth="1200px" maxHeight="400px" className="flex align-center justify-center gap-1">
 						<Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.4)" id="startBtn" onClick={handleStart}>
 							START : {pongConfig.start ? "ON" : "OFF"}

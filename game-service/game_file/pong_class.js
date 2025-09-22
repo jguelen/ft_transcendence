@@ -10,11 +10,12 @@ export class Team{
 }
 
 export class Player{
-	constructor(id, name, posx, base_up, base_down, connection){
+	constructor(id, global_id = -1, name = "", posx, base_up, base_down, connection){
+		this.id = id;
+		this.global_id = global_id;
 		this.name = name;
 		this.connection = connection;
 		this.hitbox = 2;
-		this.id = id;
 		this.posx = posx;
 		this.posy = HEIGHT / 2;
 		this.base_up = base_up;
@@ -128,6 +129,7 @@ export class GameProject{
 		this.speeding_mode = speeding_mode;
 		this.player_array = [];
 		this.player_name_array = [];
+		this.player_id_array = [];
 		this.player_case_array = [];
 		this.start = false;
 	}
