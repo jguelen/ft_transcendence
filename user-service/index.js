@@ -238,33 +238,7 @@ fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3000 }, (err) => {
 })
 
 
-function validateEmail(email) {
-
-	return String(email)
-    	.toLowerCase()
-    	.match(
-		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-};
-
-
-function validateUserName(userName) {
-
-	if (userName.length == 0)
-		return false
-	if (userName.length > 32)
-		return false
-	return true	
-};
-
-function validatePassword(password) {
-
-	if (password.length > 64)
-		return false
-
-	return true
-};
-
+//avirer
 async function checkUserNameDuplicate(userName) {
 console.log("checkUserNameDuplicate")
 console.log(userName)

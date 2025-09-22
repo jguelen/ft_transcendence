@@ -26,17 +26,19 @@ document.getElementById('sif_submitbutton').addEventListener('click', function(e
 		body: JSON.stringify( { userlogin:userLogin, password:password } )
 	})
 	.then( function(response) {
-		if (response.status != 200)
+console.error(response.status )
+		if (response.status == 500)
 			return response.json()
-		else return null
+		if (response.status == 200)
+			location.href = '/'
+		if (response.status == 401)
+			alert("Invalid user or password")
 	})
 	.then( function(data) {
-console.log(data)
-		if (data)
-			alert(data.msg)
-		else {
-			location.href = '/'
-		} 
+		if (data.msg)
+			location.href = `/error?login-error=${data.msg}`
+		else
+			location.href = `/error?login-error`
 	})
 	.catch( function(error) { console.error(error) })
 })

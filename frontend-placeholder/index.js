@@ -118,8 +118,12 @@ function getUser(user) {
 
 
 function sendAppPage_unconnected(req, res) {
-	
-	res.sendFile('index.html')
+
+	const user = getUser(req.user);
+	if(user == undefined)
+		return res.sendFile('index.html')
+
+	res.redirect('/')
 }
 
 function sendAppPage_protected(req, res) {
