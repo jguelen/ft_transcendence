@@ -5,6 +5,7 @@ const { USER_SERVICE_URL } = process.env;
 if (!USER_SERVICE_URL) {
 	throw new Error("Missing USER_SERVICE_URL env var");
 }
+console.log(USER_SERVICE_URL)
 
 const fastify = require('fastify')({ logger: false })
 const fastify_cookie = require('@fastify/cookie')
@@ -94,6 +95,7 @@ console.log(req.body);
 	const email = req.body.useremail
 	const name = req.body.username
 	const password = req.body.password
+		console.log(`${USER_SERVICE_URL}/api/user_getbyemail/${email}`);
 
 	try {
 		const pwHash = await bcrypt.hash(password, 12);
