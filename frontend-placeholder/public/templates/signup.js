@@ -36,7 +36,7 @@ document.getElementById('suf_submitbutton').addEventListener('click', function(e
 			method: 'POST',
 			credentials: 'include', // This sends cookies and other credentials
 			headers: {'Content-Type': 'application/json'},
-			body: JSON.stringify( {username:userName, useremail:userEmail, password:password})
+			body: JSON.stringify( {name:userName, email:userEmail, password:password})
 		})
 		.then( function(response) {
 			if (response.status != 200)
@@ -50,12 +50,6 @@ console.log(data)
 			else
 				location.href = '/';
 		})
-
-// 		.then( function(response) {return response.text() })
-// 		.then( function(msg) { 
-// 			if(msg != "") alert(msg)
-// // if(msg != "") alert(msg); else location.href = '/';
-// 		})
 		.catch( function(error) { console.error(error) });
 
 	} else alert("Et bah non, le nom ou le mot de pass est invalide !");

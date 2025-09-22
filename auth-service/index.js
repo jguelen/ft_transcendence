@@ -210,8 +210,10 @@ console.log(req.body);
 
 	try {
 		var	getbylogin_res = null
+
 		if (userlogin.includes('@')) {
 console.log("->email");
+
 			getbylogin_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${userlogin}`,
 			{
 				method: 'POST',
@@ -259,6 +261,7 @@ console.log(token)
 	}
 	catch (err) {
 console.log(err)
+// Revoir cette daube quand il y aura ngix
 		if (err.name == "API_Error")
 			res.status(500).send( { msg: err.message } )
 		else {
@@ -266,12 +269,12 @@ console.log(err)
 			res.status(500).send( { msg: null } )
 		}	
 //CORS sh!te ?#!à$
-		// if (err.name == "API_Error")
-		// 	res.redirect(`http://localhost:3000/error?login-error=${err.message}`)
-		// else {
-		// 	console.log(err)
-		// 	res.redirect(`http://localhost:3000/error?login-error`)
-		// }
+		//  if (err.name == "API_Error")
+		//  	res.redirect(`http://localhost:3000/error?login-error=${err.message}`)
+		//  else {
+		//  	console.log(err)
+		//  	res.redirect(`http://localhost:3000/error?login-error`)
+		//}
 	}
 })
 
@@ -280,9 +283,9 @@ fastify.post('/api/auth/signup', async (req, res) => {
 console.log('# /auth/signup');
 console.log(req.body);
 
-	const email = req.body.useremail
-	const name = req.body.username
-	const password = req.body.password
+	const {email, name, password} = req.body
+//	const name = req.body.username
+//	const password = req.body.password
 
 	try {
 		const pwHash = await bcrypt.hash(password, 12);
@@ -294,20 +297,29 @@ console.log(req.body);
 			body: JSON.stringify({
 				email: email,
 				name: name,
-				password: password,
+				password: pwHash,
 				api_passphrase: process.env.API_PASSPHRASE
 			})
 		});
 console.log(createuser_res.status);
-		if (createuser_res.status == 400) {
+		if (createuser_res.status == 400 || createuser_res.status == 500) {
 			const {msg} = await createuser_res.json()
 			throw API_Error(msg)
 		}
-		if (createuser_res.status == 404)
-			throw API_Error("db_error")
 
 		userData = await createuser_res.json()
 console.log(userData);
+
+		const token = jwt.sign( { userId: userData.id }, process.env.JWT_SECRET );
+
+console.log(token)
+
+		res.status(200).cookie("ft_transcendence_jwt", token, {
+			path: "/",
+			httpOnly: true,
+			sameSite: "none",
+			secure: true
+		}).send()
 
 
 /*		
@@ -346,7 +358,7 @@ console.log(token)
 			secure: true
 		}).send();*/
 	}
-	catch (error) {
+	catch (err) {
 		if (err.name == "API_Error")
 			res.status(500).send( { msg: err.message } )
 		else {

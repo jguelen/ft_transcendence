@@ -8,7 +8,7 @@ console.log(loggedUser)
 	const userName = location.href.substring(location.href.lastIndexOf('/') + 1);
 console.log(userName)
 
-		fetch(`http://localhost:3002/api/user/getbyname/${userName}`, {
+		fetch(`http://localhost:3002/api/user/getprofilebyname/${userName}`, {
 			method: 'GET',
 			credentials: 'include',
 		})

@@ -90,8 +90,7 @@ console.log(uniqueUserName);
 				data: { name: uniqueUserName, email, password }
 			})
 console.log(user);
-//			if (!user)
-//			 	return res.status(404).send();
+
 
 console.log('newuser created');
 
@@ -102,7 +101,7 @@ console.error('newuser pancarte');
 			console.log(err);
 			if (err.code = 'P2002')
 				return res.status(500).send( {msg: "email_exists"} );
-			res.status(500).send( {msg: "db_error"} );
+			res.status(500).send( {msg: "internal_error"} );
 		}
 	})
 

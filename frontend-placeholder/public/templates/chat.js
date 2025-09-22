@@ -12,7 +12,7 @@ console.log('Enter key pressed!');
 
 		const userName = document.getElementById('searchUserText').value.trim()
 
-		fetch(`http://localhost:3002/api/user/getbyname/${userName}`, {
+		fetch(`http://localhost:3002/api/user/getprofilebyname/${userName}`, {
 			method: 'GET',
 			credentials: 'include',
 		})

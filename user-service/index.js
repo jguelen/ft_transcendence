@@ -115,26 +115,6 @@ fastify.register(api_private_routes)
 
 
 /*
-fastify.get('/api/user/getbyemail/:email', {}, async function (req, res) {
-console.log("/api/user/getbyemail/:email");	
-console.log(req.params);
-
-	const value = req.params.email;
-	try {
-		var user = await prisma.user.findUnique({
-			where: { 
-				email: value
-			}
-		})
-		return res.send(user);
-	}
-	catch (error) {
-		res.status(500).send()
-	}
-})
-*/
-
-
 fastify.get('/api/user/getbyname/:name', {}, async function (req, res) {
 console.log("/api/user/getbyname/:name");	
 console.log(req.params);
@@ -164,8 +144,6 @@ console.error(error);
 })
 
 
-
-
 //!!
 fastify.get('/api/user/getbyid/:id', {}, async function (req, res) {
 console.log("/api/user/getbyid/:id");	
@@ -186,7 +164,7 @@ console.log(req.params);
 	}
 
 })
-
+*/
 
 fastify.post('/api/user/newuser', {}, async function (req, res) {
 console.log('# /newuser');
@@ -236,44 +214,3 @@ fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3000 }, (err) => {
 		process.exit(1)
 	}
 })
-
-
-//avirer
-async function checkUserNameDuplicate(userName) {
-console.log("checkUserNameDuplicate")
-console.log(userName)
-//	try {
-		var user = await prisma.user.findMany({
-			where: { 
-				name: userName
-			}
-		})
-console.log("checkUserNameDuplicate: 1")		
-console.log(user)
-		if (user.length == 0)
-			return userName
-
-		const altSuffixes = ["-1", "-2", "-3"]
-
-		for (let index = 0; index < altSuffixes.length; index++) {			
-			var alternateName = userName + altSuffixes[index];
-			var user = await prisma.user.findMany({
-				where: { 
-					name: alternateName
-				}
-			})
-console.log(`checkUserNameDuplicate: 2 - ${index}`)
-console.log(user)
-			if (user.length == 0)
-				return alternateName
-		}
-		return ""
-//	}
-// 	catch (error) {
-// console.log("Dupl catch")
-// 		throw new Error(error);
-// 	}
-};
-
-
-
