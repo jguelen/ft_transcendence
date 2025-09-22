@@ -165,10 +165,6 @@ export class Game {
 	//The iteration of the Game
 	async gameLoop() {
 		let now = Date.now();
-		try{
-			if (inputdata.type === 'keydown') inputpressed(inputdata.key, connection);
-			if (inputdata.type === 'keyup') inputrelease(inputdata.key, connection);
-		} catch (e) {}
 		for (let team of this.teams){
 			if (team.score >= this.MAX_SCORE){
 				this.timeend = Date.now();

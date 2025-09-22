@@ -3,7 +3,6 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import ArrowInput from '../components/ArrowInput';
 import {PongGameService} from '../game/display_pong';
-import './pong.css';
 
 export default function PongGame({config}: {config : any}) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -26,8 +25,10 @@ export default function PongGame({config}: {config : any}) {
 
 	useEffect(() => {
 		if (canvasRef.current) {
+			console.log("test connexion");
 			serviceRef.current = new PongGameService(canvasRef.current);
 			serviceRef.current.enableKeyboardListeners();
+			console.log(serviceRef);
 		}
 		return () => {
 			if (serviceRef.current?.ws) {
@@ -42,6 +43,9 @@ export default function PongGame({config}: {config : any}) {
 		if (serviceRef.current?.ws) {
 			const onMessage = (event: any) => {
 				const data = JSON.parse(event.data);
+				if (data.type === 'matchtitle') {
+					setMsg((msg : string) => (data.msg));
+				}
 				if (data.type === 'end') {
 					setPongConfig((cfg : any) => ({ ...cfg, start: false }));
 					setMsg((msg : string) => (data.msg));
@@ -65,9 +69,16 @@ export default function PongGame({config}: {config : any}) {
 
 				serviceRef.current.draw_start(pongConfig.custom_mode);
 
-				serviceRef.current.ws.send(
-					JSON.stringify({ type: "gamesearch", gameparam: pongConfig, keys: keys })
-				);
+				const trySend = () => {
+					if (serviceRef.current.myId) {
+						serviceRef.current.ws.send(
+							JSON.stringify({ type: "gamesearch", gameparam: pongConfig, keys: keys })
+						);
+					} else {
+						setTimeout(trySend, 50);
+					}
+				};
+				trySend();
 			}
 		}
 	}
@@ -97,6 +108,18 @@ export default function PongGame({config}: {config : any}) {
 						<Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.4)" id="speedingModeBtn"onClick={handleSpeedingMode}>
 							Speeding mode : {pongConfig.speeding_mode ? "ON" : "OFF"}
 						</Button>
+						{pongConfig.IA && (
+							<>
+								<input style={{ width: "8em", textAlign: "center" }} >Player 1</input>
+								<input style={{ width: "8em", textAlign: "center" }} >Player 2</input>
+								<input style={{ width: "8em", textAlign: "center" }} >Player 3</input>
+								<input style={{ width: "8em", textAlign: "center" }} >Player 4</input>
+								<input style={{ width: "8em", textAlign: "center" }} >Player 5</input>
+								<input style={{ width: "8em", textAlign: "center" }} >Player 6</input>
+								<input style={{ width: "8em", textAlign: "center" }} >Player 7</input>
+								<input style={{ width: "8em", textAlign: "center" }} >Player 8</input>
+							</>
+						)}
 						{pongConfig.IA && (
 							<>
 								<label htmlFor="iaDiff">Difficulté IA :</label>
@@ -146,6 +169,7 @@ export default function PongGame({config}: {config : any}) {
 					</Card>
 				</>
 			)}
+			<h1 style={{ display: pongConfig.start ? "block" : "none" }}>{msg}</h1>
 			<canvas ref={canvasRef} id="pong" width={800} height={600} style={{ display: pongConfig.start ? "block" : "none" }}></canvas>
 		</div>
 	);

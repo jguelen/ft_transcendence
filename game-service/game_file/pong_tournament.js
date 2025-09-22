@@ -6,10 +6,11 @@ import {WIDTH} from './pong_constant.js';
 const pos = [6, WIDTH - 6];
 
 export class Tournament{
-	constructor(clients, operator, players, custom, IA_diff, speeding_mode){
+	constructor(clients, operator, players, players_keys, custom, IA_diff, speeding_mode){
 		this.clients = clients;
 		this.operator = operator;
 		this.players = players;
+		this.players_keys = players_keys;
 		this.groups = this.make_group();
 		this.custom = custom;
 		this.IA_diff = IA_diff;
@@ -47,9 +48,10 @@ export class Tournament{
 		return (groups_temp);
 	}
 	async match(idx1, idx2){
+		this.clients[0].connection.send(JSON.stringify({ type: 'matchtitle', msg: String(this.players[idx1].name + " VS "+ this.players[idx2].name) }));
 		console.log(this.players[idx1].name , "VS", this.players[idx2].name)
-		const players_data = [new Player(this.clients[0].id, pos[0], 'w', 's', this.clients[0].connection),
-						new Player(this.clients[0].id, pos[1], 'ArrowUp', 'ArrowDown', this.clients[0].connection)];
+		const players_data = [new Player(this.clients[0].id, this.players[idx1].name, pos[0], this.players_keys[0].keyup, this.players_keys[0].keydown, this.clients[0].connection),
+						new Player(this.clients[0].id, this.players[idx2].name, pos[1], this.players_keys[1].keyup, this.players_keys[1].keydown, this.clients[0].connection)];
 		this.gameInstance = new Game(this.operator, false, players_data, this.custom, this.IA_diff, this.speeding_mode);
 		let data = await this.gameInstance.startGame();
 		if (data.winner == "team1"){
@@ -81,9 +83,11 @@ export class Tournament{
 	}
 	async tournament(){
 		if (this.groups == null) return ;
+
 		let winneridx = null;
 		while (typeof winneridx != typeof 1)
 			winneridx = await this.choose_game(this.groups);
+
 		this.players[winneridx].rank = this.rank;
 		console.log("The Great Winner of the Tournament is :", this.players[winneridx].name);
 		console.log("Ranking :");
