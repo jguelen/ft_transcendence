@@ -7,9 +7,10 @@ import clsx from 'clsx'
 interface ListItem
 {
   victory: boolean;
-  playerName: string;
+  oponentName: string;
   score: string;
   time_since: string;
+  team: boolean;
 }
 
 interface ScrollableListProps
@@ -40,7 +41,7 @@ const ScrollableList = ({ items }: ScrollableListProps) => {
               </h1>
             </span>
             <h2 className="font-inter font-semibold text-subtitle text-white">
-             VS {item.playerName}</h2>
+             VS {item.oponentName}{item.team ? "’s teams" : ""}</h2>
           </div>
           <div className="flex flex-col justify-center items-end pr-[10px]">
             <h2 className="font-inter font-semibold text-subtitle text-white">
@@ -57,40 +58,57 @@ const ScrollableList = ({ items }: ScrollableListProps) => {
   );
 };
 
-const fetchItemsFromAPI = async (): Promise<ListItem[]> => {
-  console.log("Appel API simule...");
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve(
-        Array.from({ length: 20 }, (_, i) => ({
-          victory: i % 2 == 0 ? true : false,
-          playerName: i % 2 == 0 ? "Winner" : "Loser",
-          score: i % 2 == 0 ? "2-0" : "0-9",
-          time_since: "2h"
-        }))
-      );
-    }, 1000);
+//ATTENTION changer le mdp JWT
+const API_URL = `http://${window.location.hostname}:3000/api/game/matches`;
+export async function fetchItemsFromAPI(
+  playerId: string,
+  jwtToken: string
+  ): Promise<{ items: ListItem[], win_nbr: number, loose_nbr: number }> {
+  const response = await fetch(`${API_URL}/${playerId}`, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${jwtToken}`,
+      "Content-Type": "application/json"
+    },
   });
-};
+
+  if (!response.ok) {
+    throw new Error("API error: " + response.status);
+  }
+  const data = await response.json();
+  return ({
+      items : data.iddata_array.map((item: any) => ({
+        victory: item.victory,
+        oponentName: item.oponentName,
+        score: item.score,
+        time_since: `${item.time_since}h`,
+        team : item.team })),
+      win_nbr: data.win_nbr,
+      loose_nbr: data.loose_nbr
+  });
+}
 
 function Profile()
 {
   const [items, setItems] = useState<ListItem[]>([]);
+  const [win_nbr, setWinNbr] = useState<number>(0);
+  const [loose_nbr, setLooseNbr] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetchItemsFromAPI()
-      .then(data =>
-      {
-        setItems(data);
-        setIsLoading(false);
-      })
-      .catch(error =>
-      {
+  fetchItemsFromAPI("0", "your_jwt_secret_key_change_this_in_production")
+    .then(data => {
+      setItems(data.items);
+      setWinNbr(data.win_nbr);
+      setLooseNbr(data.loose_nbr);
+      setIsLoading(false);
+    })
+      .catch(error => {
         console.error("Error during data fetch", error);
         setIsLoading(false);
       });
   }, []);
+
   return (
     <div className="contents">
       <Navbar activeMenu='profile' className='col-start-1 row-start-1'/>
@@ -104,7 +122,7 @@ function Profile()
         flex justify-center items-center gap-3">
         <img src="/icons/lightning.svg" className="w-[66px] h-[66px]"/>
         <span className="flex flex-col justify-center items-center">
-          <h1 className="font-inter text-white font-semibold text-[32px]">58</h1>
+          <h1 className="font-inter text-white font-semibold text-[32px]">{String(loose_nbr)}</h1>
           <h2 className="font-inter text-text font-semibold text-subtitle">Defeats</h2>
         </span>
       </Card>
@@ -113,7 +131,7 @@ function Profile()
         <img src="/icons/trophy.svg" className="w-[66px] h-[66px]"/>
         <span className="flex flex-col justify-center items-center">
           <h1 className="font-inter text-white font-semibold text-[32px]">
-            156
+            {String(win_nbr)}
           </h1>
           <h2 className="font-inter text-text font-semibold text-subtitle">
             Victories

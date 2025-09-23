@@ -8,10 +8,37 @@ import * as utils from './pong_web_utils.js';
 import Fastify from 'fastify';
 import websocketPlugin from '@fastify/websocket';
 import fastifyStatic from '@fastify/static';
+import fastifyCors from '@fastify/cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 import Database from 'better-sqlite3';
+
+//JWT
+import jwt from 'jsonwebtoken';
+
+const { JWT_SECRET } = process.env
+
+
+function verifyJWT(request, reply, done) {
+	const authHeader = request.headers['authorization'];
+	if (!authHeader) {
+		reply.status(401).send({ error: 'Authorization header missing' });
+		return;
+	}
+	const token = authHeader.split(' ')[1];
+	if (!token) {
+		reply.status(401).send({ error: 'Token missing' });
+		return;
+	}
+	try {
+		const decoded = jwt.verify(token, JWT_SECRET);
+		request.user = decoded;
+		done();
+	} catch (err) {
+		reply.status(401).send({ error: 'Invalid token' });
+	}
+}
 
 //Database
 const database = new Database('/app/data/pong_database.db');
@@ -50,10 +77,71 @@ const __dirname = path.dirname(__filename);
 
 const fastify = Fastify();
 
+await fastify.register(fastifyCors, { origin: true });
 await fastify.register(websocketPlugin);
 await fastify.register(fastifyStatic, {
   root: path.join(__dirname, 'game'),
   prefix: '/',
+});
+
+fastify.get('/api/game/matches/:id', { preHandler: verifyJWT }, async (request, reply) => {
+	const id = request.params.id;
+	const id_rows = database.prepare(`
+		SELECT * FROM matches
+		WHERE player1 LIKE ?
+			OR player2 LIKE ?
+			OR player3 LIKE ?
+			OR player4 LIKE ?
+		ORDER BY date DESC
+	`).all(`%"id":${id}%`, `%"id":${id}%`, `%"id":${id}%`, `%"id":${id}%`);
+	if (!id_rows || id_rows.length === 0) {
+		reply.status(404).send({ error: "Match not found" });
+		return;
+	}
+	let iddata_array = [];
+	let win_nbr = 0;
+	let loose_nbr = 0;
+	let len = 0;
+	id_rows.forEach(row => {
+		let player1 = row.player1 ? JSON.parse(row.player1) : null;
+        let player2 = row.player2 ? JSON.parse(row.player2) : null;
+        let player3 = row.player3 ? JSON.parse(row.player3) : null;
+        let player4 = row.player4 ? JSON.parse(row.player4) : null;
+        let winner1 = row.winner1 ? JSON.parse(row.winner1) : null;
+        let winner2 = row.winner2 ? JSON.parse(row.winner2) : null;
+        let looser1 = row.looser1 ? JSON.parse(row.looser1) : null;
+
+		let win = false;
+		let team = 0;
+		if (winner1.id == id || winner2.id == id){
+			win = true;
+			win_nbr++;
+		} else {
+			loose_nbr++;
+		}
+		if (len < 20){
+			if (player1.id == id || player3.id == id)
+				team = 1;
+			else if (player2.id == id || player4.id == id)
+				team = 2;
+			if (team == 0) {
+				return;
+			}
+			const lastDate = new Date(date.replace(' ', 'T'));
+			const now = Date.now();
+			const diffMs = now - lastDate.getTime();
+			const diffHours = diffMs / 1000 / 60 / 60;
+			let iddata = {
+				victory : win,
+				oponentName : (win) ? looser1.name : winner1.name,  
+				score : (team == 1) ? team1_score : team2_score,
+				time_since : Math.round(diffHours * 100) / 100,
+				team : (player3 != null && player4 != null) ? true : false
+			}
+			iddata_array.push(iddata);
+		}
+	})
+	reply.send({iddata_array, win_nbr, loose_nbr});
 });
 
 fastify.register(async function (fastify){
