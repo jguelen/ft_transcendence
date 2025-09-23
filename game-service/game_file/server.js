@@ -84,7 +84,9 @@ await fastify.register(fastifyStatic, {
   prefix: '/',
 });
 
-fastify.get('/api/game/matches/:id', { preHandler: verifyJWT }, async (request, reply) => {
+//Put the alias of logged user instead of saved name
+//{ preHandler: verifyJWT },
+fastify.get('/api/game/matches/:id', async (request, reply) => {
 	const id = request.params.id;
 	const id_rows = database.prepare(`
 		SELECT * FROM matches
@@ -103,6 +105,7 @@ fastify.get('/api/game/matches/:id', { preHandler: verifyJWT }, async (request, 
 	let loose_nbr = 0;
 	let len = 0;
 	id_rows.forEach(row => {
+		console.log("test4");
 		let player1 = row.player1 ? JSON.parse(row.player1) : null;
         let player2 = row.player2 ? JSON.parse(row.player2) : null;
         let player3 = row.player3 ? JSON.parse(row.player3) : null;
@@ -111,31 +114,54 @@ fastify.get('/api/game/matches/:id', { preHandler: verifyJWT }, async (request, 
         let winner2 = row.winner2 ? JSON.parse(row.winner2) : null;
         let looser1 = row.looser1 ? JSON.parse(row.looser1) : null;
 
+		console.log("test3");
 		let win = false;
+		console.log("test loose2.7");
 		let team = 0;
-		if (winner1.id == id || winner2.id == id){
+		console.log("test loose2.5");
+		if ((winner1 && winner1.id == id) || (winner2 && winner2.id == id)){
+			console.log("test win1");
 			win = true;
 			win_nbr++;
+			console.log("test win2");
 		} else {
+			console.log("test loose1");
 			loose_nbr++;
+			console.log("test loose2");
 		}
+		console.log("test2");
 		if (len < 20){
-			if (player1.id == id || player3.id == id)
+			if ((player1 && player1.id == id) || (player3 && player3.id == id))
 				team = 1;
-			else if (player2.id == id || player4.id == id)
+			else if ((player2 && player2.id == id) || (player4 && player4.id == id))
 				team = 2;
 			if (team == 0) {
 				return;
 			}
-			const lastDate = new Date(date.replace(' ', 'T'));
+			const lastDate = new Date(row.date.replace(' ', 'T'));
 			const now = Date.now();
 			const diffMs = now - lastDate.getTime();
 			const diffHours = diffMs / 1000 / 60 / 60;
+
+			let time_since = "";
+			if (diffHours < 1) {
+				const diffMins = Math.floor(diffMs / 1000 / 60);
+				time_since = diffMins + "min";
+			} else {
+				time_since = Math.floor(diffHours) + "h";
+			}
+
+			let oponentName = "Unknown";
+			if (win) {
+				oponentName = looser1 && looser1.name ? looser1.name : "Unknown";
+			} else {
+				oponentName = winner1 && winner1.name ? winner1.name : "Unknown";
+			}
 			let iddata = {
 				victory : win,
-				oponentName : (win) ? looser1.name : winner1.name,  
-				score : (team == 1) ? team1_score : team2_score,
-				time_since : Math.round(diffHours * 100) / 100,
+				oponentName : oponentName,  
+				score : (team == 1) ? String(row.team1_score + " - " + row.team2_score) : String(row.team2_score + " - " + row.team1_score),
+				time_since : time_since,
 				team : (player3 != null && player4 != null) ? true : false
 			}
 			iddata_array.push(iddata);

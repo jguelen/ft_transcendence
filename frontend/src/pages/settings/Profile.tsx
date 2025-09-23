@@ -26,7 +26,7 @@ const ScrollableList = ({ items }: ScrollableListProps) => {
        (
         <div className="flex justify-between items-center w-full h-[79px] border
          border-cyan_darkend rounded-small p-[10px]">
-          <div className="flex w-full h-full justify-start items-center gap-2">
+          <div className="flex w-[280px] h-full justify-start items-center gap-2">
             <span className={clsx
               (
                 "rounded-small w-[120px] h-[47px]",
@@ -81,7 +81,7 @@ export async function fetchItemsFromAPI(
         victory: item.victory,
         oponentName: item.oponentName,
         score: item.score,
-        time_since: `${item.time_since}h`,
+        time_since: item.time_since,
         team : item.team })),
       win_nbr: data.win_nbr,
       loose_nbr: data.loose_nbr
