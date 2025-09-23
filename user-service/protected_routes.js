@@ -1,4 +1,4 @@
-
+// protected_routes.js
 
 const { prisma } = require('./index.js')
 
@@ -575,11 +575,40 @@ console.log(req.params);
 
 			return res.status(200).send();
 		}
-		catch (error) {
-			console.error(error);
+		catch (err) {
+			console.error(err);
 			res.status(500)
 		}
 	})
+
+fastify_instance.get('/api/user/getprofilebyname/:name',  { preHandler: [verifyJWT] }, async function (req, res) {
+console.log("/api/user/getprofilebyname/:name");	
+console.log(req.params);
+
+	const value = req.params.name;
+	try {
+		var user = await prisma.user.findMany({
+			where: { 
+				name: value
+			}
+		})
+
+console.log("result");
+		if (user.length == 0)
+			return res.status(200).send({});
+
+console.log(user[0]);
+
+		const userData = {id:user[0].id, name:value, rank:user[0].rank}
+
+		return res.status(200).send(userData);
+	}
+	catch (err) {
+console.error(err);
+		res.status(500).send()
+	}
+})
+
 
 
 	next()

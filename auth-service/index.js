@@ -2,6 +2,7 @@
 // npm i bcrypt jsonwebtoken
 // npm i @fastify/oauth2
 
+// npm i fastify @fastify/cookie @fastify/jwt @fastify/oauth2 bcrypt jsonwebtoken @fastify/oauth2
 
 const { USER_SERVICE_URL } = process.env;
 if (!USER_SERVICE_URL) {
@@ -15,6 +16,13 @@ const bcrypt = require('bcrypt');
 const fastifyOauth2 = require("@fastify/oauth2");
 
 
+function API_Error(message) {
+	const err = new Error(message)
+	err.name =  "API_Error";
+	return err			
+}
+
+
 // Cookies
 fastify.register(fastify_cookie, {
   secret: process.env.JWT_SECRET,
@@ -22,30 +30,29 @@ fastify.register(fastify_cookie, {
 })
 
 // OAuth
-	const startRedirectPath = `/login/github`;
-	const callbackUri = `http://localhost:3001/login/github/callback`;
+const startRedirectPath = `/login/github`
+const callbackUri = `http://localhost:3001/login/github/callback`
 
 fastify.register(fastifyOauth2, {
-  name: 'githubOAuth2',
-  scope: ["user:email", "read:user"],
+	name: 'githubOAuth2',
+	scope: ["user:email", "read:user"],
 	credentials: {
-	  client: {
-		id: process.env.GITHUB_OAUTH_ID,
-		secret: process.env.GITHUB_OAUTH_SECRET,
-	  },
-	  auth: fastifyOauth2.GITHUB_CONFIGURATION,    
+		client: {
+			id: process.env.GITHUB_OAUTH_ID,
+			secret: process.env.GITHUB_OAUTH_SECRET,
+		},
+		auth: fastifyOauth2.GITHUB_CONFIGURATION
 	},
 	startRedirectPath,
 	callbackUri,
 });
 
 
-
 // Temporary due to CORS sh!te
 fastify.addHook('preHandler', (req, res, next) => {
 console.log("hohohoho");
 
-	res.header("Access-Control-Allow-Origin", "http://localhost:3000")
+	res.header("Access-Control-Allow-Origin", "http://localhost:4000")
 	res.header("Access-Control-Allow-Credentials", true)
 
 	const isPreflight = /options/i.test(req.method);
@@ -80,18 +87,24 @@ console.log(user);
       		Accept: "application/vnd.github+json",
       		Authorization: `Bearer ${token.access_token}`,
       		"X-GitHub-Api-Version": "2022-11-28"}
-  });
+	});
 
   	const emails = await res.json();
 console.log(emails);
+
+	if (emails.length >= 2)
+		if (emails[1].email == "testtest@notrealthisisa.test")
+			return { fullName: "Dev-test", email: "a@a.a" }
 
 	const primary_verified_emails =
 		emails.filter((item) => { return item.primary && item.verified } )
 
 console.log(primary_verified_emails);
-	const email = (primary_verified_emails.length != 0) ? primary_verified_emails[0].email : null
+	const email = (primary_verified_emails.length != 0)
+		? primary_verified_emails[0].email
+		: null
 
-	return { fullName: user.name, email: email };
+	return { fullName: user.name, email: email }
 }
 
 
@@ -101,17 +114,15 @@ fastify.get(`/login/github/callback`, async function (req, res) {
 //throw (Error("test"));
 		const { token } = await this.githubOAuth2.getAccessTokenFromAuthorizationCodeFlow(req);
 		if (!token)
-			throw (Error("no github token"));
+			throw API_Error("no_github_token")
 
-//console.log(`token.access_token`)
+		const gh_user = await getGitHubUserDetails(token)
 
-		const user = await getGitHubUserDetails(token)
+console.log(gh_user);
+		if (!gh_user?.email)
+			throw API_Error("cannot_get_email")
 
-console.log(user);
-		if (!user.email)
-			throw (Error("cannot get email"));
-
-		const response = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${user.email}`,
+		const getbyemail_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${gh_user.email}`,
 		{
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -120,22 +131,70 @@ console.log(user);
             })
         })
 
-		const userData = await response.json();
+		if (![200, 404].includes(getbyemail_res.status))
+			throw API_Error(`user_service_error_${getbyemail_res.status}`)
 
+		var userData = null
+		if (getbyemail_res.status == 200) {
+		// Sign in existing user
+			userData = await getbyemail_res.json()
+
+//console.log("UU");
+console.log(userData);
+//console.log("UU");
+		}
+	
+		if (getbyemail_res.status == 404) {
+		// Sign up a new user
+console.log("Sign up a new user");
+			const createuser_res = await fetch(`${USER_SERVICE_URL}/api/user/createuser`,
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					email: gh_user.email,
+					name: gh_user.fullName,
+					password: null,
+					api_passphrase: process.env.API_PASSPHRASE
+				})
+			});
+console.log(createuser_res.status);
+			if (createuser_res.status == 400) {
+				const {msg} = await createuser_res.json()
+				throw API_Error(msg)
+			}
+			if (createuser_res.status == 404)
+				throw API_Error("db_error")
+
+			userData = await createuser_res.json()
 console.log(userData);
 
+		}
 
+		const session_token = jwt.sign( { userId: userData.id },
+			process.env.JWT_SECRET, { expiresIn: '24h' });
+console.log(session_token)
+//		res.status(200).cookie("ft_transcendence_jwt", session_token, {
+		res.cookie("ft_transcendence_jwt", session_token, {
+			path: "/",
+			httpOnly: true,
+			sameSite: "none",
+			secure: true
+		}).redirect("http://localhost:3000/login")
+//		}).redirect("http://localhost:3000/login?oauth=true")
 
-
-		return { access_token: token.access_token };
+//		return { access_token: token.access_token }
 	}
 	catch(err) {
-		console.log(err)
-		return res.redirect("http://localhost:3000/error")
+//		console.error(`${err.name}: ${err.message}`);
+		if (err.name == "API_Error")
+			res.redirect(`http://localhost:3000/error?oauth-error=${err.message}`)
+		else {
+			console.log(err)
+			res.redirect(`http://localhost:3000/error?oauth-error`)
+		}
 	}
 });
-
-
 
 
 
@@ -143,24 +202,52 @@ fastify.post('/api/auth/login', async (req, res) => {
 console.log('# /auth/login');
 console.log(req.body);
 
+	const userlogin = req.body.userlogin
 	const email = req.body.userlogin
 	const password = req.body.password
 
+//	const { userlogin, password} = req.body
+
 	try {
-		const response = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${email}`);
-console.log(response);
+		var	getbylogin_res = null
 
-		const userData = await response.json();
+		if (userlogin.includes('@')) {
+console.log("->email");
 
+			getbylogin_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${userlogin}`,
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					api_passphrase: process.env.API_PASSPHRASE,
+				})
+			})
+		}
+		else {
+console.log("->name");
+			getbylogin_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyname/${userlogin}`,
+			{
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					api_passphrase: process.env.API_PASSPHRASE,
+				})
+			})
+		}
+
+		if (getbylogin_res.status == 404)
+			return res.status(401).send()
+		if (getbylogin_res.status != 200)
+			throw API_Error(`user_service_error_${getbylogin_res.status}`)
+
+		const userData = await getbylogin_res.json();
 console.log(userData);
-
-		if (!userData)
-			return res.status(401).send( {msg: "Invalid user or password"} );
-
+// throw API_Error("test")
+//throw Error("iii")
 		if (!await bcrypt.compare(password, userData.password))
-			return res.status(401).send( {msg: "Invalid user or password"} );
+			return res.status(401).send();
 
-		const token = jwt.sign( { userId: userData.id }, process.env.JWT_SECRET );
+		const token = jwt.sign( { userId: userData.id }, process.env.JWT_SECRET, { expiresIn: '24h' });
 
 console.log(token)
 
@@ -172,25 +259,70 @@ console.log(token)
 		}).send();
 
 	}
-	catch (error) {
-console.error(error);
-		return res.status(500).send( {msg: "Internal error"} );
+	catch (err) {
+console.log(err)
+// Revoir cette daube quand il y aura ngix
+		if (err.name == "API_Error")
+			res.status(500).send( { msg: err.message } )
+		else {
+			console.log(err)
+			res.status(500).send( { msg: null } )
+		}	
+//CORS sh!te ?#!à$
+		//  if (err.name == "API_Error")
+		//  	res.redirect(`http://localhost:3000/error?login-error=${err.message}`)
+		//  else {
+		//  	console.log(err)
+		//  	res.redirect(`http://localhost:3000/error?login-error`)
+		//}
 	}
 })
-
 
 
 fastify.post('/api/auth/signup', async (req, res) => { 
 console.log('# /auth/signup');
 console.log(req.body);
 
-	const email = req.body.email
-	const name = req.body.name
-	const password = req.body.password
+	const {email, name, password} = req.body
+//	const name = req.body.username
+//	const password = req.body.password
 
 	try {
 		const pwHash = await bcrypt.hash(password, 12);
 
+		const createuser_res = await fetch(`${USER_SERVICE_URL}/api/user/createuser`,
+		{
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({
+				email: email,
+				name: name,
+				password: pwHash,
+				api_passphrase: process.env.API_PASSPHRASE
+			})
+		});
+console.log(createuser_res.status);
+		if (createuser_res.status == 400 || createuser_res.status == 500) {
+			const {msg} = await createuser_res.json()
+			throw API_Error(msg)
+		}
+
+		userData = await createuser_res.json()
+console.log(userData);
+
+		const token = jwt.sign( { userId: userData.id }, process.env.JWT_SECRET );
+
+console.log(token)
+
+		res.status(200).cookie("ft_transcendence_jwt", token, {
+			path: "/",
+			httpOnly: true,
+			sameSite: "none",
+			secure: true
+		}).send()
+
+
+/*		
 		const response = await fetch(`${USER_SERVICE_URL}/api/user/newuser`,
 		{
 			method: 'POST',
@@ -224,11 +356,15 @@ console.log(token)
 			httpOnly: true,
 			sameSite: "none",
 			secure: true
-		}).send();
+		}).send();*/
 	}
-	catch (error) {
-console.error(error);
-		return res.status(500).send( {msg: "Internal error"} );
+	catch (err) {
+		if (err.name == "API_Error")
+			res.status(500).send( { msg: err.message } )
+		else {
+			console.log(err)
+			res.status(500).send( { msg: null } )
+		}
 	}
 })
 
