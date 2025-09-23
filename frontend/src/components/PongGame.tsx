@@ -5,8 +5,8 @@ import ArrowInput from '../components/ArrowInput';
 import Input from '../components/Input';
 import {PongGameService} from '../game/display_pong';
 
-const player_id = 0;
-const player_name = "";
+const player_id = 8;
+const player_name = "Test";
 
 class MokeUser{
 	name : string;
