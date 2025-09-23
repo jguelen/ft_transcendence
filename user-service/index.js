@@ -1,3 +1,5 @@
+// index.js
+
 // npm i fastify
 // npm i sqlite3
 // npm i prisma --save-dev
@@ -17,8 +19,10 @@
 //DATABASE_URL="file:./users_db.db"; npx prisma migrate dev --name init
 //npx prisma migrate reset
 
+// npm i fastify @fastify/cookie @fastify/jwt sqlite3 bcrypt jsonwebtoken prisma --save-dev
 
-/* 9 6
+
+/*
 
 const fastify = require('fastify')({ logger: false })
 const fastify_static = require('@fastify/static')
@@ -104,76 +108,13 @@ fastify.register(fastify_cookie, {})
 exports.prisma = prisma
 
 const {protected_routes} = require('./protected_routes.js')
-
+const {api_private_routes} = require('./api_private_routes.js')
 
 fastify.register(protected_routes)
-
-
-
-//exports.protected_routes = function(fastify_instance, options, next) {
-const api_private_routes = function(fastify_instance, options, next) {
-
-    fastify_instance.addHook('preValidation', (req, res, done) =>  {
-console.log(req.body);	
-
-        if (req.body?.api_passphrase != process.env.API_PASSPHRASE) {
-console.log("api_private_routes");	
-            return res.status(404).send();
-		}
-		done()
-    })
-
-
-	fastify_instance.post('/api/user/getbyemail/:email', {}, async function (req, res) {
-console.log("POST /api/user/getbyemail/:email");
-console.log(req.params.email);
-
-		const value = req.params.email;
-		try {
-			var user = await prisma.user.findUnique({
-				where: { 
-					email: value
-				}
-			})
-console.log(user)
-			return res.send(user)
-		}
-		catch (error) {
-			console.log(error)
-			res.status(500).send()
-		}
-	})
-
-	next()
-}
-
-	// try {
 fastify.register(api_private_routes)
-	// }
-	// catch (error) {
-	// 	console.log(error)
-	// 	res.status(500).send()
-	// }
 
 
-fastify.get('/api/user/getbyemail/:email', {}, async function (req, res) {
-console.log("/api/user/getbyemail/:email");	
-console.log(req.params);
-
-	const value = req.params.email;
-	try {
-		var user = await prisma.user.findUnique({
-			where: { 
-				email: value
-			}
-		})
-		return res.send(user);
-	}
-	catch (error) {
-		res.status(500).send()
-	}
-})
-
+/*
 fastify.get('/api/user/getbyname/:name', {}, async function (req, res) {
 console.log("/api/user/getbyname/:name");	
 console.log(req.params);
@@ -203,8 +144,6 @@ console.error(error);
 })
 
 
-
-
 //!!
 fastify.get('/api/user/getbyid/:id', {}, async function (req, res) {
 console.log("/api/user/getbyid/:id");	
@@ -225,10 +164,9 @@ console.log(req.params);
 	}
 
 })
-
+*/
 
 fastify.post('/api/user/newuser', {}, async function (req, res) {
-
 console.log('# /newuser');
 console.log(req.body);
 
@@ -241,11 +179,11 @@ console.log(req.body);
 //		if (!validateEmail(email))
 //			return res.status(404).send( {} );
 
-		if (!validatePassword(password))
-		 	return res.status(404).send();
+		// if (!validatePassword(password))
+		//  	return res.status(404).send();
 
-		if (!validateUserName(name))
-			return res.status(404).send();
+		// if (!validateUserName(name))
+		// 	return res.status(404).send();
 
 		uniqueUserName = await checkUserNameDuplicate(name)
 console.log("uniqueUserName");
@@ -276,70 +214,3 @@ fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3000 }, (err) => {
 		process.exit(1)
 	}
 })
-
-
-function validateEmail(email) {
-
-	return String(email)
-    	.toLowerCase()
-    	.match(
-		/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    );
-};
-
-
-function validateUserName(userName) {
-
-	if (userName.length == 0)
-		return false
-	if (userName.length > 32)
-		return false
-	return true	
-};
-
-function validatePassword(password) {
-
-	if (password.length > 64)
-		return false
-
-	return true
-};
-
-async function checkUserNameDuplicate(userName) {
-console.log("checkUserNameDuplicate")
-console.log(userName)
-//	try {
-		var user = await prisma.user.findMany({
-			where: { 
-				name: userName
-			}
-		})
-console.log("checkUserNameDuplicate: 1")		
-console.log(user)
-		if (user.length == 0)
-			return userName
-
-		const altSuffixes = ["-1", "-2", "-3"]
-
-		for (let index = 0; index < altSuffixes.length; index++) {			
-			var alternateName = userName + altSuffixes[index];
-			var user = await prisma.user.findMany({
-				where: { 
-					name: alternateName
-				}
-			})
-console.log(`checkUserNameDuplicate: 2 - ${index}`)
-console.log(user)
-			if (user.length == 0)
-				return alternateName
-		}
-		return ""
-//	}
-// 	catch (error) {
-// console.log("Dupl catch")
-// 		throw new Error(error);
-// 	}
-};
-
-
-

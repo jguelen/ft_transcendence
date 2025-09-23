@@ -67,15 +67,15 @@ function Register()
       return;
     }
 
-    const passwordErrors = validatePassword(password, t);
+    // const passwordErrors = validatePassword(password, t);
 
-    if (passwordErrors.length > 0)
-    {
-      console.log({passwordErrors})
-      setError(passwordErrors.join(' ')); 
-      setLoadingSubmit(false);
-      return;
-    }
+    // if (passwordErrors.length > 0)
+    // {
+    //   console.log({passwordErrors})
+    //   setError(passwordErrors.join(' ')); 
+    //   setLoadingSubmit(false);
+    //   return;
+    // }
 
     if (password != repassword)
     {
