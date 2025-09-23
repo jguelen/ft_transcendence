@@ -17,6 +17,9 @@ services:
     ports:
       - "3001:3001"
     environment:
+      - export GITHUB_OAUTH_ID="id"
+      - export GITHUB_OAUTH_SECRET="secret"
+      - export API_PASSPHRASE="huhuhuhahahihi"
       - PORT=3001
       - JWT_SECRET="your_jwt_secret_key_change_this_in_production"
       - USER_SERVICE_URL=http://user-service:3002
@@ -32,7 +35,9 @@ services:
       - "3002:3002"
     environment:
       - DATABASE_URL=file:./data/users_db.db
-      - AUTH_SERVICE_URL=http://auth_service:3001
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - export API_PASSPHRASE="huhuhuhahahihi"
+      - export JWT_SECRET="your_jwt_secret_key_change_this_in_production"
       - PORT=3002
     restart: unless-stopped
     volumes:

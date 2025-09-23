@@ -4,7 +4,6 @@ import Input from '../../components/Input';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { signup, login } from '../../services/authService';
 
 function Register()
 {
@@ -85,26 +84,29 @@ function Register()
       setLoadingSubmit(false);
       return;
     }
-    
-    try
-    {
-       // 1. On tente d'inscrire l'utilisateur
-      await signup({ useremail: email, username, password });
-
-      // 2. Si ça réussit, on le connecte automatiquement
-      await login({ useremail: email, password });
-      navigate('/', { replace: true });
-    }
-    catch (apiError: any)
-    {
-      // On extrait le message d'erreur spécifique du backend s'il existe,
-      const errorMessage = apiError.response?.data?.msg;
-      setError(errorMessage);
-    }
-    finally
-    {
-      setLoadingSubmit(false);
-    }
+      console.log("initializing connexion with:", {email, password, username});
+      fetch('/api/auth/signup', {
+  		method: 'POST',
+  		credentials: 'include',
+  		headers: {'Content-Type': 'application/json'},
+  		body: JSON.stringify( { name:username, email:email, password:password } )
+  	})
+  	.then( function(response) {
+  		if (response.status != 200)
+  			return response.json()
+  		else return null
+  	})
+  	.then( function(data) {
+      console.log(data)
+  		if (data)
+  			alert(data.msg)
+  		else {
+        alert("Connexion succeed !");
+  			location.href = '/'
+  		} 
+  	})
+  	.catch( (error) => { console.error(error); setError("invalid password or email")})
+    .finally(() => { setLoadingSubmit(false)});
   }
 
   return (

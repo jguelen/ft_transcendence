@@ -30,7 +30,7 @@ model FriendshipRequest {
 	requesterId		Int
 	requested		User @relation("requestedToRequester", fields: [requestedId], references: [id], onDelete: Cascade)
 	requestedId		Int
-	declined		Int
+	declined		Int @default(0)
 	createdAt		DateTime @default(now())
 
 	@@id([requesterId, requestedId])

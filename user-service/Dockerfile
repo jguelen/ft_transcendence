@@ -1,24 +1,39 @@
-# Étape 1: Installation des dépendances
-FROM node:18-alpine AS deps
+# ---- Étape 1 : Le "Builder" ----
+# On utilise une image Node complète pour avoir tous les outils de build
+FROM node:18 AS builder
+
 WORKDIR /app
-COPY package.json package-lock.json ./
+
+# Copier les fichiers de dépendances et le schéma Prisma
+COPY package*.json ./
+COPY schema.prisma ./
+
+# Installer TOUTES les dépendances, y compris les 'devDependencies' (comme 'prisma')
 RUN npm install
 
-# Étape 2: Construction de l'application
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-# On "construit" le client Prisma ici, car on a tout le code nécessaire
+# Générer le Prisma Client. C'est CRUCIAL.
+# Cette commande lit 'schema.prisma' et crée le code de Prisma Client dans 'node_modules/.prisma/client'
 RUN npx prisma generate
 
-# Étape 3: Image finale, optimisée pour la production
-FROM node:18-alpine AS final
-WORKDIR /app
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/migrations ./migrations
-COPY --from=builder /app/schema.prisma ./schema.prisma
-COPY --from=builder /app/index.js ./index.js
+# Copier le reste du code de l'application
+COPY . .
 
-# On applique la migration, PUIS on lance le serveur.
-CMD ["sh", "-c", "npx prisma migrate deploy && node index.js"]
+
+# ---- Étape 2 : L'image de Production ----
+# On part d'une image plus légère pour la version finale
+FROM node:18
+
+WORKDIR /app
+
+# Copier les dépendances et le Prisma Client généré depuis l'étape "builder"
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package*.json ./
+
+# Copier le reste du code de l'application depuis l'étape "builder"
+COPY --from=builder /app .
+
+# Exposer le port de l'application
+EXPOSE 3000
+
+# La commande pour démarrer l'application
+CMD [ "node", "index.js" ]

@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../../context/AuthContext'
 
 function Login()
 {
@@ -11,7 +10,6 @@ function Login()
   const [error, setError] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const { login } = useAuth();
   const { t } = useTranslation();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>)
@@ -25,20 +23,29 @@ function Login()
       setLoading(false);
       return;
     }
-    try
-    {
-      console.log("initializing connexion with:", {email, password});
-      await login({ email, password });
-      alert("Connexion succeed !");
-    }
-    catch (err)
-    {
-      setError("invalid password or email");
-    }
-    finally
-    {
-      setLoading(false);
-    }
+    console.log("initializing connexion with:", {email, password});
+    fetch('/api/auth/login', {
+  		method: 'POST',
+  		credentials: 'include',
+  		headers: {'Content-Type': 'application/json'},
+  		body: JSON.stringify( { userlogin:email, password:password } )
+  	})
+  	.then( function(response) {
+  		if (response.status != 200)
+  			return response.json()
+  		else return null
+  	})
+  	.then( function(data) {
+      console.log(data)
+  		if (data)
+  			alert(data.msg)
+  		else {
+        alert("Connexion succeed !");
+  			location.href = '/'
+  		} 
+  	})
+  	.catch( (error) => { console.error(error); setError("invalid password or email")})
+    .finally(() => { setLoading(false)});
   }
 
   return (

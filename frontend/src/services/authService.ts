@@ -10,8 +10,6 @@ export interface SignupCredentials {
 
 // Connexion de l'utilisateur
 export const login = async (credentials: LoginCredentials): Promise<void> => {
-  // L'URL est relative à la baseURL définie dans api.ts
-  // '/auth/login' devient 'https://localhost:8443/api/auth/login'
   await api.post('/auth/login', credentials);
   // La réponse est vide (200 OK), le cookie est géré automatiquement par le navigateur
 };
