@@ -27,21 +27,58 @@ CREATE TABLE IF NOT EXISTS matches (
 )`);
 
 function saveMatch(mode, data) {
-	let details = { custom : data.custom, duration: data.duration};
+	// let details = JSON.stringify({ custom : data.custom, duration: data.duration});
+	// const stmt = database.prepare(`
+	// 	INSERT INTO matches (mode,
+	// 		player1, player2, player3, player4,
+	// 		team1_score, team2_score, 
+	// 		winner_team, winner1, winner2,
+	// 		looser_team, looser1, looser2, details)
+	// 	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+	// `);
+	// stmt.run(mode,
+	// 	data.player1, data.player2, data.player3, data.player4,
+	// 	data.team1_score, data.team2_score, 
+	// 	data.winner_team, data.winner1, data.winner2,
+	// 	data.looser_team, data.looser1, data.looser2,
+	// 	details);
 	const stmt = database.prepare(`
-		INSERT INTO matches (mode,
-			player1, player2, player3, player4,
+		INSERT INTO matches (
+			mode, player1, player2, player3, player4,
 			team1_score, team2_score, 
 			winner_team, winner1, winner2,
-			looser_team, looser1, looser2, details)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			looser_team, looser1, looser2, details
+		) VALUES (
+			@mode, @player1, @player2, @player3, @player4,
+			@team1_score, @team2_score, 
+			@winner_team, @winner1, @winner2,
+			@looser_team, @looser1, @looser2, @details
+		)
 	`);
-	stmt.run(mode,
-		data.player1, data.player2, data.player3, data.player4,
-		data.team1_score, data.team2_score, 
-		data.winner_team, data.winner1, data.winner2,
-		data.looser_team, data.looser1, data.looser2,
-		details);	
+	// stmt.run({
+	// 	mode,
+	// 	player1: data.player1, player2: data.player2, player3: data.player3, player4: data.player4,
+	// 	team1_score: data.team1_score, team2_score: data.team2_score,
+	// 	winner_team: data.winner_team, winner1: data.winner1, winner2: data.winner2,
+	// 	looser_team: data.looser_team, looser1: data.looser1, looser2: data.looser2,
+	// 	details: JSON.stringify({ custom: data.custom, duration: data.duration })
+	// });
+	stmt.run({
+		mode,
+		player1: typeof data.player1 === 'object' ? JSON.stringify(data.player1) : data.player1,
+		player2: typeof data.player2 === 'object' ? JSON.stringify(data.player2) : data.player2,
+		player3: typeof data.player3 === 'object' ? JSON.stringify(data.player3) : data.player3,
+		player4: typeof data.player4 === 'object' ? JSON.stringify(data.player4) : data.player4,
+		team1_score: data.team1_score,
+		team2_score: data.team2_score,
+		winner_team: data.winner_team,
+		winner1: typeof data.winner1 === 'object' ? JSON.stringify(data.winner1) : data.winner1,
+		winner2: typeof data.winner2 === 'object' ? JSON.stringify(data.winner2) : data.winner2,
+		looser_team: data.looser_team,
+		looser1: typeof data.looser1 === 'object' ? JSON.stringify(data.looser1) : data.looser1,
+		looser2: typeof data.looser2 === 'object' ? JSON.stringify(data.looser2) : data.looser2,
+		details: JSON.stringify({ custom: data.custom, duration: data.duration })
+	});
 }
 
 const pos = [6, WIDTH - 6];
@@ -90,13 +127,15 @@ export class Tournament{
 	}
 	async match(idx1, idx2){
 		this.clients[0].connection.send(JSON.stringify({ type: 'matchtitle', msg: String(this.players[idx1].name + " VS "+ this.players[idx2].name) }));
-		console.log(this.players[idx1].name , "VS", this.players[idx2].name)
-		console.log(this);
+		console.log(this.players[idx1].name , this.players[idx1].id , "VS", this.players[idx2].name, this.players[idx2].id)
 		const players_data = [new Player(this.clients[0].id, this.players[idx1].id, this.players[idx1].name, pos[0], this.players_keys[0].keyup, this.players_keys[0].keydown, this.clients[0].connection),
 			new Player(this.clients[0].id, this.players[idx2].id, this.players[idx2].name, pos[1], this.players_keys[1].keyup, this.players_keys[1].keydown, this.clients[0].connection)];
-		console.log(players);
 		this.gameInstance = new Game(this.operator, false, players_data, this.custom, this.IA_diff, this.speeding_mode);
 		let data = await this.gameInstance.startGame();
+		if (this.players[idx1].id != -1 || this.players[idx2].id != -1){
+			console.log("Data win in db:", data);
+			saveMatch("Tournament Match", data);
+		}
 		if (data.winner_team == "team1"){
 			this.players[idx2].rank = this.rank;
 			this.rank--;
@@ -108,9 +147,6 @@ export class Tournament{
 			this.rank--;
 			console.log("Winner of the match is :", this.players[idx2].name)
 			return idx2;
-		}
-		if (this.players[idx1].id != -1 || this.players[idx2].id != -1){
-			saveMatch("Tournament Match", data);
 		}
 		return 0;
 	}

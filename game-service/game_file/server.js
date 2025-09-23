@@ -87,7 +87,7 @@ fastify.register(async function (fastify){
 					}
 				}
 				if (data.type === 'gamesearch'){
-					// console.log(data);
+					console.log(data);
 					// console.log("new Project search");
 					for (let projects of projectsArray){
 						if (projects.IA === data.gameparam.IA &&
@@ -106,7 +106,7 @@ fastify.register(async function (fastify){
 						// console.log("project", projects);
 						return ;
 					}
-					// console.log("new Project");
+					console.log("new Project");
 					let newProject = new GameProject(
 						data.gameparam.IA,
 						data.gameparam.local,
@@ -121,18 +121,21 @@ fastify.register(async function (fastify){
 						newProject.player_name_array = data.tournament_players;
 						newProject.player_id_array = data.ids;
 					} else {
-						projects.player_name_array.push(data.name);
-						projects.player_id_array.push(data.id);
+						newProject.player_name_array.push(data.name);
+						newProject.player_id_array.push(data.id);
 					}
 					newProject.player_case_array.push({keyup: data.keys.keysup.p1, keydown: data.keys.keysdown.p1});
-					if (newProject.local)
+					if (newProject.local){
+						newProject.player_array.push(actual_client);
 						newProject.player_case_array.push({keyup: data.keys.keysup.p2, keydown: data.keys.keysdown.p2});
+					}
 					if (newProject.local && newProject.IA)
 						newProject.player_name_array.push(String('IA') + IA_DIFF_NAME[data.gameparam.IA_diff]);
 					else if (newProject.local && !newProject.IA){
 						newProject.player_name_array.push("Local player");
 					}
 					projectsArray.push(newProject);
+					console.log(newProject);
 				}
 			} catch (e) {}
 		});
@@ -159,28 +162,42 @@ setInterval(() => {
 		create_game(project.local, project.tournament, project.IA,
 			project.IA_diff, project.player_nbr, project.custom_mode,
 			project.speeding_mode, project.player_array, project.player_name_array,
-			project.player_case_array
+			project.player_id_array, project.player_case_array
 		)
 		projectsArray.splice(index, 1);
 	}
 }, 1000);
 
 function saveMatch(mode, data) {
-	let details = { custom : data.custom, duration: data.duration};
 	const stmt = database.prepare(`
-		INSERT INTO matches (mode,
-			player1, player2, player3, player4,
+		INSERT INTO matches (
+			mode, player1, player2, player3, player4,
 			team1_score, team2_score, 
 			winner_team, winner1, winner2,
-			looser_team, looser1, looser2, details)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+			looser_team, looser1, looser2, details
+		) VALUES (
+			@mode, @player1, @player2, @player3, @player4,
+			@team1_score, @team2_score, 
+			@winner_team, @winner1, @winner2,
+			@looser_team, @looser1, @looser2, @details
+		)
 	`);
-	stmt.run(mode,
-		data.player1, data.player2, data.player3, data.player4,
-		data.team1_score, data.team2_score, 
-		data.winner_team, data.winner1, data.winner2,
-		data.looser_team, data.looser1, data.looser2,
-		details);	
+	stmt.run({
+		mode,
+		player1: typeof data.player1 === 'object' ? JSON.stringify(data.player1) : data.player1,
+		player2: typeof data.player2 === 'object' ? JSON.stringify(data.player2) : data.player2,
+		player3: typeof data.player3 === 'object' ? JSON.stringify(data.player3) : data.player3,
+		player4: typeof data.player4 === 'object' ? JSON.stringify(data.player4) : data.player4,
+		team1_score: data.team1_score,
+		team2_score: data.team2_score,
+		winner_team: data.winner_team,
+		winner1: typeof data.winner1 === 'object' ? JSON.stringify(data.winner1) : data.winner1,
+		winner2: typeof data.winner2 === 'object' ? JSON.stringify(data.winner2) : data.winner2,
+		looser_team: data.looser_team,
+		looser1: typeof data.looser1 === 'object' ? JSON.stringify(data.looser1) : data.looser1,
+		looser2: typeof data.looser2 === 'object' ? JSON.stringify(data.looser2) : data.looser2,
+		details: JSON.stringify({ custom: data.custom, duration: data.duration })
+	});
 }
 
 /* Here are what each parameer stan for :
@@ -201,7 +218,8 @@ async function create_game(local, tournament, IA, IA_diff,
 							players_name,
 							players_id,
 							players_keys){
-	// console.log("new Game");
+	console.log("new Game");
+	// console.log("keys", players_keys);
 	if (local){
 		if (tournament == true){
 			let tournament_players = [
@@ -234,6 +252,7 @@ async function create_game(local, tournament, IA, IA_diff,
 				console.log("Tournament don't have enough player");
 				return ;
 			}
+			console.log("keys", players_keys);
 			let tournamentInstance = new Tournament(
 					players_list, tournament_players, players_keys,
 					operator, custom, IA_diff, speeding_mode);
@@ -258,10 +277,10 @@ async function create_game(local, tournament, IA, IA_diff,
 			let gameInstance = new Game(operator, IA, players, custom, IA_diff, speeding_mode);
 			gameInstance_array.push(gameInstance);
 			let data = await gameInstance.startGame();
-			console.log("Winner is :", data.winner);
+			console.log("Winner is :", data.winner1.name);
 			saveMatch("1v1 Local", data);
 			for (let player of players_list){
-				player.connection.send(JSON.stringify({ type: 'end', msg : String("Winner is :" + data.winner)}));
+				player.connection.send(JSON.stringify({ type: 'end', msg : String("Winner is :" + data.winner1.name)}));
 			}
 			let idx = gameInstance_array.indexOf(gameInstance);
 			gameInstance_array.splice(idx, 1);
@@ -289,10 +308,15 @@ async function create_game(local, tournament, IA, IA_diff,
 		let gameInstance = new Game(operator, IA, players, custom, IA_diff, speeding_mode);
 		gameInstance_array.push(gameInstance);
 		let data = await gameInstance.startGame();
-		console.log("Winner is :", data.winner);
+		if (player_nbr == 2)
+			message = "Winner is :" + data.winner1.name;
+		else {
+			message = "Winners are :" + data.winner1.name + "and" + data.winner2.name;
+		}
+		console.log(message);
 		saveMatch((player_nbr == 4) ? "2v2 Online" : "1v1 Online" , data);
 		for (let player of players_list){
-			player.connection.send(JSON.stringify({ type: 'end', msg : String("Winner is :" + data.winner)}));
+			player.connection.send(JSON.stringify({ type: 'end', msg : message}));
 		}
 		let idx = gameInstance_array.indexOf(gameInstance);
 		gameInstance_array.splice(idx, 1);
