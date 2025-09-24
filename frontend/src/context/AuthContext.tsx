@@ -1,61 +1,97 @@
-// src/context/AuthContext.tsx
-import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import { User } from '../types';
-import * as authService from '../services/authService';
+import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  logout: () => Promise<void>;
-  isLoading: boolean;
+// --- Définition des Types ---
+// Décrit la forme d'un objet utilisateur. Adaptez-le à vos besoins.
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  // ... ajoutez d'autres champs si nécessaire (rank, language, etc.)
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+// Décrit la forme de ce que notre Contexte va fournir.
+interface AuthContextType {
+  user: User | null;
+  isLoading: boolean;
+  login: (userData: User) => void;
+  logout: () => void;
+}
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+// --- Création du Contexte ---
+// On type le contexte pour qu'il s'attende à la forme de AuthContextType ou null.
+const AuthContext = createContext<AuthContextType | null>(null);
+
+
+// --- Création du Provider ---
+// On type les props du Provider. "children" représente les composants enfants.
+type AuthProviderProps = {
+  children: ReactNode;
+};
+
+export function AuthProvider({ children }: AuthProviderProps) {
+  // On type l'état 'user'. Il peut être soit un objet User, soit null.
   const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Au chargement, on vérifie si un cookie de session existe déjà
-    const checkUser = async () => {
+    const checkLoggedInUser = async () => {
       try {
-        const userData = await authService.getLoggedInUser();
-        setUser(userData);
+        const response = await fetch('/api/user/getloggeduser', {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          // On s'assure que les données reçues correspondent bien à notre type User
+          const userData: User = await response.json();
+          console.log(response);
+          setUser(userData);
+        } else {
+          console.log("that's why i don't see anything")
+          setUser(null);
+        }
       } catch (error) {
+        console.error("that's really strange")
         setUser(null);
       } finally {
         setIsLoading(false);
       }
     };
-    checkUser();
+
+    checkLoggedInUser();
   }, []);
 
-  const login = async (credentials: LoginCredentials) => {
-    await authService.login(credentials);
-    const userData = await authService.getLoggedInUser();
+  // La fonction login attend un paramètre qui doit être de type User.
+  const login = (userData: User) => {
     setUser(userData);
   };
 
-  const logout = async () => {
-    await authService.logout();
+  const logout = () => {
     setUser(null);
   };
 
-  const isAuthenticated = !!user;
+  // La valeur fournie correspondra parfaitement à notre interface AuthContextType
+  const value: AuthContextType = {
+    user,
+    isLoading,
+    login,
+    logout,
+  };
 
-  return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout, isLoading }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
 
-export const useAuth = () => {
+
+// --- Création du Custom Hook ---
+// C'est ici que la magie de TypeScript opère pour la sécurité.
+export function useAuth(): AuthContextType {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+
+  // Si on essaie d'utiliser ce hook en dehors du Provider, le contexte sera null.
+  // On lève une erreur claire pour le développeur.
+  if (context === null) {
+    throw new Error('useAuth doit être utilisé à l\'intérieur d\'un AuthProvider');
   }
+
+  // Si le contexte existe, on sait (grâce au typage) qu'il correspond à AuthContextType.
   return context;
-};
+}
+
