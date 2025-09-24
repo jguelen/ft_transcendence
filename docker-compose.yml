@@ -41,7 +41,7 @@ services:
       - PORT=3002
     restart: unless-stopped
     volumes:
-      - user-data:/app/data
+      - ./user-service:/app/data
 
   game-service:
     build:
@@ -51,7 +51,7 @@ services:
       - "3000:3000"
     environment:
       - DATABASE_URL=file:./data/pong_database.db
-      - export JWT_SECRET="your_jwt_secret_key_change_this_in_production"
+      - JWT_SECRET="your_jwt_secret_key_change_this_in_production"
       - PORT=3000
     restart: unless-stopped
     volumes:
@@ -68,7 +68,6 @@ services:
       - PORT=3003
     restart: unless-stopped
     volumes:
-      - ./avatar-service/files:/app/data
       - avatar-images:/app/avatars
 
 volumes:

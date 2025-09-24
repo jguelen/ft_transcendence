@@ -112,6 +112,7 @@ console.error('newuser pancarte');
 async function checkUserNameDuplicate(userName) {
 console.log("checkUserNameDuplicate")
 console.log(userName)
+// console.log("prisma :", prisma != mull);
 //	try {
 		var user = await prisma.user.findMany({
 			where: { 
