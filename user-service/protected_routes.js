@@ -243,16 +243,14 @@ console.log(req.params);
 
 
 
-	fastify_instance.put('/api/user/updatepw/:pw/:newpw', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.put('/api/user/updatepw', { preHandler: [verifyJWT] }, async function (req, res) {
 
-		const pw = req.params.pw;
-		const newPw = req.params.newpw;
+		const pw = req.body.pw;
+		const newPw = req.body.newpw;
 
 console.log("/api/user/updatepw");
 console.log(pw);
 console.log(newPw);
-
-//var hashedPassword = "132"
 
 		try {
 			var user = await prisma.user.findUnique({
