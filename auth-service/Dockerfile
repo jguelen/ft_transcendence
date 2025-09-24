@@ -1,6 +1,6 @@
 # ---- Étape 1 : Le "Builder" ----
 # On utilise une image Node complète pour avoir tous les outils de build
-FROM node:18-slim AS builder
+FROM node:20-slim AS builder
 
 WORKDIR /app
 
