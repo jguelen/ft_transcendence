@@ -5,17 +5,17 @@ import ArrowInput from '../components/ArrowInput';
 import Input from '../components/Input';
 import {PongGameService} from '../game/display_pong';
 
-// const player_id = 8;
-// const player_name = "Test";
+const player_id = 8;
+const player_name = "Test";
 
-// class MokeUser{
-// 	name : string;
-// 	id : number;
-// 	constructor(name : string, id : number){
-// 		this.name = name;
-// 		this.id = id;
-// 	}
-// }
+class MokeUser{
+	name : string;
+	id : number;
+	constructor(name : string, id : number){
+		this.name = name;
+		this.id = id;
+	}
+}
 
 // let users = [
 // 	new MokeUser("Ness", 0),
@@ -28,31 +28,31 @@ import {PongGameService} from '../game/display_pong';
 // 	new MokeUser("Luigi", 7)
 // ];
 
-async function fetchgetselfId(): Promise<any> {
-	const res = await fetch(`http://${window.location.hostname}:3002/api/user/getloggeduser`, {
-		credentials: 'include'
-	});
-	if (!res.ok) throw new Error("User API error");
-	const data = await res.json();
-	console.log("player name :", data.name);
-	console.log("player id :", data.id);
-	return data;
-}
+// async function fetchgetselfId(): Promise<any> {
+// 	const res = await fetch(`http://${window.location.hostname}:3002/api/user/getloggeduser`, {
+// 		credentials: 'include'
+// 	});
+// 	if (!res.ok) throw new Error("User API error");
+// 	const data = await res.json();
+// 	console.log("player name :", data.name);
+// 	console.log("player id :", data.id);
+// 	return data;
+// }
 
-async function fetchgetallUser(): Promise<Array<{id: number, name: string}>> {
-	const res = await fetch(`http://${window.location.hostname}:3002/api/user/all`, {
-		credentials: 'include'
-	});
-	const text = await res.text();
-	console.log("API /api/user/all RAW response:", text);
-	let data;
-	try {
-		data = JSON.parse(text);
-	} catch (e) {
-		throw new Error("API /api/user/all did not return JSON. Raw response: " + text);
-	}
-	return data;
-}
+// async function fetchgetallUser(): Promise<Array<{id: number, name: string}>> {
+// 	const res = await fetch(`http://${window.location.hostname}:3002/api/user/all`, {
+// 		credentials: 'include'
+// 	});
+// 	const text = await res.text();
+// 	console.log("API /api/user/all RAW response:", text);
+// 	let data;
+// 	try {
+// 		data = JSON.parse(text);
+// 	} catch (e) {
+// 		throw new Error("API /api/user/all did not return JSON. Raw response: " + text);
+// 	}
+// 	return data;
+// }
 
 function isNameInUsers(users : Array<{id: number, name: string}>, name : string) {
 	return users.some(user => user.name === name);

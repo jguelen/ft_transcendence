@@ -30,9 +30,9 @@ function Account()
     }
     try
     {
-
+      const response = await fetch ('')
     }
-    catch (apiError: any)
+    catch (error)
     {
     }
     finally

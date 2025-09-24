@@ -6,7 +6,8 @@ interface User {
   id: number;
   name: string;
   email: string;
-  // ... ajoutez d'autres champs si nécessaire (rank, language, etc.)
+  keymap: string;
+  language: string;
 }
 
 // Décrit la forme de ce que notre Contexte va fournir.
@@ -42,14 +43,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (response.ok) {
           // On s'assure que les données reçues correspondent bien à notre type User
           const userData: User = await response.json();
-          console.log(response);
+          console.log(userData);
           setUser(userData);
         } else {
           console.log("that's why i don't see anything")
           setUser(null);
         }
       } catch (error) {
-        console.error("that's really strange")
+        console.error("that's really strange", error)
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -94,4 +95,3 @@ export function useAuth(): AuthContextType {
   // Si le contexte existe, on sait (grâce au typage) qu'il correspond à AuthContextType.
   return context;
 }
-
