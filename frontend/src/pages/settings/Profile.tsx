@@ -4,6 +4,8 @@ import ImageLoader from '../../components/ImageLoader';
 import { useState, useEffect } from 'react';
 import clsx from 'clsx'
 
+// const token = localStorage.getItem('ft_transcendance_jwt');
+
 interface ListItem
 {
   victory: boolean;
@@ -58,16 +60,39 @@ const ScrollableList = ({ items }: ScrollableListProps) => {
   );
 };
 
+async function fetchUserNameById(id: number): Promise<string> {
+  const res = await fetch(`http://${window.location.hostname}:3002/api/user/${id}`, {
+    credentials: 'include'
+  });
+  if (!res.ok) throw new Error("User API error");
+  const data = await res.json();
+  console.log(data.name);
+  return data.name;
+}
+
+async function oponentName(oponent: any): Promise<string> {
+  if (!oponent) return "Unknown";
+  if (oponent.id === -1) {
+    return oponent.name;
+  } else if (oponent.id >= 0) {
+    try {
+      return await fetchUserNameById(oponent.id);
+    } catch {
+      return "Unknown";
+    }
+  }
+  return "Unknown";
+}
+
 //ATTENTION changer le mdp JWT
 const API_URL = `http://${window.location.hostname}:3000/api/game/matches`;
 export async function fetchItemsFromAPI(
-  playerId: string,
-  jwtToken: string
+  playerId: string
   ): Promise<{ items: ListItem[], win_nbr: number, loose_nbr: number }> {
   const response = await fetch(`${API_URL}/${playerId}`, {
     method: "GET",
+    credentials: "include",
     headers: {
-      "Authorization": `Bearer ${jwtToken}`,
       "Content-Type": "application/json"
     },
   });
@@ -75,14 +100,21 @@ export async function fetchItemsFromAPI(
   if (!response.ok) {
     throw new Error("API error: " + response.status);
   }
+  // console.log("token :", token);
   const data = await response.json();
+  
+  const items: ListItem[] = await Promise.all(
+    data.iddata_array.map(async (item: any) => ({
+      victory: item.victory,
+      oponentName: await oponentName(item.oponent),
+      score: item.score,
+      time_since: item.time_since,
+      team: item.team
+    }))
+  );
+
   return ({
-      items : data.iddata_array.map((item: any) => ({
-        victory: item.victory,
-        oponentName: item.oponentName,
-        score: item.score,
-        time_since: item.time_since,
-        team : item.team })),
+      items,
       win_nbr: data.win_nbr,
       loose_nbr: data.loose_nbr
   });
@@ -96,17 +128,17 @@ function Profile()
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-  fetchItemsFromAPI("0", "your_jwt_secret_key_change_this_in_production")
-    .then(data => {
-      setItems(data.items);
-      setWinNbr(data.win_nbr);
-      setLooseNbr(data.loose_nbr);
-      setIsLoading(false);
-    })
-      .catch(error => {
-        console.error("Error during data fetch", error);
+    fetchItemsFromAPI("0")
+      .then(data => {
+        setItems(data.items);
+        setWinNbr(data.win_nbr);
+        setLooseNbr(data.loose_nbr);
         setIsLoading(false);
-      });
+      })
+        .catch(error => {
+          console.error("Error during data fetch", error);
+          setIsLoading(false);
+        });
   }, []);
 
   return (

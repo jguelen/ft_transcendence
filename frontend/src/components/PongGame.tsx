@@ -5,38 +5,64 @@ import ArrowInput from '../components/ArrowInput';
 import Input from '../components/Input';
 import {PongGameService} from '../game/display_pong';
 
-const player_id = 8;
-const player_name = "Test";
+// const player_id = 8;
+// const player_name = "Test";
 
-class MokeUser{
-	name : string;
-	id : number;
-	constructor(name : string, id : number){
-		this.name = name;
-		this.id = id;
-	}
+// class MokeUser{
+// 	name : string;
+// 	id : number;
+// 	constructor(name : string, id : number){
+// 		this.name = name;
+// 		this.id = id;
+// 	}
+// }
+
+// let users = [
+// 	new MokeUser("Ness", 0),
+// 	new MokeUser("Lucas", 1),
+// 	new MokeUser("Wolf", 8),
+// 	new MokeUser("Amphinobi", 3),
+// 	new MokeUser("Shulk", 4),
+// 	new MokeUser("Mario", 5),
+// 	new MokeUser("Yoshi", 6),
+// 	new MokeUser("Luigi", 7)
+// ];
+
+async function fetchgetselfId(): Promise<any> {
+	const res = await fetch(`http://${window.location.hostname}:3002/api/user/getloggeduser`, {
+		credentials: 'include'
+	});
+	if (!res.ok) throw new Error("User API error");
+	const data = await res.json();
+	console.log("player name :", data.name);
+	console.log("player id :", data.id);
+	return data;
 }
 
-let moke_users = [
-	new MokeUser("Ness", 0),
-	new MokeUser("Lucas", 1),
-	new MokeUser("Wolf", 2),
-	new MokeUser("Amphinobi", 3),
-	new MokeUser("Shulk", 4),
-	new MokeUser("Mario", 5),
-	new MokeUser("Yoshi", 6),
-	new MokeUser("Luigi", 7)
-];
+async function fetchgetallUser(): Promise<Array<{id: number, name: string}>> {
+	const res = await fetch(`http://${window.location.hostname}:3002/api/user/all`, {
+		credentials: 'include'
+	});
+	const text = await res.text();
+	console.log("API /api/user/all RAW response:", text);
+	let data;
+	try {
+		data = JSON.parse(text);
+	} catch (e) {
+		throw new Error("API /api/user/all did not return JSON. Raw response: " + text);
+	}
+	return data;
+}
 
-function isNameInMokeUsers(name : string) {
-	return moke_users.some(user => user.name === name);
+function isNameInUsers(users : Array<{id: number, name: string}>, name : string) {
+	return users.some(user => user.name === name);
 }
 
 function isDuplicate(name :string , idx : number, arr : any[]) {
 	return arr.filter((n, i) => n === name && i !== idx).length > 0;
 }
 
-function getTournamentPlayerIds(names: string[], userList: MokeUser[]) {
+function getTournamentPlayerIds(names: string[], userList: Array<{id: number, name: string}>) {
   let errors : any[] = [];
   let ids: number[] = [];
   let uniqueNames = new Set<string>();
@@ -60,6 +86,10 @@ function getTournamentPlayerIds(names: string[], userList: MokeUser[]) {
 export default function PongGame({config}: {config : any}) {
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const serviceRef = useRef<PongGameService>();
+	const [player_name, setPlayerName] = useState<string>("Unknown");
+	const [player_id, setPlayerId] = useState<number>(-1);
+	const [users, setUsersList] = useState<Array<{id: number, name: string}>>([]);
+	
 	const [pongConfig, setPongConfig] = useState({ ...config });
 	const [msg, setMsg] = useState<string>("");
 	const [playerKeysup, setPlayerKeysup] = useState<{ p1: string; p2?: string }>({
@@ -80,6 +110,22 @@ export default function PongGame({config}: {config : any}) {
 	};
 
 	useEffect(() => {
+		fetchgetselfId()
+			.then(data => {
+				setPlayerName(data.name);
+				setPlayerId(data.id);
+			})
+			.catch(error => {
+				console.error("Error during data fetch", error);
+			});
+		
+		fetchgetallUser()
+			.then(data => {
+				setUsersList(data);
+			})
+			.catch(error => {
+				console.error("Error during data fetch", error);
+			});
 		if (canvasRef.current) {
 			console.log("test connexion");
 			serviceRef.current = new PongGameService(canvasRef.current);
@@ -116,7 +162,7 @@ export default function PongGame({config}: {config : any}) {
 
 	function handleStart() {
 		if (!pongConfig.start) {
-			const { ids, errors } = getTournamentPlayerIds(tournamentPlayers, moke_users);
+			const { ids, errors } = getTournamentPlayerIds(tournamentPlayers, users);
 
 			if (errors.length > 0) {
 			setMsg(errors.join("\n"));
@@ -193,7 +239,7 @@ export default function PongGame({config}: {config : any}) {
 						{pongConfig.tournament && (
 							<div style={{ display: "flex", gap: "1em", flexWrap: "wrap" }}>
 								{tournamentPlayers.map((name, idx) => {
-									const isInMoke = isNameInMokeUsers(name);
+									const isInMoke = isNameInUsers(users, name);
 									const isDup = isDuplicate(name, idx, tournamentPlayers);
 
 									let bgColor = "bg-white";

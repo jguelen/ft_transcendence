@@ -11,30 +11,21 @@ exports.protected_routes = function(fastify_instance, options, next) {
 
 // JWT verification function
 const verifyJWT = async (req, res) => {
-console.log("PreHandler verifyJWT");
-
-	req.user = undefined
 	try {
-console.log(req.cookies);
-		if (!req.cookies)
-			return
-
+		// console.log("user request1:",req);
+		if (!req.cookies) {
+			return res.status(401).send({ error: 'No cookies' });
+		}
 		const token = req.cookies['ft_transcendence_jwt'];
-console.log("upr verifyJWT 1");
-//console.log("token: " + token + "\n");
-console.log(token);
-		if (!token)
-			return;
-
+		if (!token) {
+			return res.status(401).send({ error: 'No JWT cookie' });
+		}
 		const decoded = jwt.verify(token, JWT_SECRET);
-
-//		const decoded = jwt.decode(token); // no sign verif
-console.log("upr verifyJWT 2");
-console.log(decoded);
-		req.user = {userId: Number(decoded.userId)}
-	}
-	catch(error) {
+		req.user = { userId: Number(decoded.userId) };
+		// console.log("user request:",req);
+	} catch (error) {
 		console.error(error);
+		return res.status(401).send({ error: 'Invalid token' });
 	}
 };
 
@@ -63,7 +54,27 @@ console.log(req.user);
 		}
 	})
 
+	fastify_instance.get('/api/user/:id', { preHandler: verifyJWT }, async (req, reply) => {
+		try {
+			const user = await prisma.user.findUnique({ where: { id: Number(req.params.id) } });
+			if (!user) return reply.status(404).send({ error: "User not found" });
+			return { name: user.name, id: user.id };
+		} catch (error) {
+			res.status(500)
+		}
+	});
 
+	fastify_instance.get('/api/user/all', { preHandler: verifyJWT }, async (req, reply) => {
+		try {
+			const users = await prisma.user.findMany({
+				select: { id: true, name: true }
+			});
+			console.log(users);
+			return users;
+		} catch (error) {
+			reply.status(500).send({ error: "Database error" });
+		}
+	});
 
 	fastify_instance.put('/api/user/updatekeybinds/:keymap', { preHandler: [verifyJWT] }, async function (req, res) {
 

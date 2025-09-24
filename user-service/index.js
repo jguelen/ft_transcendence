@@ -63,7 +63,7 @@ fastify.addHook('preHandler', (req, res, next) => {
 console.log("preHandler-CORS-tmp");
 //  req.jwt = fastify.jwt
 
-	res.header("Access-Control-Allow-Origin", "http://localhost:3000")
+	res.header("Access-Control-Allow-Origin", "http://localhost:3002")
 	res.header("Access-Control-Allow-Credentials", true)
 
 	const isPreflight = /options/i.test(req.method);
@@ -208,7 +208,7 @@ console.error('newuser pancarte');
 
 
 // Run the serveur!
-fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3000 }, (err) => {
+fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3002 }, (err) => {
 	if (err) {
 		fastify.log.error(err)
 		process.exit(1)

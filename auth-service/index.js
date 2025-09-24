@@ -260,6 +260,7 @@ console.log(token)
 
 	}
 	catch (err) {
+		console.log("FInd a way in here");
 console.log(err)
 // Revoir cette daube quand il y aura ngix
 		if (err.name == "API_Error")
