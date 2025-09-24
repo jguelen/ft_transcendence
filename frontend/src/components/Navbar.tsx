@@ -9,6 +9,25 @@ type NavItemProps = {
   isActive: boolean;
 };
 
+async function handleLogout()
+{
+  try
+  {
+    const response = await	fetch('/api/auth/logout',
+      {
+				method: 'DELETE',
+				credentials: 'include'
+			})
+		alert(response.status)
+		if (response.status == 200)
+			location.href = '/'
+	}
+  catch(error)
+  {
+    console.error(error)
+  }
+}
+
 function NavItem({ to, iconSrc, label, isActive }: NavItemProps) {
   return (
     <Link
@@ -53,12 +72,12 @@ function Navbar({activeMenu, className}: NavbarProps)
       <NavItem iconSrc='/icons/user.svg' isActive={activeMenu === 'account'}
          label="Account" to="/settings/account"/>
       <span className="border border-stroke w-full h-[1px]"/>
-      <Link to="/" className="w-full max-h-[105px] h-full rounded-small
+      <button className="w-full max-h-[105px] h-full rounded-small
         flex justify-start items-center pl-[10px] gap-[15px] border border-transparent
-        hover:border-red-500">
+        hover:border-red-500" onClick={() => handleLogout()}>
         <img src="/icons/logout.svg" className="w-[40px] h-[40px]"/>
         <h1 className="font-inter font-semibold text-text text-[32px]">Logout</h1>
-      </Link>
+      </button>
     </Card>
   )
 }
