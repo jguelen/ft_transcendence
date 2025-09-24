@@ -50,7 +50,7 @@ fastify.register(fastifyOauth2, {
 
 // Temporary due to CORS sh!te
 fastify.addHook('preHandler', (req, res, next) => {
-console.log("hohohoho");
+console.log("hohohohohuhu");
 
 	res.header("Access-Control-Allow-Origin", "http://localhost:4000")
 	res.header("Access-Control-Allow-Credentials", true)

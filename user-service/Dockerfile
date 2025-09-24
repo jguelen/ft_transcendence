@@ -3,12 +3,15 @@
 FROM node:18 AS builder
 
 WORKDIR /app
+RUN chown node /app
+
 
 # Copier les fichiers de dépendances et le schéma Prisma
 COPY package*.json ./
 COPY schema.prisma ./
 
 # Installer TOUTES les dépendances, y compris les 'devDependencies' (comme 'prisma')
+RUN npm install -g nodemon
 RUN npm install
 
 # Générer le Prisma Client. C'est CRUCIAL.
@@ -36,4 +39,5 @@ COPY --from=builder /app .
 EXPOSE 3000
 
 # La commande pour démarrer l'application
-CMD [ "node", "index.js" ]
+CMD [ "npx",  "nodemon", "index.js" ]
+#CMD [ "node", "index.js" ]
