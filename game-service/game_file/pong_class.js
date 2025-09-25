@@ -108,9 +108,10 @@ export class Ball {
 }
 
 export class Client {
-	constructor(connection, id){
+	constructor(connection, id, global_id){
 		this.connection = connection;
 		this.id = id;
+		this.global_id = global_id;
 		this.gameInstance = null;
 		this.tournamentInstance = null;
 	}

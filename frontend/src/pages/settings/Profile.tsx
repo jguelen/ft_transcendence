@@ -2,7 +2,8 @@ import Card from '../../components/Card';
 import Navbar from '../../components/Navbar';
 import ImageLoader from '../../components/ImageLoader';
 import { useState, useEffect } from 'react';
-import clsx from 'clsx'
+import clsx from 'clsx';
+import { useAuth } from '../../context/AuthContext';
 
 // const token = localStorage.getItem('ft_transcendance_jwt');
 
@@ -61,12 +62,11 @@ const ScrollableList = ({ items }: ScrollableListProps) => {
 };
 
 async function fetchUserNameById(id: number): Promise<string> {
-  const res = await fetch(`http://${window.location.hostname}:3002/api/user/${id}`, {
+  const res = await fetch(`/api/user/${id}`, {
     credentials: 'include'
   });
   if (!res.ok) throw new Error("User API error");
   const data = await res.json();
-  console.log(data.name);
   return data.name;
 }
 
@@ -89,6 +89,8 @@ const API_URL = `http://${window.location.hostname}:3000/api/game/matches`;
 export async function fetchItemsFromAPI(
   playerId: string
   ): Promise<{ items: ListItem[], win_nbr: number, loose_nbr: number }> {
+  if (playerId == null)
+    throw new Error("No user id");
   const response = await fetch(`${API_URL}/${playerId}`, {
     method: "GET",
     credentials: "include",
@@ -122,13 +124,14 @@ export async function fetchItemsFromAPI(
 
 function Profile()
 {
+  const { user } = useAuth();
   const [items, setItems] = useState<ListItem[]>([]);
   const [win_nbr, setWinNbr] = useState<number>(0);
   const [loose_nbr, setLooseNbr] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetchItemsFromAPI("0")
+    fetchItemsFromAPI(String((user ? user?.id : null)))
       .then(data => {
         setItems(data.items);
         setWinNbr(data.win_nbr);
@@ -147,7 +150,7 @@ function Profile()
       <Card maxHeight='' maxWidth='' className="col-start-2 row-start-1
          col-span-2 flex flex-col justify-center items-center gap-2">
          <h1 className="font-orbitron text-white font-medium text-[36px]">
-           JohnDoe42</h1>
+           {(user) ? user.name : "Player"}</h1>
          <ImageLoader/>
       </Card>
       <Card maxHeight='' maxWidth='' className="col-start-1 row-start-2

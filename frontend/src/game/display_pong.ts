@@ -24,7 +24,7 @@ export class PongGameService
 	_keyupHandler : (event: KeyboardEvent) => void;
 	fpsIntervalId : any;
 
-	constructor(canvas: HTMLCanvasElement){
+	constructor(canvas: HTMLCanvasElement, global_id : number){
 		this.canvas = canvas;
 		this.imgsrc = new ImageSrc;
 		this.ball_trail = [];
@@ -41,7 +41,8 @@ export class PongGameService
 		this.SCALE_X = canvas.width / this.WIDTH;
 		this.SCALE_Y = canvas.height / this.HEIGHT;
 		this.ctx = canvas.getContext("2d")!;
-		const wsUrl = `wss://${window.location.hostname}:8443/ws`;
+		const wsUrl = `wss://${window.location.hostname}:8443/ws?global_id=${global_id}`;
+		console.log(`user global id :${global_id}`);
 		console.log(wsUrl);
 		this.ws = new WebSocket(wsUrl);
 		this.myId = null;

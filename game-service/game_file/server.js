@@ -161,11 +161,46 @@ fastify.get('/api/game/matches/:id', { preHandler: verifyJWT }, async (request, 
 	reply.send({iddata_array, win_nbr, loose_nbr});
 });
 
+function log_out(connection){
+	for (let tournamentInstance of tournamentInstance_array){
+		if (!tournamentInstance.gameInstance.players.some(player => player.connection === connection))
+			continue;
+		tournamentInstance.terminate();
+	}
+	for (let gameInstance of gameInstance_array){
+		if (!gameInstance.players.some(player => player.connection === connection))
+			continue;
+		gameInstance.terminate();
+	}
+	for (let project of projectsArray){
+		const idx = project.player_array.findIndex(player => player.connection === connection);
+		if (idx !== -1) {
+			project.player_array.splice(idx, 1);
+			if (project.player_name_array) project.player_name_array.splice(idx, 1);
+			if (project.player_id_array) project.player_id_array.splice(idx, 1);
+			if (project.player_case_array) project.player_case_array.splice(idx, 1);
+		}
+	}
+	const index = clients.indexOf(connection.socket);
+	console.log("Client Leaving", clients[index]);
+	if (index !== -1) clients.splice(index, 1);
+}
+
 fastify.register(async function (fastify){
 	fastify.get('/ws', {websocket : true }, (connection, req) => {
-		let new_client = new Client(connection, id); id++;
+		const global_id = Number(req.query.global_id);
+		const duplicates = clients.filter(client => client.global_id === global_id);
+
+		for (const client of duplicates) {
+			try {
+				client.connection.send(JSON.stringify({ type: 'multipleconnexion', msg: 'Another game was opened on this account' }));
+				client.connection.close();
+				log_out(client.connection);
+			} catch (e) {}
+		}
+		let new_client = new Client(connection, id, global_id); id++;
 		clients.push(new_client);
-		console.log("New Client", new_client.id);
+		console.log("New Client", new_client.id, new_client.global_id);
 		connection.send(JSON.stringify({type: 'welcome', id: new_client.id}));
 		connection.on('message', (message) => {
 			let actual_client = clients.find(client => client.connection === connection);
@@ -192,7 +227,7 @@ fastify.register(async function (fastify){
 					}
 				}
 				if (data.type === 'gamesearch'){
-					console.log(data);
+					// console.log(data);
 					// console.log("new Project search");
 					for (let projects of projectsArray){
 						if (projects.IA === data.gameparam.IA &&
@@ -240,14 +275,12 @@ fastify.register(async function (fastify){
 						newProject.player_name_array.push("Local player");
 					}
 					projectsArray.push(newProject);
-					console.log(newProject);
+					// console.log(newProject);
 				}
 			} catch (e) {}
 		});
 		connection.on('close', () => {
-			const index = clients.indexOf(connection.socket);
-			console.log("Client Leaving", clients[index]);
-			if (index !== -1) clients.splice(index, 1);
+			log_out(connection);
 		});
 	});
 })
@@ -363,13 +396,21 @@ async function create_game(local, tournament, IA, IA_diff,
 					operator, custom, IA_diff, speeding_mode);
 			tournamentInstance_array.push(tournamentInstance);
 			let winner = await tournamentInstance.tournament();
-			if (winner != null)
-				console.log("Winner is :", winner);
+			if (winner != null){
+				if (winner != ""){
+					console.log("Winner is :", winner);
+					for (let player of players_list){
+						player.connection.send(JSON.stringify({ type: 'end', msg: String("Winner is :" + winner)}));
+					}
+				} else {
+					console.log("Game Ended by deconnexion");
+					for (let player of players_list){
+						player.connection.send(JSON.stringify({ type: 'end', msg : String("Game ended by Deconnexion from a Player")}));
+					}
+				}
+			}
 			else
 				console.log("Tournament crash");
-			for (let player of players_list){
-				player.connection.send(JSON.stringify({ type: 'end', msg: String("Winner is :" + winner)}));
-			}
 			let idx = tournamentInstance_array.indexOf(tournamentInstance);
 			tournamentInstance_array.splice(idx, 1);
 		} else {
@@ -382,10 +423,17 @@ async function create_game(local, tournament, IA, IA_diff,
 			let gameInstance = new Game(operator, IA, players, custom, IA_diff, speeding_mode);
 			gameInstance_array.push(gameInstance);
 			let data = await gameInstance.startGame();
-			console.log("Winner is :", data.winner1.name);
-			saveMatch("1v1 Local", data);
-			for (let player of players_list){
-				player.connection.send(JSON.stringify({ type: 'end', msg : String("Winner is :" + data.winner1.name)}));
+			if (data != null){
+				console.log("Winner is :", data.winner1.name);
+				saveMatch("1v1 Local", data);
+				for (let player of players_list){
+					player.connection.send(JSON.stringify({ type: 'end', msg : String("Winner is :" + data.winner1.name)}));
+				}
+			} else {
+				console.log("Game Ended by deconnexion");
+				for (let player of players_list){
+					player.connection.send(JSON.stringify({ type: 'end', msg : String("Game ended by Deconnexion from a Player")}));
+				}
 			}
 			let idx = gameInstance_array.indexOf(gameInstance);
 			gameInstance_array.splice(idx, 1);
@@ -413,15 +461,22 @@ async function create_game(local, tournament, IA, IA_diff,
 		let gameInstance = new Game(operator, IA, players, custom, IA_diff, speeding_mode);
 		gameInstance_array.push(gameInstance);
 		let data = await gameInstance.startGame();
-		if (player_nbr == 2)
-			message = "Winner is :" + data.winner1.name;
-		else {
-			message = "Winners are :" + data.winner1.name + "and" + data.winner2.name;
-		}
-		console.log(message);
-		saveMatch((player_nbr == 4) ? "2v2 Online" : "1v1 Online" , data);
-		for (let player of players_list){
-			player.connection.send(JSON.stringify({ type: 'end', msg : message}));
+		if (data != null){
+			if (player_nbr == 2)
+				message = "Winner is :" + data.winner1.name;
+			else {
+				message = "Winners are :" + data.winner1.name + "and" + data.winner2.name;
+			}
+			console.log(message);
+			saveMatch((player_nbr == 4) ? "2v2 Online" : "1v1 Online" , data);
+			for (let player of players_list){
+				player.connection.send(JSON.stringify({ type: 'end', msg : message}));
+			}
+		} else {
+			console.log("Game Ended by deconnexion");
+			for (let player of players_list){
+				player.connection.send(JSON.stringify({ type: 'end', msg : String("Game ended by Deconnexion from a Player")}));
+			}
 		}
 		let idx = gameInstance_array.indexOf(gameInstance);
 		gameInstance_array.splice(idx, 1);
