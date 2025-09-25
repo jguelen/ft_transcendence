@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { validatePassword } from '../auth/Register';
 import { useState } from 'react';
 
+import Friends from '../../components/FriendList'
+
 function Account()
 {
   const [username, setUsername] = useState<string>("JohnDoe42");
@@ -85,7 +87,8 @@ function Account()
     <div className="contents">
       <Navbar activeMenu='account' className="col-start-1 row-start-1"/>
       <Card maxHeight='' maxWidth='' className="col-start-2 row-start-1 row-span-3">
-        Friends
+        {/* Friends */}
+        <Friends/>
       </Card>
       <Card maxHeight='' maxWidth='' className="col-start-3 row-start-1 p-[30px]
         flex flex-col justify-evenly items-center">

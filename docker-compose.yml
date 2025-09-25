@@ -69,6 +69,16 @@ services:
     restart: unless-stopped
     volumes:
       - avatar-images:/app/avatars
+  
+  online-service:
+    build:
+      context: ./online-service
+    container_name: online_service
+    ports:
+      - "3004:3004"
+    environment:
+      - PORT=3004
+    restart: unless-stopped
 
 volumes:
   user-data:

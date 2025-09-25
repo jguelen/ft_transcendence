@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect, ReactNode } from 'react';
+import { createContext, useState, useContext, useEffect, ReactNode, useRef } from 'react';
 
 // --- Définition des Types ---
 // Décrit la forme d'un objet utilisateur. Adaptez-le à vos besoins.
@@ -16,6 +16,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (userData: User) => void;
   logout: () => void;
+  wsRef: React.MutableRefObject<WebSocket | null>;
 }
 
 // --- Création du Contexte ---
@@ -33,6 +34,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   // On type l'état 'user'. Il peut être soit un objet User, soit null.
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     const checkLoggedInUser = async () => {
@@ -60,6 +62,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
     checkLoggedInUser();
   }, []);
 
+  useEffect(() => {
+    if (!user) return;
+
+    const wsUrl = `wss://${window.location.hostname}:8443/online`;
+    const ws = new WebSocket(wsUrl);
+    wsRef.current = ws;
+
+    ws.onopen = () => {
+      ws.send(JSON.stringify({ id: user.id, name: user.name }));
+    };
+
+    ws.onclose = () => {
+      wsRef.current = null;
+    };
+
+    return () => {
+      wsRef.current?.close();
+      wsRef.current = null;
+    };
+  }, [user?.id, user?.name]);
+
   // La fonction login attend un paramètre qui doit être de type User.
   const login = (userData: User) => {
     setUser(userData);
@@ -75,6 +98,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading,
     login,
     logout,
+    wsRef,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -155,7 +155,7 @@ export default function PongGame({config}: {config : any}) {
 				serviceRef.current.draw_start(pongConfig.custom_mode);
 
 				const trySend = () => {
-					if (serviceRef.current.myId) {
+					if (serviceRef.current?.myId) {
 						serviceRef.current.ws.send(
 							JSON.stringify({ type: "gamesearch",
 								gameparam: pongConfig, keys: keys,
