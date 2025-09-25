@@ -40,6 +40,7 @@ console.log(user)
 		}
 	})
 
+	
 	fastify_instance.post('/api/user/getbyname/:name', {}, async function (req, res) {
 console.log("POST /api/user/getbyname/:name");
 console.log(req.params.name);
