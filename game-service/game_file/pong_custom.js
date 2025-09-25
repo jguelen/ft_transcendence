@@ -5,6 +5,8 @@ import {HEIGHT, WIDTH, BASE_PLAYER_SPEED,
 import {Box, Obstacle} from './pong_class.js';
 import * as utils from './pong_web_utils.js';
 
+let max_box = 10;
+let prob_box = 0.3;
 /*
 	The box has a chance of 1 to 10 to spawn every 3 sec
 	it give the following changes to the games if the ball touchs it :
@@ -130,8 +132,13 @@ async function effect8(game){ //done maybe ajust despawn after point
 }
 
 async function effect9(game){ //nothing
-	console.log("Nothing {9}");
-	
+	console.log("Starfall {9}");
+	max_box = 30;
+	prob_box = 1;
+	while (game.box_array.length < max_box){
+		let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
+		game.box_array.push(new_box);
+	}
 }
 
 async function effect10(game){ //nothing
@@ -317,6 +324,8 @@ function apply_effect(game, nbr){
 }
 
 export function reset_effect(game){
+	max_box = 10;
+	prob_box = 0.3;
 	game.true_speeding_ball = false;
 	game.in_effect = false;
 	game.multiple_ball = false;
@@ -374,7 +383,7 @@ function randomCustomWeighted() {
     const weights = [
         common, rare, common, common, //0, 1, 2, 3
 		uncommon, epic, rare, rare, //4, 5, 6, 7
-		uncommon, epic, rare, uncommon, //8, 9, 10, 11
+		uncommon, legendary, rare, uncommon, //8, 9, 10, 11
 		uncommon, uncommon, rare, epic, //12, 13, 14, 15
 		uncommon, rare, legendary, common, //16, 17, 18, 19
 		rare, rare, uncommon //20, 21, 22
@@ -409,14 +418,14 @@ export async function custom_mode_func(game){
 			let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
 			while (game.box_array.includes(new_box) == true)
 				new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
-			// let nbr = 10;
+			// let nbr = 9;
 			// let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), nbr);
 			return (new_box);
 		}
 		setInterval(() => {
-			if (game.box_array.length > 10)
+			if (game.box_array.length > max_box)
 				game.box_array.shift();
-			if (Math.random() < 0.3 && game.gold_game == false && game.epic_moment == false && game.pause == false)
+			if (Math.random() < prob_box && game.gold_game == false && game.epic_moment == false && game.pause == false)
 				game.box_array.push(spawn_a_box());
 		}, 1000);
 	}

@@ -84,14 +84,12 @@ async function oponentName(oponent: any): Promise<string> {
   return "Unknown";
 }
 
-//ATTENTION changer le mdp JWT
-const API_URL = `http://${window.location.hostname}:3000/api/game/matches`;
 export async function fetchItemsFromAPI(
   playerId: string
   ): Promise<{ items: ListItem[], win_nbr: number, loose_nbr: number }> {
   if (playerId == null)
     throw new Error("No user id");
-  const response = await fetch(`${API_URL}/${playerId}`, {
+  const response = await fetch(`/api/game/matches/${playerId}`, {
     method: "GET",
     credentials: "include",
     headers: {

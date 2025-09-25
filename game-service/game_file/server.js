@@ -161,7 +161,7 @@ fastify.get('/api/game/matches/:id', { preHandler: verifyJWT }, async (request, 
 	reply.send({iddata_array, win_nbr, loose_nbr});
 });
 
-function log_out(connection){
+function disconnection(connection){
 	for (let tournamentInstance of tournamentInstance_array){
 		if (!tournamentInstance.gameInstance.players.some(player => player.connection === connection))
 			continue;
@@ -181,7 +181,7 @@ function log_out(connection){
 			if (project.player_case_array) project.player_case_array.splice(idx, 1);
 		}
 	}
-	const index = clients.indexOf(connection.socket);
+	const index = clients.indexOf(connection);
 	console.log("Client Leaving", clients[index]);
 	if (index !== -1) clients.splice(index, 1);
 }
@@ -195,7 +195,7 @@ fastify.register(async function (fastify){
 			try {
 				client.connection.send(JSON.stringify({ type: 'multipleconnexion', msg: 'Another game was opened on this account' }));
 				client.connection.close();
-				log_out(client.connection);
+				disconnection(client.connection);
 			} catch (e) {}
 		}
 		let new_client = new Client(connection, id, global_id); id++;
@@ -280,7 +280,7 @@ fastify.register(async function (fastify){
 			} catch (e) {}
 		});
 		connection.on('close', () => {
-			log_out(connection);
+			disconnection(connection);
 		});
 	});
 })

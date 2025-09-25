@@ -37,7 +37,6 @@ const ROUTES = {
   },
   CONTEST: {
     TOURNAMENT: '/cup',
-    GAME: '/cup/game',
   },
   LOCAL: {
     INDEX: '/local-pong',
@@ -70,13 +69,12 @@ function App() {
               <Route path={ROUTES.HOME} element={<Home />}/>
               <Route path={ROUTES.LOCAL.INDEX} element={ <LocalPong/> }/>
               <Route path={ROUTES.ONLINE.INDEX} element={ <OnlinePong />}/>
-              <Route path={ROUTES.CONTEST.TOURNAMENT} element={ <Tournament/> }/>
+              <Route path={ROUTES.CONTEST.TOURNAMENT} element={  <TournamentGame/> }/>
               <Route element={ <GameLayout/> }>
                 <Route path={ROUTES.LOCAL.PLAY_1V1} element={ <Local1v1/> }/>
                 <Route path={ROUTES.LOCAL.PLAY_AI} element={ <Ai1v1/> }/>
                 <Route path={ROUTES.ONLINE.PLAY_1V1} element={<Online1v1 />}/>
                 <Route path={ROUTES.ONLINE.PLAY_2V2} element={<Online2v2 />}/>
-                <Route path={ROUTES.CONTEST.GAME} element={ <TournamentGame/> }/>
               </Route>
 
               <Route element={<GridLayout/>} >
