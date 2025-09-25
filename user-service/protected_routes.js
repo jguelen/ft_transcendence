@@ -8,33 +8,54 @@ const { JWT_SECRET } = process.env
 
 
 exports.protected_routes = function(fastify_instance, options, next) {
-
+/*
 // JWT verification function
-const verifyJWT = async (req, res) => {
-	try {
-		// console.log("user request1:",req);
-		if (!req.cookies) {
-			return res.status(401).send({ error: 'No cookies' });
+	const verifyJWT = async (req, res) => {
+		try {
+			// console.log("user request1:",req);
+			if (!req.cookies) {
+				return res.status(401).send({ error: 'No cookies' });
+			}
+			const token = req.cookies['ft_transcendence_jwt'];
+			if (!token) {
+				return res.status(401).send({ error: 'No JWT cookie' });
+			}
+			const decoded = jwt.verify(token, JWT_SECRET);
+			req.user = { userId: Number(decoded.userId) };
+			// console.log("user request:",req);
+		} catch (error) {
+			console.error(error);
+			return res.status(401).send({ error: 'Invalid token' });
 		}
-		const token = req.cookies['ft_transcendence_jwt'];
-		if (!token) {
-			return res.status(401).send({ error: 'No JWT cookie' });
+	};
+*/
+
+// JWT verification function	
+	fastify_instance.addHook('preValidation', (req, res, done) =>  {
+		try {
+// console.log("user request1:",req);
+			if (!req.cookies) {
+				return res.status(401).send({ error: 'No cookies' });
+			}
+			const token = req.cookies['ft_transcendence_jwt'];
+			if (!token) {
+				return res.status(401).send({ error: 'No JWT cookie' });
+			}
+			const decoded = jwt.verify(token, JWT_SECRET);
+			req.user = { userId: Number(decoded.userId) };
+// console.log("user request:",req);
+			done()
 		}
-		const decoded = jwt.verify(token, JWT_SECRET);
-		req.user = { userId: Number(decoded.userId) };
-		// console.log("user request:",req);
-	} catch (error) {
-		console.error(error);
-		return res.status(401).send({ error: 'Invalid token' });
-	}
-};
+		catch (err) {
+			console.log(err);
+			res.status(401).send({ error: 'Invalid token' });
+		}
+	})
 
 
-	fastify_instance.get('/api/user/getloggeduser', { preHandler: [verifyJWT] }, async function (req, res) {
-
+	fastify_instance.get('/api/user/getloggeduser', async function (req, res) {
 console.log("/api/user/getloggeduser");
 console.log(req.user);
-
 		try {
 			var user = await prisma.user.findUnique({
 				where: { 
@@ -49,22 +70,27 @@ console.log(req.user);
 				}
 			);
 		}
-		catch (error) {
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
-	fastify_instance.get('/api/user/:id', { preHandler: verifyJWT }, async (req, reply) => {
+
+fastify_instance.get('/api/user/:id', async (req, reply) => {
 		try {
 			const user = await prisma.user.findUnique({ where: { id: Number(req.params.id) } });
 			if (!user) return reply.status(404).send({ error: "User not found" });
 			return { name: user.name, id: user.id };
-		} catch (error) {
-			res.status(500)
 		}
-	});
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
+		}
+});
 
-	fastify_instance.get('/api/user/all', { preHandler: verifyJWT }, async (req, reply) => {
+
+fastify_instance.get('/api/user/all', async (req, reply) => {
 		try {
 			const users = await prisma.user.findMany({
 				select: { id: true, name: true }
@@ -74,12 +100,33 @@ console.log(req.user);
 		} catch (error) {
 			reply.status(500).send({ error: "Database error" });
 		}
-	});
+});
 
-	fastify_instance.put('/api/user/updatekeybinds/:keymap', { preHandler: [verifyJWT] }, async function (req, res) {
+
+	fastify_instance.post('/api/user/getbyname', {}, async function (req, res) {
+console.log("POST /api/user/getbyname");
+console.log(req.params.name);
+		try {
+			var user = await prisma.user.findMany({
+				where: { 
+					name: req.body.name
+				}
+			})
+console.log(user)
+			if (user.length == 0)
+				return res.status(404).send()
+			res.status(200).send( { id: user[0].id, name: user[0].name })
+		}
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
+		}
+	})
+
+
+	fastify_instance.put('/api/user/updatekeybinds/:keymap', async function (req, res) {
 
 		const keymap = req.params.keymap;
-
 console.log("/api/user/updatekeybinds");
 console.log(keymap);
 
@@ -94,16 +141,16 @@ console.log(keymap);
 			})
 			return res.status(200).send( {keymap: keymap} );
 		}
-		catch (error) {
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
 
-	fastify_instance.put('/api/user/updatelanguage/:language', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.put('/api/user/updatelanguage/:language', async function (req, res) {
 
 		const language = req.params.language;
-
 console.log("/api/user/updatelanguage");
 console.log(language);
 
@@ -118,13 +165,14 @@ console.log(language);
 			})
 			return res.status(200).send( {language: language} );
 		}
-		catch (error) {
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
 
-	fastify_instance.put('/api/user/updateusername/:newusername', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.put('/api/user/updateusername/:newusername', async function (req, res) {
 
 		const newName = req.params.newusername;
 
@@ -155,14 +203,14 @@ console.log(newName);
 
 			return res.status(200).send( {name: altName} );
 		}
-		catch (error) {
+		catch (err) {
+			console.log(err)
 			res.status(500).send()
 		}
-
 	})
 
 
-	fastify_instance.put('/api/user/requestfriendship/:userid', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.put('/api/user/requestfriendship/:userid', async function (req, res) {
 console.log("/api/user/requestfriendship/:userid");
 
 		const requesteduserid = req.params.userid
@@ -182,14 +230,14 @@ console.log('new friendshiprequest created');
 
 			res.status(200).send();
 		}
-		catch (error) {
-			console.error(error);
+		catch (err) {
+			console.log(err)
 			res.status(500).send()
 		}
 	})
 
 
-	fastify_instance.get('/api/user/getyourfriendshiprequests', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.get('/api/user/getyourfriendshiprequests', async function (req, res) {
 
 console.log("/api/user/getyourfriendshiprequests");
 console.log(req.user);
@@ -207,15 +255,14 @@ console.log(yourfriendshiprequests);
 
 			return res.status(200).send(yourfriendshiprequests);
 		}
-		catch (error) {
-			console.error(error);
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
 
-
-	fastify_instance.delete('/api/user/delyourfriendshiprequest/:requestedid', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.delete('/api/user/delyourfriendshiprequest/:requestedid', async function (req, res) {
 
 console.log("/api/user/delyourfriendshiprequest");
 console.log(req.user);
@@ -235,15 +282,14 @@ console.log(req.params);
 
 			return res.status(200).send();
 		}
-		catch (error) {
-			console.error(error);
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
 
-
-	fastify_instance.put('/api/user/updatepw', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.put('/api/user/updatepw', async function (req, res) {
 
 		const pw = req.body.pw;
 		const newPw = req.body.newpw;
@@ -282,8 +328,6 @@ console.log("response received");
 				return res.status(500).send();
 
 			const userData = await response.json();
-
-
 console.log(userData);
 
 			var user = await prisma.user.update({
@@ -297,14 +341,14 @@ console.log(userData);
 
 			return res.status(200).send();
 		}
-		catch (error) {
+		catch (err) {
+			console.log(err)
 			res.status(500).send()
 		}
 	})
 
 
-
-	fastify_instance.get('/api/user/getfriendshiprequests', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.get('/api/user/getfriendshiprequests', async function (req, res) {
 
 console.log("/api/user/getfriendshiprequests");
 console.log(req.user);
@@ -322,14 +366,14 @@ console.log(yourfriendshiprequests);
 
 			return res.status(200).send(yourfriendshiprequests);
 		}
-		catch (error) {
-			console.error(error);
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
 
-	fastify_instance.put('/api/user/acceptfriendshiprequest/:requesterid', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.put('/api/user/acceptfriendshiprequest/:requesterid', async function (req, res) {
 
 console.log("/api/user/acceptfriendshiprequest");
 console.log(req.user);
@@ -361,14 +405,14 @@ console.log("ok");
 
 			return res.status(200).send();
 		}
-		catch (error) {
-			console.error(error);
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
 
-	fastify_instance.put('/api/user/declinefriendshiprequest/:requesterid', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.put('/api/user/declinefriendshiprequest/:requesterid', async function (req, res) {
 
 console.log("/api/user/declinefriendshiprequest");
 console.log(req.user);
@@ -390,15 +434,14 @@ console.log(req.user);
 console.log("ok");
 			return res.status(200).send();
 		}
-		catch (error) {
-			console.error(error);
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
 
-	fastify_instance.get('/api/user/getfriends', { preHandler: [verifyJWT] }, async function (req, res) {
-
+	fastify_instance.get('/api/user/getfriends', async function (req, res) {
 console.log("/api/user/getfriends");
 console.log(req.user);
 
@@ -421,13 +464,13 @@ console.log(friends);
 
 			return res.status(200).send(friends);
 		}
-		catch (error) {
-			console.error(error);
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
-	fastify_instance.delete('/api/user/unfriend/:friendid', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.delete('/api/user/unfriend/:friendid', async function (req, res) {
 
 console.log("/api/user/unfriend");
 console.log(req.user);
@@ -461,20 +504,18 @@ console.log(friendship);
 
 			return res.status(200).send();
 		}
-		catch (error) {
-			console.error(error);
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
-
 	})
 
 
-	fastify_instance.get('/api/user/getrelationship/:userid', { preHandler: [verifyJWT] },
-		async function (req, res) {
+	fastify_instance.get('/api/user/getrelationship/:userid', async function (req, res) {
 console.log("/api/user/getrelationship/:name");	
 console.log(req.params);
 
-		const targetUserId = req.params.userid;
+		const targetUserId = Number(req.params.userid);
 
 		try {
 			var relationship = await prisma.$queryRawUnsafe(`
@@ -496,24 +537,24 @@ THEN TRUE ELSE FALSE END AS hasblockedyou`,
 			req.user.userId,
 			targetUserId)
 
-var relationship = {
-	isfriend: relationship[0].isfriend == 1,
-	isblockedbyyou: relationship[0].isblockedbyyou  == 1,
-	hasblockedyou: relationship[0].hasblockedyou  == 1
-}
+			var relationship = {
+				isfriend: relationship[0].isfriend == 1,
+				isblockedbyyou: relationship[0].isblockedbyyou  == 1,
+				hasblockedyou: relationship[0].hasblockedyou  == 1
+			}
 			
 console.log(relationship);
 
 			return res.status(200).send(relationship);
 		}
-		catch (error) {
-			console.error(error);
+		catch (err) {
+			console.log(err)
 			res.status(500).send()
 		}
 	})
 
 
-	fastify_instance.get('/api/user/getblockeds', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.get('/api/user/getblockeds', async function (req, res) {
 
 console.log("/api/user/getblockeds");
 console.log(req.user);
@@ -531,14 +572,14 @@ console.log(blockeds);
 
 			return res.status(200).send(blockeds);
 		}
-		catch (error) {
-			console.error(error);
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
 
-	fastify_instance.put('/api/user/block/:usertoblockid', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.put('/api/user/block/:usertoblockid', async function (req, res) {
 
 console.log("/api/user/block");
 console.log(req.user);
@@ -556,14 +597,14 @@ console.log(req.user);
 		console.log("ok");
 			return res.status(200).send();
 		}
-		catch (error) {
-			console.error(error);
-			res.status(500)
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
 
-	fastify_instance.delete('/api/user/unblock/:blockedid', { preHandler: [verifyJWT] }, async function (req, res) {
+	fastify_instance.delete('/api/user/unblock/:blockedid', async function (req, res) {
 
 console.log("/api/user/unblock");
 console.log(req.user);
@@ -585,12 +626,13 @@ console.log(req.params);
 			return res.status(200).send();
 		}
 		catch (err) {
-			console.error(err);
-			res.status(500)
+			console.log(err)
+			res.status(500).send()
 		}
 	})
 
-fastify_instance.get('/api/user/getprofilebyname/:name',  { preHandler: [verifyJWT] }, async function (req, res) {
+
+	fastify_instance.get('/api/user/getprofilebyname/:name', async function (req, res) {
 console.log("/api/user/getprofilebyname/:name");	
 console.log(req.params);
 
@@ -613,12 +655,10 @@ console.log(user[0]);
 		return res.status(200).send(userData);
 	}
 	catch (err) {
-console.error(err);
+		console.log(err)
 		res.status(500).send()
 	}
 })
-
-
 
 	next()
 }

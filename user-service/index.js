@@ -79,24 +79,6 @@ console.log("preHandler-CORS-tmp");
 
 
 
-/*
-fastify.addHook('preHandler2', (req, res, next) => {
-console.log("hahaha");
-//  req.jwt = fastify.jwt
-
-	try {
-//		const token = req.cookies['ft_transcendence_jwt'];
-
-//		const decoded = jwt.verify(token, 'supersecretcode-CHANGE_THIS-USE_ENV_FILE');
-
-	} catch (error) {
-		return res.status(401).send({ error: 'Invalid token' });
-	}
-  return next()
-})
-*/
-
-
 // fastify.register(fastify_cookie, {
 //   secret: process.env.JWT_SECRET,
 //   hook: 'preHandler',
@@ -113,98 +95,6 @@ const {api_private_routes} = require('./api_private_routes.js')
 fastify.register(protected_routes)
 fastify.register(api_private_routes)
 
-
-/*
-fastify.get('/api/user/getbyname/:name', {}, async function (req, res) {
-console.log("/api/user/getbyname/:name");	
-console.log(req.params);
-
-	const value = req.params.name;
-	try {
-		var user = await prisma.user.findMany({
-			where: { 
-				name: value
-			}
-		})
-
-console.log("result");
-		if (user.length == 0)
-			return res.status(200).send({});
-
-console.log(user[0]);
-
-		const userData = {id:user[0].id, name:value, rank:user[0].rank}
-
-		return res.status(200).send(userData);
-	}
-	catch (error) {
-console.error(error);
-		res.status(500).send()
-	}
-})
-
-
-//!!
-fastify.get('/api/user/getbyid/:id', {}, async function (req, res) {
-console.log("/api/user/getbyid/:id");	
-console.log(req.params);
-
-	const value = req.params.id;
-
-	try {
-		var user = await prisma.user.findUnique({
-			where: { 
-				id: value
-			}
-		})
-		return res.send(user);
-	}
-	catch (error) {
-		res.status(500).send("")
-	}
-
-})
-*/
-
-fastify.post('/api/user/newuser', {}, async function (req, res) {
-console.log('# /newuser');
-console.log(req.body);
-
-//		const { username, useremail, password } = req.body;
-	try {
-		const email = req.body.email;
-		const name = req.body.name;
-		const password = req.body.password;
-
-//		if (!validateEmail(email))
-//			return res.status(404).send( {} );
-
-		// if (!validatePassword(password))
-		//  	return res.status(404).send();
-
-		// if (!validateUserName(name))
-		// 	return res.status(404).send();
-
-		uniqueUserName = await checkUserNameDuplicate(name)
-console.log("uniqueUserName");
-console.log(uniqueUserName);
-		if (uniqueUserName == "")
-			return res.status(404).send();
-
-			let user = await prisma.user.create({
-				data: { name: uniqueUserName, email, password }
-			})
-console.log(user);
-console.log('newuser created');
-
-		res.status(200).send(user);
-	}
-	catch (error) {
-console.error('newuser pancarte');
-		console.error(error);
-		res.status(500).send();
-	}
-})
 
 
 // Run the serveur!

@@ -124,6 +124,9 @@ console.log(gh_user);
 		if (!gh_user?.email)
 			throw API_Error("cannot_get_email")
 
+		if (!validateUserName(gh_user.fullName))
+			throw API_Error("name_incompatible")
+
 		const getbyemail_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${gh_user.email}`,
 		{
             method: 'POST',
@@ -283,12 +286,13 @@ console.log(req.body);
 	const password = req.body.password.trim()
 
 	try {
-		if (!validateUserName(password))
+		if (!validateUserName(name))
 			throw API_Error("name_malformed")
-		if (!validateEmail(password))
-			throw API_Error("email_malformed")
-		if (!validatePassword(password))
-			throw API_Error("password_malformed")
+		if (!validateEmail(email))
+		 	throw API_Error("email_malformed")
+//TODO A REMETTRE EN PROD
+//		if (!validatePassword(password))
+//			throw API_Error("password_malformed")
 		
 		const pwHash = await bcrypt.hash(password, 12);
 
@@ -373,4 +377,3 @@ fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3000 }, (err) => {
 		process.exit(1)
 	}
 })
-
