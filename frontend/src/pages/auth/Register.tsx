@@ -160,7 +160,7 @@ export function validatePassword(password: string, t: Function): string[] {
   if (!/[0-9]/.test(password)) {
     errors.push(t("error.number"));
   }
-  if (!/[!@#$%^&*]/.test(password)) {
+  if (!/[!@#$%^&*_]/.test(password)) {
     errors.push(t("error.special"));
   }
   return errors;
