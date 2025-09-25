@@ -580,7 +580,6 @@ console.log(blockeds);
 
 
 	fastify_instance.put('/api/user/block/:usertoblockid', async function (req, res) {
-
 console.log("/api/user/block");
 console.log(req.user);
 
@@ -605,7 +604,6 @@ console.log(req.user);
 
 
 	fastify_instance.delete('/api/user/unblock/:blockedid', async function (req, res) {
-
 console.log("/api/user/unblock");
 console.log(req.user);
 
@@ -631,35 +629,57 @@ console.log(req.params);
 		}
 	})
 
-
+// A virer
 	fastify_instance.get('/api/user/getprofilebyname/:name', async function (req, res) {
 console.log("/api/user/getprofilebyname/:name");	
 console.log(req.params);
 
-	const value = req.params.name;
-	try {
-		var user = await prisma.user.findMany({
-			where: { 
-				name: value
-			}
-		})
-
+		const value = req.params.name;
+		try {
+			var user = await prisma.user.findMany({
+				where: { 
+					name: value
+				}
+			})
 console.log("result");
-		if (user.length == 0)
-			return res.status(200).send({});
-
+			if (user.length == 0)
+				return res.status(200).send({});
 console.log(user[0]);
+			const userData = {id:user[0].id, name:value, rank:user[0].rank}
 
-		const userData = {id:user[0].id, name:value, rank:user[0].rank}
+			return res.status(200).send(userData);
+		}
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
+		}
+	})
 
-		return res.status(200).send(userData);
-	}
-	catch (err) {
-		console.log(err)
-		res.status(500).send()
-	}
-})
+
+	fastify_instance.post('/api/user/getprofilebyname', async function (req, res) {
+console.log("#POST /api/user/getprofilebyname");	
+console.log(req.body);
+
+		const value = req.body.name;
+		try {
+			var user = await prisma.user.findMany({
+				where: { 
+					name: value
+				}
+			})
+console.log("result");
+			if (user.length == 0)
+				return res.status(200).send({});
+console.log(user[0]);
+			const userData = {id:user[0].id, name:value, rank:user[0].rank}
+
+			return res.status(200).send(userData);
+		}
+		catch (err) {
+			console.log(err)
+			res.status(500).send()
+		}
+	})
 
 	next()
 }
-

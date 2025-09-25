@@ -127,11 +127,12 @@ console.log(gh_user);
 		if (!validateUserName(gh_user.fullName))
 			throw API_Error("name_incompatible")
 
-		const getbyemail_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${gh_user.email}`,
+		const getbyemail_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail`,
 		{
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
+				email: gh_user.email,
                 api_passphrase: process.env.API_PASSPHRASE,
             })
         })
@@ -201,7 +202,7 @@ console.log(session_token)
 
 
 fastify.post('/api/auth/login', async (req, res) => { 
-console.log('# /auth/login');
+console.log('#POST /auth/login');
 console.log(req.body);
 
 	const userlogin = req.body.userlogin.trim()
@@ -212,22 +213,24 @@ console.log(req.body);
 
 		if (userlogin.includes('@')) {
 console.log("->email");
-			getbylogin_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${userlogin}`,
+			getbylogin_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail`,
 			{
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
+					email: userlogin,
 					api_passphrase: process.env.API_PASSPHRASE,
 				})
 			})
 		}
 		else {
 console.log("->name");
-			getbylogin_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyname/${userlogin}`,
+			getbylogin_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyname`,
 			{
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
+					name: userlogin, 
 					api_passphrase: process.env.API_PASSPHRASE,
 				})
 			})

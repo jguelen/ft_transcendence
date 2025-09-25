@@ -104,3 +104,6 @@ fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3002 }, (err) => {
 		process.exit(1)
 	}
 })
+
+// docker compose logs -f auth-service user-service
+// compose down auth-service
