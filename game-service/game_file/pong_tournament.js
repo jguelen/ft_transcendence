@@ -132,43 +132,58 @@ export class Tournament{
 			new Player(this.clients[0].id, this.players[idx2].id, this.players[idx2].name, pos[1], this.players_keys[1].keyup, this.players_keys[1].keydown, this.clients[0].connection)];
 		this.gameInstance = new Game(this.operator, false, players_data, this.custom, this.IA_diff, this.speeding_mode);
 		let data = await this.gameInstance.startGame();
-		if (this.players[idx1].id != -1 || this.players[idx2].id != -1){
-			console.log("Data win in db:", data);
-			saveMatch("Tournament Match", data);
-		}
-		if (data.winner_team == "team1"){
-			this.players[idx2].rank = this.rank;
-			this.rank--;
-			console.log("Winner of the match is :", this.players[idx1].name)
-			return idx1;
-		}
-		else if (data.winner_team == "team2"){
-			this.players[idx1].rank = this.rank;
-			this.rank--;
-			console.log("Winner of the match is :", this.players[idx2].name)
-			return idx2;
+		if (data != null){
+			if (this.players[idx1].id != -1 || this.players[idx2].id != -1){
+				console.log("Data win in db:", data);
+				saveMatch("Tournament Match", data);
+			}
+			if (data.winner_team == "team1"){
+				this.players[idx2].rank = this.rank;
+				this.rank--;
+				console.log("Winner of the match is :", this.players[idx1].name)
+				return idx1;
+			}
+			else if (data.winner_team == "team2"){
+				this.players[idx1].rank = this.rank;
+				this.rank--;
+				console.log("Winner of the match is :", this.players[idx2].name)
+				return idx2;
+			}
+		} else {
+			this.gameInstance = null;
+			console.log("Game from Tournament Ended because of Deconnexion");
+			throw new String("Tournament Deconnexion");
 		}
 		return 0;
 	}
 	async choose_game(node){
-		if (Array.isArray(node) && node.length === 2 && typeof node[0] === typeof 1 && typeof node[1] === typeof 1) {
-			console.log("match");
-			let winneridx = await this.match(node[0], node[1]);
-			return winneridx;
+		try {
+			if (Array.isArray(node) && node.length === 2 && typeof node[0] === typeof 1 && typeof node[1] === typeof 1) {
+				console.log("match");
+				let winneridx = await this.match(node[0], node[1]);
+				return winneridx;
+			}
+			if (Array.isArray(node)) {
+				console.log("submatch");
+				node[0] = await this.choose_game(node[0]);
+				node[1] = await this.choose_game(node[1]);
+			}
+			return node;
+		} catch (error) {
+			throw error;
 		}
-		if (Array.isArray(node)) {
-			console.log("submatch");
-			node[0] = await this.choose_game(node[0]);
-			node[1] = await this.choose_game(node[1]);
-		}
-		return node;
 	}
 	async tournament(){
 		if (this.groups == null) return ;
 
 		let winneridx = null;
-		while (typeof winneridx != typeof 1)
-			winneridx = await this.choose_game(this.groups);
+		try {
+			while (typeof winneridx != typeof 1)
+				winneridx = await this.choose_game(this.groups);
+		} catch (error){
+			console.log(error);
+			return "";
+		}
 
 		this.players[winneridx].rank = this.rank;
 		console.log("The Great Winner of the Tournament is :", this.players[winneridx].name);
@@ -177,5 +192,9 @@ export class Tournament{
 		this.players.sort((a, b) => a.rank - b.rank);
 		this.players.forEach(p => console.log(p.rank + " : " + p.name));
 		return winner;
+	}
+	terminate(){
+		this.gameInstance.terminate();
+		return "";
 	}
 }

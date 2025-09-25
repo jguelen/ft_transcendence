@@ -692,5 +692,25 @@ export class Game {
 				team.frontplayer.release(this, key, id);
 		}
 	};
+
+	terminate(){
+		this.over = true;
+		this.start = false;
+
+		// this.players
+		// 	.filter(client => client.connection && client.connection.readyState === client.connection.OPEN)
+		// 	.forEach(client => {
+		// 		try {
+		// 			client.connection.send(JSON.stringify({ type: 'terminated', state: null }));
+		// 		} catch (e){
+		// 			console.error('Erreur lors de l\'envoi du terminate au client :', e);
+		// 		}
+		// 	});
+
+		if (this._gameOverResolver) {
+			this._gameOverResolver(null);
+			this._gameOverResolver = null;
+		}
+	}
 }
 

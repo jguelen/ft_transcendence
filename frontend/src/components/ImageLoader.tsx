@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useAuth } from '../context/AuthContext';
 
 type ImageState = {
     current: string;
@@ -8,7 +9,8 @@ type ImageState = {
 
 export default function ImageLoader() {
 	const default_image = "/futuristic-avatar.svg";
-    const id = 1;
+    const { user } = useAuth();
+    const id = (user) ? user.id : -1;
     const inputRef = useRef<HTMLInputElement>(null);
 	const [imageState, setImageState] = useState<ImageState>({
         current: default_image,
@@ -154,28 +156,11 @@ export default function ImageLoader() {
 
     return (
         <div
-            style={{
-                borderRadius: "50%",
-                overflow: "hidden",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: isUploading ? "wait" : "pointer",
-                opacity: isUploading ? 0.7 : 1,
-            }}
-            className="shadow-card max-w-[200px] max-h-[200px] h-full aspect-square"
+                className={`shadow-card max-w-[200px] max-h-[200px] h-full aspect-square rounded-full overflow-hidden flex items-center justify-center cursor-${isUploading ? "wait" : "pointer"} opacity-${isUploading ? "70" : "100"} relative`}
             onClick={handleClick}
         >
             {isUploading && (
-                <div style={{
-                    position: "absolute",
-                    background: "rgba(0,0,0,0.5)",
-                    color: "white",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    fontSize: "12px",
-                    zIndex: 10
-                }}>
+                <div className="absolute bg-black/50 text-white px-2 py-1 rounded text-xs z-10">
                     Upload...
                 </div>
             )}
