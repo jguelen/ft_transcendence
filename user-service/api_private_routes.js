@@ -20,13 +20,13 @@ console.log("api_private_routes");
 	})
 
 
-	fastify_instance.post('/api/user/getbyemail/:email', {}, async function (req, res) {
-console.log("POST /api/user/getbyemail/:email");
-console.log(req.params.email);
+	fastify_instance.post('/api/user/getbyemail', {}, async function (req, res) {
+console.log("#POST /api/user/getbyemail/:email");
+console.log(req.body);
 		try {
 			var user = await prisma.user.findUnique({
 				where: { 
-					email: req.params.email
+					email: req.body.email
 				}
 			})
 console.log(user)
@@ -41,13 +41,13 @@ console.log(user)
 	})
 
 	
-	fastify_instance.post('/api/user/getbyname/:name', {}, async function (req, res) {
-console.log("POST /api/user/getbyname/:name");
-console.log(req.params.name);
+	fastify_instance.post('/api/user/getbyname', {}, async function (req, res) {
+console.log("#POST /api/user/getbyname");
+console.log(req.body.name);
 		try {
 			var user = await prisma.user.findMany({
 				where: { 
-					name: req.params.name
+					name: req.body.name
 				}
 			})
 console.log(user)
@@ -74,10 +74,8 @@ console.log('# /newuser');
 
 			if (!validateEmail(email))
 				return res.status(400).send( {msg: "email_malformed"} )
-
-			if (!validatePassword(password))
-			  	return res.status(400).send( {msg: "password_malformed"} );
-
+//			if (!validatePassword(password))
+//			  	return res.status(400).send( {msg: "password_malformed"} );
 			if (!validateUserName(name))
 			 	return res.status(400).send( {msg: "username_malformed"} );
 
