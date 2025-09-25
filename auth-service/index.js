@@ -15,6 +15,8 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const fastifyOauth2 = require("@fastify/oauth2");
 
+const { validateEmail, validateUserName, validatePassword } = require('./validators.js')
+
 
 function API_Error(message) {
 	const err = new Error(message)
@@ -28,6 +30,7 @@ fastify.register(fastify_cookie, {
   secret: process.env.JWT_SECRET,
   hook: 'preHandler',
 })
+
 
 // OAuth
 const startRedirectPath = `/login/github`
@@ -52,7 +55,7 @@ fastify.register(fastifyOauth2, {
 fastify.addHook('preHandler', (req, res, next) => {
 console.log("hohohoho");
 
-	res.header("Access-Control-Allow-Origin", "http://localhost:4000")
+	res.header("Access-Control-Allow-Origin", "http://localhost:3000")
 	res.header("Access-Control-Allow-Credentials", true)
 
 	const isPreflight = /options/i.test(req.method);
@@ -63,7 +66,6 @@ console.log("hohohoho");
 	}
 	return next()
 })
-
 
 
 async function getGitHubUserDetails(token) {
@@ -168,7 +170,6 @@ console.log(createuser_res.status);
 
 			userData = await createuser_res.json()
 console.log(userData);
-
 		}
 
 		const session_token = jwt.sign( { userId: userData.id },
@@ -187,33 +188,27 @@ console.log(session_token)
 	}
 	catch(err) {
 //		console.error(`${err.name}: ${err.message}`);
+		console.log(err)
 		if (err.name == "API_Error")
 			res.redirect(`http://localhost:3000/error?oauth-error=${err.message}`)
-		else {
-			console.log(err)
+		else
 			res.redirect(`http://localhost:3000/error?oauth-error`)
-		}
 	}
 });
-
 
 
 fastify.post('/api/auth/login', async (req, res) => { 
 console.log('# /auth/login');
 console.log(req.body);
 
-	const userlogin = req.body.userlogin
-	const email = req.body.userlogin
-	const password = req.body.password
-
-//	const { userlogin, password} = req.body
+	const userlogin = req.body.userlogin.trim()
+	const password = req.body.password.trim()
 
 	try {
 		var	getbylogin_res = null
 
 		if (userlogin.includes('@')) {
 console.log("->email");
-
 			getbylogin_res = await fetch(`${USER_SERVICE_URL}/api/user/getbyemail/${userlogin}`,
 			{
 				method: 'POST',
@@ -260,8 +255,7 @@ console.log(token)
 
 	}
 	catch (err) {
-		console.log("FInd a way in here");
-console.log(err)
+		console.log(err)
 // Revoir cette daube quand il y aura ngix
 		if (err.name == "API_Error")
 			res.status(500).send( { msg: err.message } )
@@ -284,11 +278,18 @@ fastify.post('/api/auth/signup', async (req, res) => {
 console.log('# /auth/signup');
 console.log(req.body);
 
-	const {email, name, password} = req.body
-//	const name = req.body.username
-//	const password = req.body.password
+	const name = req.body.name.trim()
+	const email = req.body.email.trim()
+	const password = req.body.password.trim()
 
 	try {
+		if (!validateUserName(password))
+			throw API_Error("name_malformed")
+		if (!validateEmail(password))
+			throw API_Error("email_malformed")
+		if (!validatePassword(password))
+			throw API_Error("password_malformed")
+		
 		const pwHash = await bcrypt.hash(password, 12);
 
 		const createuser_res = await fetch(`${USER_SERVICE_URL}/api/user/createuser`,
@@ -312,7 +313,6 @@ console.log(createuser_res.status);
 console.log(userData);
 
 		const token = jwt.sign( { userId: userData.id }, process.env.JWT_SECRET );
-
 console.log(token)
 
 		res.status(200).cookie("ft_transcendence_jwt", token, {
@@ -321,51 +321,13 @@ console.log(token)
 			sameSite: "none",
 			secure: true
 		}).send()
-
-
-/*		
-		const response = await fetch(`${USER_SERVICE_URL}/api/user/newuser`,
-		{
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({
-				email: email,
-				name: name,
-				password: pwHash
-			})
-		}
-
-		);
-//console.log(response);
-		if (response.status == 500)
-			return res.status(500).send( {msg: "Can't create user"} );
-
-		if (response.status == 404)
-			return res.status(404).send( {msg: "Invalid user name of password"} );
-
-		const userData = await response.json();
-
-console.log(userData);
-
-
-		const token = jwt.sign( { userId: userData.id }, process.env.JWT_SECRET );
-
-console.log(token)
-
-		res.status(200).cookie("ft_transcendence_jwt", token, {
-			path: "/",
-			httpOnly: true,
-			sameSite: "none",
-			secure: true
-		}).send();*/
 	}
 	catch (err) {
+		console.log(err)
 		if (err.name == "API_Error")
 			res.status(500).send( { msg: err.message } )
-		else {
-			console.log(err)
+		else
 			res.status(500).send( { msg: null } )
-		}
 	}
 })
 
@@ -391,6 +353,7 @@ console.log(newPwHash);
 
 		return res.status(200).send( {newpwhash: newPwHash} );
 	} catch (error) {
+		console.log(err)
 		return res.status(500).send();
 	}
 })
@@ -400,15 +363,7 @@ fastify.delete('/api/auth/logout', async (req, res) => {
 console.log('# /api/auth/logout');
 
 	return res.status(200).clearCookie('ft_transcendence_jwt', {}).send();
-
 })
-
-
-
-
-
-
-
 
 
 // Run the serveur!
@@ -419,5 +374,3 @@ fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3000 }, (err) => {
 	}
 })
 
-
-//module.exports = async function (app, options) {

@@ -16,18 +16,25 @@ exports.validateUserName = function(userName) {
     if (userName.length > 32)
         return false
     return true	
-};
+}
 
 
-// !! Hashed password
 exports.validatePassword = function(password) {
 
-    if (password == null)
-        return true
-    if (password.length > 64)
-        return false
-    if (password.length == 0)
-        return false
-
-    return true
-};
+	if (password.length < 12) {
+		return false;
+	}
+	if (!/[a-z]/.test(password)) {
+		return false;
+	}
+	if (!/[A-Z]/.test(password)) {
+		return false;
+	}
+	if (!/[0-9]/.test(password)) {
+		return false;
+	}
+	if (!/[!@#$%^&*_]/.test(password)) {
+    	return false;
+	}
+	return true;
+}
