@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import FriendScrollableList from "./Friend";
-import { useAuth } from "../context/AuthContext"
+import useAuth from "../context/AuthContext"
 
 export type FriendStatus = "ami" | "random" | "bloqué" | "blockedby";
 export interface FriendItem {

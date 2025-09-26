@@ -105,28 +105,6 @@ fastify_instance.get('/api/user/all', async (req, reply) => {
 		}
 });
 
-
-	fastify_instance.post('/api/user/getbyname', {}, async function (req, res) {
-console.log("POST /api/user/getbyname");
-console.log(req.params.name);
-		try {
-			var user = await prisma.user.findMany({
-				where: { 
-					name: req.body.name
-				}
-			})
-console.log(user)
-			if (user.length == 0)
-				return res.status(404).send()
-			res.status(200).send( { id: user[0].id, name: user[0].name })
-		}
-		catch (err) {
-			console.log(err)
-			res.status(500).send()
-		}
-	})
-
-
 	fastify_instance.put('/api/user/updatekeybinds/:keymap', async function (req, res) {
 
 		const keymap = req.params.keymap;

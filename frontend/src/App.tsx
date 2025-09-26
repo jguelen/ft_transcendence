@@ -22,8 +22,6 @@ import Ai1v1 from './pages/game/local/Ai1v1';
 import Online1v1 from './pages/game/online/Online1v1';
 import Online2v2 from './pages/game/online/Online2v2';
 import TournamentGame from './pages/game/local/TournamentGame'
-
-// Components
 import ProtectedRoute from './components/ProtectedRoute';
 
 const ROUTES = {

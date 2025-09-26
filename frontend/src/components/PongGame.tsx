@@ -3,7 +3,7 @@ import Button from '../components/Button';
 import Card from '../components/Card';
 import ArrowInput from '../components/ArrowInput';
 import {PongGameService} from '../game/display_pong';
-import { useAuth } from '../context/AuthContext';
+import useAuth from '../context/AuthContext';
 
 async function fetchgetallUser(): Promise<Array<{id: number, name: string}>> {
 	const res = await fetch('/api/user/all', {
