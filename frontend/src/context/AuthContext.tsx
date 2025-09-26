@@ -1,8 +1,6 @@
-import { createContext, useState, useContext, useEffect, ReactNode, useRef } from 'react';
+import { createContext, useState, useContext, useEffect, ReactNode, useRef, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-// --- Définition des Types ---
-// Décrit la forme d'un objet utilisateur. Adaptez-le à vos besoins.
 interface User
 {
   id: number;
@@ -12,65 +10,103 @@ interface User
   language: string;
 }
 
-// Décrit la forme de ce que notre Contexte va fournir.
 interface AuthContextType
 {
   user: User | null;
   isLoading: boolean;
-  register: (email: string, password: string, username: string) => void;
-  login: (email: string, password: string) => void;
-  logout: () => void;
   wsRef: React.MutableRefObject<WebSocket | null>;
-  updateUsername: (newName: string) => void;
+  register: (name: string, email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+  updateUsername: (newName: string) => Promise<void>;
 }
 
-// --- Création du Contexte ---
-// On type le contexte pour qu'il s'attende à la forme de AuthContextType ou null.
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// --- Création du Provider ---
-// On type les props du Provider. "children" représente les composants enfants.
-type AuthProviderProps = {
+type AuthProviderProps =
+{
   children: ReactNode;
 };
 
 export function AuthProvider({ children }: AuthProviderProps)
 {
-  // On type l'état 'user'. Il peut être soit un objet User, soit null.
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const wsRef = useRef<WebSocket | null>(null);
-
-  useEffect(() => {
-    const checkLoggedInUser = async () => {
-      try {
-        const response = await fetch('/api/user/getloggeduser', {
-          credentials: 'include',
-        });
-        if (response.ok) {
-          const userData: User = await response.json();
-          console.log(userData);
-          setUser(userData);
-        } else {
-          console.log("that's why i don't see anything")
-          setUser(null);
-        }
-      } catch (error) {
-        console.error("that's really strange", error)
-        setUser(null);
-      } finally {
-        setIsLoading(false);
   const { t } = useTranslation();
 
-  const getLoggedUser = async () =>
+  useEffect(() =>
+  {
+    const checkUserSession = async () =>
+    {
+      try
+      {
+        const response = await fetch('/api/user/getloggeduser',
+        {
+          credentials: 'include',
+        });
+
+        if (response.ok)
+        {
+          const userData: User = await response.json();
+          setUser(userData);
+        }
+        else
+        {
+          setUser(null);
+        }
+      }
+      catch (error)
+      {
+        console.error("Erreur lors de la vérification de la session :", error);
+        setUser(null);
+      }
+      finally
+      {
+        setIsLoading(false);
+      }
+    };
+
+    checkUserSession();
+  }, []);
+
+  useEffect(() => {
+    if (!user) {
+      if (wsRef.current)
+      {
+        wsRef.current.close();
+        wsRef.current = null;
+      }
+      return;
+    }
+    if (wsRef.current) return;
+    const wsUrl = `wss://${window.location.hostname}:8443/online`;
+    const ws = new WebSocket(wsUrl);
+    wsRef.current = ws;
+    ws.onopen = () =>
+    {
+      console.log("WebSocket connecté.");
+      ws.send(JSON.stringify({ type: "connection", id: user.id }));
+    };
+    ws.onclose = () =>
+    {
+      console.log("WebSocket déconnecté.");
+      wsRef.current = null;
+    };
+    return () =>
+    {
+      if (ws.readyState === WebSocket.OPEN)
+        ws.close();
+    };
+  }, [user]);
+
+  const getLoggedUser = useCallback(async () =>
   {
     try
     {
-      const response = await fetch('/api/user/getloggeduser');
+      const response = await fetch('/api/user/getloggeduser', { credentials: 'include' });
       if (!response.ok)
-      {
         throw new Error(t("auth.error.unauthenticated"));
-      }
       const userData = await response.json();
       setUser(userData);
     }
@@ -79,50 +115,24 @@ export function AuthProvider({ children }: AuthProviderProps)
       console.log("Aucune session active trouvée.", error.message);
       setUser(null);
     }
-  };
-   useEffect(() =>
-   {
-      const checkUserSession = async () =>
-      {
-        setIsLoading(true);
-        await getLoggedUser();
-        setIsLoading(false);
-      };
-      checkUserSession();
-    }, []);
+  }, [t]);
 
-  const register = async (name: string, email: string, password: string) =>
+  const register = useCallback(async (name: string, email: string, password: string) =>
   {
     const response = await fetch('/api/auth/signup',
     {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name: name, email: email, password: password })
+      body: JSON.stringify({ name, email, password })
     });
+    if (!response.ok)
+      throw new Error(t("auth.error.registerFailed"));
+    await getLoggedUser();
+  }, [t, getLoggedUser]);
 
-  useEffect(() => {
-    if (!user || wsRef.current) return;
 
-    const wsUrl = `wss://${window.location.hostname}:8443/online`;
-    const ws = new WebSocket(wsUrl);
-    wsRef.current = ws;
-
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ type: "connection", id: user.id }));
-    };
-
-    ws.onclose = () => {
-      wsRef.current = null;
-    };
-
-    return () => {
-      ws.close();
-      wsRef.current = null;
-    };
-  }, [user]);
-
-  const login = async (email: string, password: string) =>
+  const login = useCallback(async (email: string, password: string) =>
   {
     const response = await fetch('/api/auth/login',
     {
@@ -131,73 +141,62 @@ export function AuthProvider({ children }: AuthProviderProps)
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userlogin: email, password: password })
     });
-
     if (!response.ok)
-    {
       throw new Error(t("auth.error.loginFailed"));
-    }
-
     await getLoggedUser();
-  };
+  }, [t, getLoggedUser]);
 
-  const logout = async () =>
+  const logout = useCallback(async () =>
   {
     try
     {
-      const response = await	fetch('/api/auth/logout',
-        {
-  				method: 'DELETE',
-  				credentials: 'include'
-  			})
-  		if (response.ok)
-        setUser(null);
-  		else
-  		  console.error("back deconnexion failed");
-  	}
-    catch(error)
+      const response = await fetch('/api/auth/logout',
+      {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!response.ok)
+        console.error("La déconnexion côté serveur a échoué.");
+    }
+    catch (error)
     {
-      console.error(error)
+      console.error("Erreur lors de la déconnexion:", error);
     }
+    finally
+    {
       setUser(null);
-  };
-
-
-  const updateUsername = async (newName: string) => {
-    if (!user) {
-      throw new Error(t("auth.error.notConnected"));
     }
-    try {
-      const response = await fetch(`/api/user/updateusername/${newName}`, {
+  }, []);
+
+  const updateUsername = useCallback(async (newName: string) =>
+  {
+    if (!user)
+      throw new Error(t("auth.error.notConnected"));
+    try
+    {
+      const response = await fetch(`/api/user/updateusername/${newName}`,
+      {
         method: 'PUT',
         credentials: 'include',
       });
 
-      console.log('Réponse du serveur reçue:', response.status, response.statusText);
-
-      if (!response.ok) {
+      if (!response.ok)
         throw new Error(t("auth.error.serverErrorWithStatus", { status: response.status }));
-      }
       const data = await response.json();
-
-      console.log('Données JSON lues depuis la réponse:', data);
-
       const actualSavedName = data.name;
-
-      console.log('Nom réellement sauvegardé selon le serveur:', actualSavedName);
-
-      setUser(currentUser => {
-        if (!currentUser) return null;
-        return { ...currentUser, name: actualSavedName };
-      });
-
-    } catch (error) {
+      setUser(currentUser =>
+        currentUser ? { ...currentUser, name: actualSavedName } : null
+      );
+    }
+    catch (error)
+    {
       console.error("Erreur dans updateUsername:", error);
       throw error;
     }
-  };
+  }, [user, t]);
 
-  const value: AuthContextType =
-  {
+  const value = useMemo(() =>
+  ({
     user,
     isLoading,
     register,
@@ -205,22 +204,15 @@ export function AuthProvider({ children }: AuthProviderProps)
     logout,
     wsRef,
     updateUsername,
-  };
+  }), [user, isLoading, register, login, logout, updateUsername]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
-// --- Création du Custom Hook ---
-// C'est ici que la magie de TypeScript opère pour la sécurité.
-export default function useAuth(): AuthContextType {
+export default function useAuth(): AuthContextType
+{
   const context = useContext(AuthContext);
-
-  // Si on essaie d'utiliser ce hook en dehors du Provider, le contexte sera null.
-  // On lève une erreur claire pour le développeur.
-  if (context === null) {
+  if (context === null)
     throw new Error('useAuth doit être utilisé à l\'intérieur d\'un AuthProvider');
-  }
-
-  // Si le contexte existe, on sait (grâce au typage) qu'il correspond à AuthContextType.
   return context;
 }

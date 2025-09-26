@@ -2,7 +2,7 @@ import Card from '../../components/Card';
 import Navbar from '../../components/Navbar';
 import ImageLoader from '../../components/ImageLoader';
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import useAuth from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx'
 
