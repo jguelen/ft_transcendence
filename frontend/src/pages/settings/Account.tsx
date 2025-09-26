@@ -1,86 +1,110 @@
+import React, { useEffect, useState } from 'react'
 import Card from '../../components/Card';
 import Navbar from '../../components/Navbar';
 import Input from '../../components/Input';
 import Button from '../../components/Button';
 import { useTranslation } from 'react-i18next'; 
 import { validatePassword } from '../auth/Register';
-import { useState } from 'react';
+import useAuth from '../../context/AuthContext'
 
 import Friends from '../../components/FriendList'
 
 function Account()
 {
-  const [username, setUsername] = useState<string>("JohnDoe42");
+  const { updateUsername, user }  = useAuth();
+  const [username, setUsername] = useState<string>(user ? user.name : "");
   const [isLoadingUser, setIsLoadingUser] = useState<boolean>(false);
   const [isLoadingPassword, setIsLoadingPassword] = useState<boolean>(false);
+  const [newPassword, setNewPassword] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [curPassword, setCurPassword] = useState<string>("");
   const [userError, setUserError] = useState<string>("");
   const [passwordError, setPasswordError] = useState<string>("");
   const { t } = useTranslation();
+
+  useEffect(() =>
+  {
+    if (user)
+      setUsername(user.name);
+  }, [user]);
 
   async function handleUsername(event: React.FormEvent<HTMLFormElement>)
   {
     event.preventDefault();
     setIsLoadingUser(true);
     setUserError('');
-    if (username)
+    const trimmedUsername = username.trim();
+
+    if (trimmedUsername.includes('@'))
     {
-      setUserError("Username shouldn't be empty");
+      setUserError(t("register.error.usernameContainsAt"));
+      setIsLoadingUser(false);
+      return;
+    }
+    if (!trimmedUsername)
+    {
+      setUserError(t("account.error.userError"));
       setIsLoadingUser(false);
       return;
     }
     try
     {
-      const response = await fetch ('')
+      if (user && trimmedUsername != user.name)
+      {
+        await updateUsername(trimmedUsername);
+        alert(t("account.usernameAlert"));
+      }
     }
     catch (error)
     {
+      setUserError(error.message || t("account.error.unknownError"));
     }
     finally
     {
       setIsLoadingUser(false);
     }
   }
-    async function handlePassword(event: React.FormEvent<HTMLFormElement>)
+
+  async function handlePassword(event: React.FormEvent<HTMLFormElement>)
   {
     event.preventDefault();
     setIsLoadingPassword(true);
     setPasswordError('');
-    const realPassword = "";
-    if (username)
-    {
-      setUserError("Username shouldn't be empty");
-      setIsLoadingUser(false);
-      return;
-    }
-    const passwordErrors = validatePassword(password, t);
+    // const passwordErrors = validatePassword(password, t);
 
-    if (passwordErrors.length > 0)
-    {
-      console.log({passwordErrors})
-      setPasswordError(passwordErrors.join(' '));
-      setIsLoadingPassword(false);
-    }
-
-    if (curPassword != realPassword)
-    {
-      console.log("Current password not equal to real password");
-      setPasswordError("Wrong password.");
-      setIsLoadingPassword(false);
-      return;
-    }
-
+    // if (passwordErrors.length > 0)
+    // {
+    //   console.log({passwordErrors})
+    //   setPasswordError(passwordErrors.join(' '));
+    //   setIsLoadingPassword(false);
+    // }
     try
     {
-
+      const response = await
+        fetch(`/api/user/updatepw`,
+        {
+    			method: 'PUT',
+    			credentials: 'include',
+      		headers: {'Content-Type': 'application/json'},
+    			body: JSON.stringify({pw: password, newpw: newPassword})
+    		})
+			if (response.status == 401)
+			{
+        console.log("Current password not equal to real password");
+        setPasswordError(t("account.error.passwordError"));
+        setIsLoadingPassword(false);
+        return;
+			}
+			if (response.status == 200)
+				return alert(t("account.passwordAlert"))
     }
-    catch (apiError: any)
+    catch (error)
     {
+      console.error(error)
     }
     finally
     {
-      setIsLoadingUser(false);
+      console.log("why????");
+      setIsLoadingPassword(false);
     }
   }
   return (
@@ -95,7 +119,7 @@ function Account()
         <div className="flex justify-center items-center">
           <img src="/icons/user.svg" className="w-[40px] h-[40px]"/>
           <h1 className="font-inter font-semibold text-[32px] text-white">
-            Username
+            {t("account.username")}
           </h1>
         </div>
         {userError && <p className="text-red-500 text-center font-inter text-sm
@@ -107,7 +131,7 @@ function Account()
             border="border-stroke" className="text-center"/>
           <Button gradientBorder={true} type="submit" disabled={isLoadingUser}
             hoverColor="rgba(39, 95, 153, 0.15)" maxWidth="">
-           {isLoadingUser ? "Loading..." : "Save"}
+           {isLoadingUser ? t("account.loading") : t("account.button")}
           </Button>
         </form>
       </Card>
@@ -116,7 +140,7 @@ function Account()
         <div className="flex justify-center items-center">
           <img src="/icons/lock.svg" className="w-[40px] h-[40px]"/>
           <h1 className="font-inter font-semibold text-[32px] text-white">
-            Password
+            {t("account.passwordTitle")}
           </h1>
         </div>
         <form onSubmit={handlePassword} action="/settings/account" method="POST"
@@ -125,13 +149,13 @@ function Account()
              text-sm w-full max-h-[25%] overflow-y-auto">{passwordError}</p>}
             <Input type="password" name="password" id="password" required value={password}
               onChange={(e) => setPassword(e.target.value)} maxWidth=""
-              border="border-stroke" className="text-center" placeholder="Current Password"/>
+              border="border-stroke" className="text-center" placeholder={t("account.password")}/>
             <Input type="password" name="curPassword" id="curPassword" required
-              value={curPassword} onChange={(e) => setCurPassword(e.target.value)}
-             maxWidth="" placeholder="New Password" className="text-center"/>
+              value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+             maxWidth="" placeholder={t("account.newPassword")} className="text-center"/>
           <Button gradientBorder={true} type="submit" disabled={isLoadingPassword}
             hoverColor="rgba(39, 95, 153, 0.15)" maxWidth="">
-           {isLoadingPassword ? "Loading..." : "Save"}
+           {isLoadingPassword ? t("account.loading") : t("account.button")}
           </Button>
         </form>
       </Card>

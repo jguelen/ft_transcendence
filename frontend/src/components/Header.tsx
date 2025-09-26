@@ -50,7 +50,7 @@ function Header({disabled = false}: HeaderProps)
     setCurrentLanguageCode(code);
     setIsOpen(false);
   }
-  
+
   return (
     <Card className="flex justify-between p-4 items-center"
       maxWidth="1600px" maxHeight="120px">

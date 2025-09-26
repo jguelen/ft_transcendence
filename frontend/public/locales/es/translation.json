@@ -1,12 +1,27 @@
 {
   "login": {
     "title": "Acceso",
-    "mail": "Correo",
+    "mail": "Correo/Usuario",
     "password": "Clave",
     "loading": "Conectando...",
     "button": "Entrar",
     "text": "¿No eres miembro?",
-    "link": "Registro"
+    "link": "Registro",
+    "githubButton": "Iniciar sesión con GitHub",
+    "success": "¡Inicio de sesión exitoso!",
+    "error": {
+      "requiredFields": "El correo electrónico y la contraseña son obligatorios.",
+      "invalidCredentials": "Correo electrónico o contraseña inválidos."
+    }
+  },
+  "auth": {
+    "error": {
+      "unauthenticated": "Usuario no autenticado",
+      "signupFailed": "Error en el registro",
+      "loginFailed": "Error en el inicio de sesión",
+      "notConnected": "Ningún usuario está conectado.",
+      "serverErrorWithStatus": "El servidor respondió con un error: {{status}}"
+    }
   },
   "register": {
     "title": "Registro",
@@ -21,7 +36,36 @@
     "error": {
       "username": "usuario incorrecto",
       "mail/password": "correo/clave incorrectos",
-      "repassword": "las dos claves deben ser iguales"
+      "repassword": "las dos claves deben ser iguales",
+      "usernameContainsAt": "El nombre de usuario no puede contener '@'."
+    }
+  },
+  "navbar": {
+    "profile": "Perfil",
+    "account": "Cuenta",
+    "logout": "Cerrar sesión"
+  },
+  "profile": {
+    "history": "Historial reciente",
+    "defeats": "Derrotas",
+    "victories": "Victorias",
+    "defeat": "Derrota",
+    "victory": "Victoria",
+    "loading": "Cargando datos..."
+  },
+  "account": {
+    "username": "Nombre de usuario",
+    "passwordTitle": "Contraseña",
+    "loading": "Cargando...",
+    "button": "Guardar",
+    "password": "Contraseña actual",
+    "newPassword": "Nueva contraseña",
+    "usernameAlert": "¡Nombre de usuario cambiado con éxito!",
+    "passwordAlert": "¡Contraseña cambiada con éxito!",
+    "error": {
+      "userError": "El nombre de usuario no debe estar vacío",
+      "unknownError": "Ocurrió un error desconocido",
+      "passwordError": "Contraseña incorrecta"
     }
   },
   "home": {
@@ -29,6 +73,16 @@
     "online": "EN LÍNEA",
     "cup": "COPA",
     "button": "JUGAR"
+  },
+  "gameMenu": {
+    "title": "ELIGE UN MODO",
+    "description": "Duéltate con otro jugador",
+    "local": {
+      "description": "Duéltate contra la inteligencia artificial"
+    },
+    "online": {
+      "description": "Duéltate contra un equipo de dos jugadores"
+    }
   },
   "error": {
     "length": "Tu clave debe tener al menos 12 caracteres.",

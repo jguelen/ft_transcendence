@@ -4,7 +4,7 @@ const { prisma } = require('./index.js')
 
 const { validateEmail, validateUserName, validatePassword } = require('./validators.js')
 
-
+const { checkUserNameDuplicate } = require('./index.js')
 
 
 exports.api_private_routes = function(fastify_instance, options, next) {
@@ -107,40 +107,3 @@ console.error('newuser pancarte');
 	next()
 }
 
-
-async function checkUserNameDuplicate(userName) {
-console.log("checkUserNameDuplicate")
-console.log(userName)
-// console.log("prisma :", prisma != mull);
-//	try {
-		var user = await prisma.user.findMany({
-			where: { 
-				name: userName
-			}
-		})
-console.log("checkUserNameDuplicate: 1")		
-console.log(user)
-		if (user.length == 0)
-			return userName
-
-		const altSuffixes = ["-1", "-2", "-3"]
-
-		for (let index = 0; index < altSuffixes.length; index++) {			
-			var alternateName = userName + altSuffixes[index];
-			var user = await prisma.user.findMany({
-				where: { 
-					name: alternateName
-				}
-			})
-console.log(`checkUserNameDuplicate: 2 - ${index}`)
-console.log(user)
-			if (user.length == 0)
-				return alternateName
-		}
-		return ""
-//	}
-// 	catch (error) {
-// console.log("Dupl catch")
-// 		throw new Error(error);
-// 	}
-};

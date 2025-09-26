@@ -6,6 +6,9 @@ const jwt = require('jsonwebtoken');
 
 const { JWT_SECRET } = process.env
 
+const { AUTH_SERVICE_URL } = process.env
+
+const { checkUserNameDuplicate } = require('./index.js')
 
 exports.protected_routes = function(fastify_instance, options, next) {
 /*
@@ -294,7 +297,6 @@ console.log(req.params);
 
 		const pw = req.body.pw;
 		const newPw = req.body.newpw;
-
 console.log("/api/user/updatepw");
 console.log(pw);
 console.log(newPw);

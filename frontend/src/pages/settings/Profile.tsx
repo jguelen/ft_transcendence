@@ -2,8 +2,9 @@ import Card from '../../components/Card';
 import Navbar from '../../components/Navbar';
 import ImageLoader from '../../components/ImageLoader';
 import { useState, useEffect } from 'react';
-import clsx from 'clsx';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from 'react-i18next';
+import clsx from 'clsx'
 
 // const token = localStorage.getItem('ft_transcendance_jwt');
 
@@ -19,9 +20,10 @@ interface ListItem
 interface ScrollableListProps
 {
   items: ListItem[];
+  t: Function
 }
 
-const ScrollableList = ({ items }: ScrollableListProps) => {
+const ScrollableList = ({ items, t }: ScrollableListProps) => {
   return (
     <div className="flex flex-col justify-start items-center w-full h-full
      gap-[10px] p-[10px] overflow-y-auto">
@@ -40,7 +42,7 @@ const ScrollableList = ({ items }: ScrollableListProps) => {
                 }
               )}>
               <h1 className="font-inter font-semibold text-subtitle text-white">
-               {item.victory === true ? "Victory" : "Defeat"}
+               {item.victory === true ? t("profile.victory") : t("profile.defeat")}
               </h1>
             </span>
             <h2 className="font-inter font-semibold text-subtitle text-white">
@@ -127,6 +129,7 @@ function Profile()
   const [win_nbr, setWinNbr] = useState<number>(0);
   const [loose_nbr, setLooseNbr] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchItemsFromAPI(String((user ? user?.id : null)))
@@ -156,7 +159,7 @@ function Profile()
         <img src="/icons/lightning.svg" className="w-[66px] h-[66px]"/>
         <span className="flex flex-col justify-center items-center">
           <h1 className="font-inter text-white font-semibold text-[32px]">{String(loose_nbr)}</h1>
-          <h2 className="font-inter text-text font-semibold text-subtitle">Defeats</h2>
+          <h2 className="font-inter text-text font-semibold text-subtitle">{t("profile.defeats")}</h2>
         </span>
       </Card>
       <Card maxHeight='' maxWidth='' className="col-start-1 row-start-3 flex
@@ -167,16 +170,16 @@ function Profile()
             {String(win_nbr)}
           </h1>
           <h2 className="font-inter text-text font-semibold text-subtitle">
-            Victories
+            {t("profile.victories")}
           </h2>
         </span>
       </Card>
       <Card maxHeight='' maxWidth='' className="col-start-2 row-start-2
         row-span-2 col-span-2 flex flex-col justify-center items-center p-[10px]">
         <h1 className="font-inter font-semibold text-[32px] text-white">
-          Recent History</h1>
+          {t("profile.history")}</h1>
         {isLoading ? (<div className="font-inter text-subtitle text-text font-medium">
-          Data is loading...</div>) : <ScrollableList items={items} />}
+          {t("profile.loading")}</div>) : <ScrollableList t={t} items={items} />}
       </Card>
     </div>
   )
