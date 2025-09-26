@@ -19,8 +19,13 @@ interface AuthContextType
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUsername: (newName: string) => Promise<void>;
+  imageUrl: string;
+  setImageUrl: (url: string) => void;
 }
 
+// --- Création du Contexte ---
+// On type le contexte pour qu'il s'attende à la forme de AuthContextType ou null.
+const default_image = "/futuristic-avatar.svg";
 const AuthContext = createContext<AuthContextType | null>(null);
 
 type AuthProviderProps =
@@ -34,6 +39,7 @@ export function AuthProvider({ children }: AuthProviderProps)
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const wsRef = useRef<WebSocket | null>(null);
   const { t } = useTranslation();
+  const [imageUrl, setImageUrl] = useState<string>(default_image);
 
   useEffect(() =>
   {
@@ -116,6 +122,9 @@ export function AuthProvider({ children }: AuthProviderProps)
       setUser(null);
     }
   }, [t]);
+  useEffect(() => {
+    setImageUrl(default_image);
+  }, [user?.id]);
 
   const register = useCallback(async (name: string, email: string, password: string) =>
   {
@@ -206,6 +215,8 @@ export function AuthProvider({ children }: AuthProviderProps)
     logout,
     wsRef,
     updateUsername,
+    imageUrl,
+    setImageUrl,
   }), [user, isLoading, register, login, logout, updateUsername]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

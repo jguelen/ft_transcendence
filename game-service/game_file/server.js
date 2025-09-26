@@ -96,13 +96,13 @@ fastify.get('/api/game/matches/:id', { preHandler: verifyJWT }, async (request, 
 			OR player4 LIKE ?
 		ORDER BY date DESC
 	`).all(`%"id":${id}%`, `%"id":${id}%`, `%"id":${id}%`, `%"id":${id}%`);
-	if (!id_rows || id_rows.length === 0) {
-		reply.status(404).send({ error: "Match not found" });
-		return;
-	}
 	let iddata_array = [];
 	let win_nbr = 0;
 	let loose_nbr = 0;
+	if (!id_rows || id_rows.length === 0) {
+		reply.send({iddata_array, win_nbr, loose_nbr});
+		return;
+	}
 	let len = 0;
 	id_rows.forEach(row => {
 		let player1 = row.player1 ? JSON.parse(row.player1) : null;

@@ -9,6 +9,7 @@ export class PongGameService
 	ball_color : string;
 	ball_middle_color : string;
 	choose_color : boolean;
+	degree : number;
 
 	lastTime : any;
 	frames : number;
@@ -32,7 +33,7 @@ export class PongGameService
 		this.ball_color = '#00f9ec';
 		this.ball_middle_color = '#66FF99';
 		this.choose_color = true;
-
+		this.degree = 0;
 		this.lastTime = performance.now();
 		this.frames = 0;
 		this.fps = 0;
@@ -259,6 +260,22 @@ export class PongGameService
 		this.ctx.setLineDash([]);
 	}
 
+	drawRotatedImage(
+		img: HTMLImageElement | HTMLCanvasElement,
+		x: number,
+		y: number,
+		w: number,
+		h: number,
+	) {
+		this.degree = (this.degree + 1) % 360;
+		const ctx = this.ctx;
+		ctx.save();
+		ctx.translate(x + w/2, y + h/2);
+		ctx.rotate(this.degree * Math.PI / 180);
+		ctx.drawImage(img, -w/2, -h/2, w, h);
+		ctx.restore();
+	}
+
 	drawColorImage(
 		img : HTMLImageElement | HTMLCanvasElement,
 		x : number, y : number, w : number,
@@ -332,10 +349,21 @@ export class PongGameService
 				Number(255 - Number(game_colorrgb[1])).toString(16).padStart(2, "0") +
 				Number(255 - Number(game_colorrgb[2])).toString(16).padStart(2, "0"));
 		}
+		// let paddel_color = this.shadow_color;
+		// if (screen.hallucination){
+		// 	let paddelrgb : number[] = hexToRgbArray(paddel_color);
+		// 	paddel_color = String( "#" +
+		// 		Number(255 - Number(paddelrgb[0])).toString(16).padStart(2, "0") +
+		// 		Number(255 - Number(paddelrgb[1])).toString(16).padStart(2, "0") +
+		// 		Number(255 - Number(paddelrgb[2])).toString(16).padStart(2, "0"));
+		// }
 
-		if (this.choose_color && this.shadow_color != previous_game_color){
-			this.imgsrc.reloadColorImage(game_color);
-		}
+		// if (this.choose_color && this.shadow_color != previous_game_color){
+		// 	this.imgsrc.reloadColorImage(game_color);
+		// }
+		// if (this.shadow_color != paddel_color){
+		// 	this.imgsrc.reloadColorPlayer(paddel_color);
+		// }
 
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.ctx.fillStyle = '#050a12';
@@ -381,6 +409,7 @@ export class PongGameService
 			this.ctx.drawImage(this.imgsrc.meteorImg, cx - mw/2, cy - mh/2, mw, mh);
 		}
 
+
 		//Star
 		for (let obs of screen.box_array){
 			this.draw_image(obs, 3, this.imgsrc.powerupImg);
@@ -417,6 +446,15 @@ export class PongGameService
 		else {
 			this.ball_trail = [];
 		}
+
+		const mwb = this.imgsrc.blackholeImg.width / 5;
+		const mhb = this.imgsrc.blackholeImg.height / 5;
+		if (screen.blackhole){
+			const cx = (this.WIDTH / 2);
+			const cy = (this.HEIGHT / 2);
+			this.drawRotatedImage(this.imgsrc.blackholeImg, cx - mwb/2, cy - mhb/2, mwb, mhb);
+		}
+		
 		// if (screen.gameover == true){
 		// 	if (screen.team1_score >= screen.MAX_SCORE)
 		// 		afficherMessage(screen, "Team 1" + " Wins !!!", 'r');
