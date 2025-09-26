@@ -174,10 +174,12 @@ export function AuthProvider({ children }: AuthProviderProps)
       throw new Error(t("auth.error.notConnected"));
     try
     {
-      const response = await fetch(`/api/user/updateusername/${newName}`,
+      const response = await fetch('/api/user/updateusername',
       {
         method: 'PUT',
         credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newusername: newName })
       });
 
       if (!response.ok)
