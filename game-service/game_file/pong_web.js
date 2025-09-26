@@ -64,6 +64,9 @@ export class Game {
 		this.portal = false;
 		this.invisible_ball_active = false;
 		this.invisible_ball = false;
+		this.starfall = false;
+		this.blackhole = false;
+		this.hallucination = false;
 		this.IA_diff = IA_diff ;
 		switch (IA_diff){
 			case 0 :
@@ -499,14 +502,15 @@ export class Game {
 			bounce_nbr: this.bounce_nbr,
 			velocity_use: this.velocity_use,
 			obstacle_array: this.obstacle_array, 
-			// holes_array: this.holes_array, 
+			blackhole : this.blackhole,
+			hallucination : this.hallucination,
 			negative: this.negative,
 			snake_array: this.snake_array,
 			invisible_player: this.invisible_player,
 			gold_game: this.gold_game,
 			meteorites_array: this.meteorites_array,
 			invisible_ball: this.invisible_ball,
-			multiple_ball_array: display_mutliple_array, 
+			multiple_ball_array: display_mutliple_array,
 			portal: this.portal, 
 			custom_mode: this.custom_mode, 
 			box_array: this.box_array,

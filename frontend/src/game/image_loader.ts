@@ -8,6 +8,7 @@ export class ImageSrc {
     powerupImg: HTMLImageElement | HTMLCanvasElement;
     obstacleImg: HTMLImageElement | HTMLCanvasElement;
     meteorImg: HTMLImageElement | HTMLCanvasElement;
+	blackholeImg: HTMLImageElement | HTMLCanvasElement;
 
     // Game images
     top_img: HTMLImageElement | HTMLCanvasElement;
@@ -45,6 +46,8 @@ export class ImageSrc {
 		this.obstacleImg.src = "/game/image/neonobstacle.png";
 		this.meteorImg = new Image();
 		this.meteorImg.src = "/game/image/meteorneon.png";
+		this.blackholeImg = new Image();
+		this.blackholeImg.src = "/game/image/blackhole.png";
 
 		//Game
 		this.top_img = new Image();
@@ -84,7 +87,11 @@ export class ImageSrc {
 		this.powerupImg = returnColorImage(this.powerupImg, main_color);
 		this.obstacleImg = returnColorImage(this.obstacleImg, main_color);
 		this.meteorImg = returnColorImage(this.meteorImg, main_color);
+		this.blackholeImg = returnColorImage(this.blackholeImg, main_color);
 		this.top_img = returnColorImage(this.top_img, main_color);
+	}
+	reloadColorPlayer(color : string){
+		this.playerImg = returnColorImage(this.playerImg, color);
 	}
 }
 

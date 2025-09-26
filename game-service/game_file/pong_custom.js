@@ -1,7 +1,7 @@
 //Import
 import {HEIGHT, WIDTH, BASE_PLAYER_SPEED,
 	BASE_BALL_SPEED, MAX_BOUNCE_ANGLE, TOP_MARGIN,
-	SPAWN_MARGIN} from './pong_constant.js';
+	SPAWN_MARGIN, BASE_COLOR, BASE_SECONDARY_COLOR} from './pong_constant.js';
 import {Box, Obstacle} from './pong_class.js';
 import * as utils from './pong_web_utils.js';
 
@@ -78,6 +78,7 @@ async function effect4(game){ //done
 }
 
 async function effect5(game){  //second player don't work
+	game.hallucination = true;
 	console.log("You are hallucinating {5}");
 	game.teams.forEach(team =>{
 		team.backplayer.up_player = team.backplayer.base_down;
@@ -132,17 +133,81 @@ async function effect8(game){ //done maybe ajust despawn after point
 }
 
 async function effect9(game){ //nothing
+	if (game.starfall == true)
+		return ;
+	game.starfall = true;
 	console.log("Starfall {9}");
 	max_box = 30;
 	prob_box = 1;
-	while (game.box_array.length < max_box){
-		let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
-		game.box_array.push(new_box);
-	}
+	do{
+		game.box_array.forEach(star =>{
+			star.y += 3;
+			if (star.y > HEIGHT - TOP_MARGIN){
+				const index = game.box_array.indexOf(star);
+				game.box_array.splice(index, 1);
+			}
+		});
+		if (Math.random() < prob_box  && game.box_array.length < max_box){
+			let new_star = new Box(Math.round(SPAWN_MARGIN) + Math.round((WIDTH - SPAWN_MARGIN) * Math.random()),
+				0, randomCustomWeighted());
+			game.box_array.push(new_star);
+			game.game_color = utils.nextColorHex(game.game_color, game.box_array.length);
+			game.game_sec_color = utils.nextColorHex(game.game_sec_color, game.box_array.length);
+		}
+		await utils.sleep(500);
+	} while (game.box_array.length > 0 && game.starfall == true)
+	game.starfall = false;
 }
 
-async function effect10(game){ //nothing
-	console.log("Nothing {10}");
+async function effect10(game){
+	console.log("Black Hole {10}");
+	// game.blackhole = true;
+
+	// const centerX = Math.floor(WIDTH / 2);
+	// const centerY = Math.floor(HEIGHT / 2);
+	// const maxBoost = 0.08;
+	// const minBoost = 0.01;
+	// const gravityRadius = WIDTH;
+	// const kickForce = 0.2;
+
+	// function blackHoleEffect() {
+	// 	const ball = game.ball;
+	// 	const dx = centerX - ball.x;
+	// 	const dy = centerY - ball.y;
+	// 	const dist = Math.sqrt(dx * dx + dy * dy);
+
+	// 	if (dist < gravityRadius) {
+	// 		const intensity = maxBoost * (1 - dist / gravityRadius) + minBoost;
+	// 		const norm = Math.sqrt(dx * dx + dy * dy) || 1;
+	// 		const nx = dx / norm;
+	// 		const ny = dy / norm;
+
+	// 		ball.dx += nx * intensity;
+	// 		ball.dy += ny * intensity;
+
+	// 		const speed = Math.sqrt(ball.dx * ball.dx + ball.dy * ball.dy);
+	// 		const desiredSpeed = Math.max(game.BALL_SPEED, speed * 1.03);
+	// 		const direction = Math.atan2(ball.dy, ball.dx);
+	// 		ball.dx = desiredSpeed * Math.cos(direction);
+	// 		ball.dy = desiredSpeed * Math.sin(direction);
+	// 	}
+
+	// 	if (dist < 2) {
+	// 		const angle = Math.random() * 2 * Math.PI;
+	// 		ball.dx += Math.cos(angle) * kickForce;
+	// 		ball.dy += Math.sin(angle) * kickForce;
+	// 	}
+	// }
+	// if (!game._blackholeInterval) {
+	// 	game._blackholeInterval = setInterval(() => {
+	// 		if (game.blackhole) {
+	// 			blackHoleEffect();
+	// 		} else {
+	// 			clearInterval(game._blackholeInterval);
+	// 			game._blackholeInterval = null;
+	// 		}
+	// 	}, 16);
+	// }
 }
 
 async function effect11(game){ //done
@@ -324,6 +389,8 @@ function apply_effect(game, nbr){
 }
 
 export function reset_effect(game){
+	game.game_color = BASE_COLOR;
+	game.game_sec_color = BASE_SECONDARY_COLOR;
 	max_box = 10;
 	prob_box = 0.3;
 	game.true_speeding_ball = false;
@@ -351,6 +418,9 @@ export function reset_effect(game){
 	game.portal = false;
 	game.invisible_ball_active = false;
 	game.invisible_ball = false;
+	game.starfall = false;
+	game.hallucination = false;
+	game.blackhole = false;
 }
 
 export function touch_box(game){
@@ -383,7 +453,7 @@ function randomCustomWeighted() {
     const weights = [
         common, rare, common, common, //0, 1, 2, 3
 		uncommon, epic, rare, rare, //4, 5, 6, 7
-		uncommon, legendary, rare, uncommon, //8, 9, 10, 11
+		uncommon, legendary, epic, uncommon, //8, 9, 10, 11
 		uncommon, uncommon, rare, epic, //12, 13, 14, 15
 		uncommon, rare, legendary, common, //16, 17, 18, 19
 		rare, rare, uncommon //20, 21, 22
@@ -418,7 +488,7 @@ export async function custom_mode_func(game){
 			let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
 			while (game.box_array.includes(new_box) == true)
 				new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
-			// let nbr = 9;
+			// let nbr = 5;
 			// let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), nbr);
 			return (new_box);
 		}
