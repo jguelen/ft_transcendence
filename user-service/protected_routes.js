@@ -153,8 +153,8 @@ console.log(language);
 	})
 
 
-	fastify_instance.post('/api/user/updateusername', async function (req, res) {
-console.log("#POST /api/user/updateusername");
+	fastify_instance.put('/api/user/updateusername', async function (req, res) {
+console.log("#PUT /api/user/updateusername");
 console.log(req.body);
 
 		const newName = req.body.newusername;
@@ -167,8 +167,9 @@ console.log(newName);
 					id: req.user.userId
 				}
 			})
+			console.log(user)
 			if (user.name == newName)
-				res.status(200).send( {name: newName} )
+				return res.status(200).send( {name: newName} )
 
 			var altName = await checkUserNameDuplicate(newName)
 			if (altName == "")
