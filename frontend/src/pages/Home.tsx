@@ -30,7 +30,7 @@ function Home()
       <Card maxWidth="400px" maxHeight="504px" className="flex flex-col
         items-center justify-evenly p-1">
         <h1 className="font-orbitron text-title text-white font-medium break-all">{t("home.cup")}</h1>
-        <Link to="/cup" className="flex justify-center items-center max-w-[252px]
+        <Link to="/cup/game" className="flex justify-center items-center max-w-[252px]
           w-full">
           <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.13)"
             >{t("home.button")}</Button>
