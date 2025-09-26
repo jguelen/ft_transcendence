@@ -172,11 +172,12 @@ console.log(language);
 	})
 
 
-	fastify_instance.put('/api/user/updateusername/:newusername', async function (req, res) {
+	fastify_instance.post('/api/user/updateusername', async function (req, res) {
+console.log("#POST /api/user/updateusername");
+console.log(req.body);
 
-		const newName = req.params.newusername;
+		const newName = req.body.newusername;
 
-console.log("/api/user/updateusername");
 console.log(newName);
 
 		try {
