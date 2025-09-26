@@ -1,12 +1,27 @@
 {
   "login": {
     "title": "Login",
-    "mail": "Email",
+    "mail": "Email/Username",
     "password": "Password",
     "loading": "Connecting...",
     "button": "Sign In",
     "text": "Not a member?",
-    "link": "Sign Up"
+    "link": "Sign Up",
+    "githubButton": "Sign In with GitHub",
+    "success": "Login successful!",
+    "error": {
+      "requiredFields": "Email and password are required.",
+      "invalidCredentials": "Invalid email or password."
+    }
+  },
+  "auth": {
+    "error": {
+      "unauthenticated": "User not authenticated",
+      "signupFailed": "Registration failed",
+      "loginFailed": "Login failed",
+      "notConnected": "No user is connected.",
+      "serverErrorWithStatus": "The server responded with an error: {{status}}"
+    }
   },
   "register": {
     "title": "Register",
@@ -22,7 +37,36 @@
       "username": "Incorrect username",
       "mail/password": "Incorrect email/password",
       "repassword": "Both passwords need to be equal",
-      "taken": "This username has already been taken."
+      "taken": "This username has already been taken.",
+      "usernameContainsAt": "Username cannot contain an '@'."
+    }
+  },
+  "navbar": {
+    "profile": "Profile",
+    "account": "Account",
+    "logout": "Logout"
+  },
+  "profile": {
+    "history": "Recent History",
+    "defeats": "Defeats",
+    "victories": "Victories",
+    "defeat": "Defeat",
+    "victory": "Victory",
+    "loading": "Data is loading..."
+  },
+  "account": {
+    "username": "Username",
+    "passwordTitle": "Password",
+    "loading": "Loading...",
+    "button": "Save",
+    "password": "Current Password",
+    "newPassword": "New Password",
+    "usernameAlert": "Username successfully changed !",
+    "passwordAlert": "Password successfully changed !",
+    "error": {
+      "userError": "The username shouldn't be empty",
+      "unknownError": "An unknown error happened",
+      "passwordError": "Wrong password"
     }
   },
   "home": {
@@ -31,11 +75,21 @@
     "cup": "CUP",
     "button": "PLAY"
   },
+  "gameMenu": {
+    "title": "CHOOSE A MODE",
+    "description": "Duel another player",
+    "local": {
+      "description": "Duel the artificial intelligence"
+    },
+    "online": {
+      "description": "Duel a team of two other players"
+    }
+  },
   "error": {
-    "length": "Your password needs to be at least 12 characters.",
-    "minuscule": "Your password needs to have at least one lowercase letter.",
-    "majuscule": "Your password needs to have at least one uppercase letter.",
-    "number": "Your password needs to contain at least one number.",
-    "special": "Your password needs to contain at least one of these special characters (!@#$%^&*)."
+    "length": "Your password need to be at least 12 characters.",
+    "minuscule": "Your password need to have at least one lowercase letter.",
+    "majuscule": "Your password need to have at least one uppercase letter.",
+    "number": "Your password need to contain at least one number.",
+    "special": "Your password need to contain at least one of these special characters (!@#$%^&*)."
   }
 }

@@ -4,6 +4,7 @@ import Input from '../../components/Input';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+import useAuth from "../../context/AuthContext"
 
 function Register()
 {
@@ -15,98 +16,50 @@ function Register()
   const [username, setUsername] = useState<string>("")
   const { t } = useTranslation();
   const navigate = useNavigate();
-
-  // function handleUsernameChange(event: React.ChangeEvent<HTMLInputElement>)
-  // {
-  //   setUsername(event.target.value)
-  //   if (usernameError)
-  //     setUsernameError("");
-  // }
-
-  // async function handleUsernameBlur()
-  // {
-  //   setCheckingUsername(true);
-  //   setUsernameError('');
-  //   if (!username)
-  //   {
-  //     setCheckingUsername(false);
-  //     return;
-  //   }
-  //   else if (username.length < 3)
-  //   {
-  //     setCheckingUsername(false);
-  //     setUsernameError(t("register.error.username"));
-  //     return;
-  //   }
-  //   try
-  //   {
-  //      const data = await checkUsernameAvailability(username);
-  //      if (!data.isAvailable)
-  //       setUsernameError(t("register.error.taken"));
-  //   }
-  //   catch (apiError)
-  //   {
-  //     console.error("Error during username verification", apiError);
-  //     setUsernameError("network error");
-  //   }
-  //   finally
-  //   {
-  //     setCheckingUsername(false);
-  //   }
-  // }
+  const { register } = useAuth();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>)
   {
     event.preventDefault();
     setLoadingSubmit(true);
     setError('');
-    if (!email || !password)
+    const trimmedUsername = username.trim();
+    const trimmedEmail = email.trim();
+
+    console.log("where is it ?", trimmedUsername);
+    if (!trimmedUsername || !password || !trimmedEmail)
     {
       setError(t("register.error.mail/password"));
       setLoadingSubmit(false);
       return;
     }
-
-    // const passwordErrors = validatePassword(password, t);
-
-    // if (passwordErrors.length > 0)
-    // {
-    //   console.log({passwordErrors})
-    //   setError(passwordErrors.join(' ')); 
-    //   setLoadingSubmit(false);
-    //   return;
-    // }
-
-    if (password != repassword)
+    if (trimmedUsername.includes('@'))
     {
-      console.log("password not equal to repassword");
-      setError("both password need to be equal.");
+      setError(t("register.error.usernameContainsAt"))
       setLoadingSubmit(false);
       return;
     }
-      console.log("initializing connexion with:", {email, password, username});
-      fetch('/api/auth/signup', {
-  		method: 'POST',
-  		credentials: 'include',
-  		headers: {'Content-Type': 'application/json'},
-  		body: JSON.stringify( { name:username, email:email, password:password } )
-  	})
-  	.then( function(response) {
-  		if (response.status != 200)
-  			return response.json()
-  		else return null
-  	})
-  	.then( function(data) {
-      console.log(data)
-  		if (data)
-  			alert(data.msg)
-  		else {
-        alert("Connexion succeed !");
-  			location.href = '/'
-  		} 
-  	})
-  	.catch( (error) => { console.error(error); setError("invalid password or email")})
-    .finally(() => { setLoadingSubmit(false)});
+    if (password !== repassword)
+    {
+      setError(t("register.error.repassword"));
+      setLoadingSubmit(false);
+      return;
+    }
+    try
+    {
+      await register(trimmedUsername, trimmedEmail, password);
+      alert(t("register.alert"));
+      navigate('/');
+    }
+    catch (error: any)
+    {
+      console.error("Échec de l'inscription:", error);
+      setError(t("register.error.taken"));
+    }
+    finally
+    {
+      setLoadingSubmit(false);
+    }
   }
 
   return (

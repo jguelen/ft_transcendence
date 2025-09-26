@@ -1,12 +1,27 @@
 {
   "login": {
     "title": "Connexion",
-    "mail": "Email",
+    "mail": "Email/Pseudo",
     "password": "Mot de passe",
     "loading": "Connexion...",
     "button": "Entrer",
     "text": "Pas membre ?",
-    "link": "Inscription"
+    "link": "Inscription",
+    "githubButton": "Se connecter avec GitHub",
+    "success": "Connexion réussie !",
+    "error": {
+      "requiredFields": "L'e-mail et le mot de passe sont requis.",
+      "invalidCredentials": "E-mail ou mot de passe invalide."
+    }
+  },
+  "auth": {
+    "error": {
+      "unauthenticated": "Utilisateur non authentifié",
+      "signupFailed": "Échec de l'inscription",
+      "loginFailed": "Échec de la connexion",
+      "notConnected": "Aucun utilisateur n'est connecté.",
+      "serverErrorWithStatus": "Le serveur a renvoyé une erreur : {{status}}"
+    }
   },
   "register": {
     "title": "Inscription",
@@ -21,7 +36,36 @@
     "error": {
       "username": "pseudo incorrect",
       "mail/password": "email/mot de passe incorrect",
-      "repassword": "les deux mots de passe doivent être identiques"
+      "repassword": "les deux mots de passe doivent être identiques",
+      "usernameContainsAt": "Le nom d'utilisateur ne peut pas contenir de '@'."
+    }
+  },
+  "navbar": {
+    "profile": "Profil",
+    "account": "Compte",
+    "logout": "Déconnexion"
+  },
+  "profile": {
+    "history": "Historique récent",
+    "defeats": "Défaites",
+    "victories": "Victoires",
+    "defeat": "Défaite",
+    "victory": "Victoire",
+    "loading": "Chargement des données..."
+  },
+  "account": {
+    "username": "Nom d'utilisateur",
+    "passwordTitle": "Mot de passe",
+    "loading": "Chargement...",
+    "button": "Enregistrer",
+    "password": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "usernameAlert": "Nom d'utilisateur modifié avec succès !",
+    "passwordAlert": "Mot de passe modifié avec succès !",
+    "error": {
+      "userError": "Le nom d'utilisateur ne doit pas être vide",
+      "unknownError": "Une erreur inconnue est survenue",
+      "passwordError": "Mot de passe incorrect"
     }
   },
   "home": {
@@ -29,6 +73,16 @@
     "online": "EN LIGNE",
     "cup": "TOURNOI",
     "button": "JOUER"
+  },
+  "gameMenu": {
+    "title": "CHOISIS UN MODE",
+    "description": "Affronte un autre joueur",
+    "local": {
+      "description": "Affronte l'intelligence artificielle"
+    },
+    "online": {
+      "description": "Affronte une équipe de deux autres joueurs"
+    }
   },
   "error": {
     "length": "Votre mot de passe doit avoir au moins 12 caractères.",

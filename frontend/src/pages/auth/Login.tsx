@@ -1,8 +1,10 @@
 import {useState} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/Button';
 import Input from '../../components/Input';
 import { useTranslation } from 'react-i18next';
+import { FaGithub } from 'react-icons/fa';
+import useAuth from '../../context/AuthContext'
 
 function Login()
 {
@@ -11,41 +13,38 @@ function Login()
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>)
   {
     event.preventDefault();
     setLoading(true);
     setError('');
+
     if (!email || !password)
     {
-      setError("incorrect email/password");
+      setError(t("login.error.requiredFields"));
       setLoading(false);
       return;
     }
-    console.log("initializing connexion with:", {email, password});
-    fetch('/api/auth/login', {
-  		method: 'POST',
-  		credentials: 'include',
-  		headers: {'Content-Type': 'application/json'},
-  		body: JSON.stringify( { userlogin:email, password:password } )
-  	})
-  	.then( function(response) {
-  		if (response.status != 200)
-  			return response.json()
-  		else return null
-  	})
-  	.then( function(data) {
-      console.log(data)
-  		if (data)
-  			alert(data.msg)
-  		else {
-        alert("Connexion succeed !");
-  			location.href = '/'
-  		} 
-  	})
-  	.catch( (error) => { console.error(error); setError("invalid password or email")})
-    .finally(() => { setLoading(false)});
+    try
+    {
+      await login(email, password);
+      alert(t("login.success"));
+      navigate('/');
+
+    }
+    catch (error: any)
+    {
+      console.error("Échec de la connexion:", error);
+      setError(error.message);
+
+    }
+    finally
+    {
+      setLoading(false);
+    }
   }
 
   return (
@@ -73,6 +72,15 @@ function Login()
          focus-visible:ring-offset-2 rounded-[4px]">{t("login.link")}
         </Link>
       </div>
+      <a 
+       href="http://localhost:3001/login/github"
+       className="flex items-center justify-center gap-3 w-full max-w-xs px-4
+       py-2 font-semibold text-white bg-[#24292e] rounded-md hover:bg-[#333]
+       transition-colors"
+      >
+        <FaGithub size={20} />
+         {t("login.githubButton")}
+      </a>
     </div>
   )
 }

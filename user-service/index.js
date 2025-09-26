@@ -89,6 +89,8 @@ fastify.register(fastify_cookie, {})
 
 exports.prisma = prisma
 
+exports.checkUserNameDuplicate = checkUserNameDuplicate
+
 const {protected_routes} = require('./protected_routes.js')
 const {api_private_routes} = require('./api_private_routes.js')
 
@@ -105,5 +107,39 @@ fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3002 }, (err) => {
 	}
 })
 
-// docker compose logs -f auth-service user-service
-// compose down auth-service
+async function checkUserNameDuplicate(userName) {
+console.log("checkUserNameDuplicate")
+console.log(userName)
+// console.log("prisma :", prisma != mull);
+//	try {
+		var user = await prisma.user.findMany({
+			where: { 
+				name: userName
+			}
+		})
+console.log("checkUserNameDuplicate: 1")		
+console.log(user)
+		if (user.length == 0)
+			return userName
+
+		const altSuffixes = ["-1", "-2", "-3"]
+
+		for (let index = 0; index < altSuffixes.length; index++) {			
+			var alternateName = userName + altSuffixes[index];
+			var user = await prisma.user.findMany({
+				where: { 
+					name: alternateName
+				}
+			})
+console.log(`checkUserNameDuplicate: 2 - ${index}`)
+console.log(user)
+			if (user.length == 0)
+				return alternateName
+		}
+		return ""
+//	}
+// 	catch (error) {
+// console.log("Dupl catch")
+// 		throw new Error(error);
+// 	}
+};
