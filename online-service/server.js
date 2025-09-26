@@ -16,20 +16,22 @@ prefix: '/',
 
 const onlineUsers = new Map();
 
-fastify.get('/online', { websocket: true }, (connection, req) => {
+fastify.get('/', { websocket: true }, (connection, req) => {
 	console.log("new connection");
 	let userId = null;
 	connection.on('message', async (message) => {
 		try {
 			const data = JSON.parse(message.toString());
 			console.log("online message :", data.type);
+			console.log("data :", data);
 			if (data.type == "connection" && data.id){
 				userId = data.id;
 				onlineUsers.set(data.id, connection);
 				console.log(`User connected: (${data.id})`);
 			} else if (data.type == "getOnlineUser" && data.id){
+				console.log("received");
 				const isOnline = onlineUsers.has(data.id);
-				connection.socket.send(
+				connection.send(
 					JSON.stringify({
 						type: "onlineStatus",
 						id: data.id,
@@ -51,6 +53,6 @@ fastify.get('/online', { websocket: true }, (connection, req) => {
 
 
 fastify.listen({ port: 3004, host: '0.0.0.0' }, err => {
-if (err) throw err;
-console.log('Server running on http://localhost:3004');
+	if (err) throw err;
+	console.log('Server running on http://localhost:3004');
 });

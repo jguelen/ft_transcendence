@@ -43,7 +43,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
           credentials: 'include',
         });
         if (response.ok) {
-          // On s'assure que les données reçues correspondent bien à notre type User
           const userData: User = await response.json();
           console.log(userData);
           setUser(userData);
@@ -63,14 +62,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || wsRef.current) return;
 
     const wsUrl = `wss://${window.location.hostname}:8443/online`;
     const ws = new WebSocket(wsUrl);
     wsRef.current = ws;
 
     ws.onopen = () => {
-      ws.send(JSON.stringify({ id: user.id, name: user.name }));
+      ws.send(JSON.stringify({ type: "connection", id: user.id }));
     };
 
     ws.onclose = () => {
@@ -78,10 +77,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     return () => {
-      wsRef.current?.close();
+      ws.close();
       wsRef.current = null;
     };
-  }, [user?.id, user?.name]);
+  }, [user]);
 
   // La fonction login attend un paramètre qui doit être de type User.
   const login = (userData: User) => {

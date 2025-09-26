@@ -138,7 +138,7 @@ export default function FriendList() {
 	useEffect(() => {
     if (!wsRef.current) return;
     const sendOnlineStatusRequests = () => {
-      friendList.forEach(friend => {
+      friendList.forEach((friend :any) => {
         if (wsRef.current?.readyState === 1) {
           wsRef.current.send(JSON.stringify({ type: "getOnlineUser", id: friend.id }));
         } else {
@@ -153,20 +153,33 @@ export default function FriendList() {
 
 	useEffect(() => {
 		if (!wsRef.current) return;
-		const handleOnlineStatus = (event: MessageEvent) => {
-			try {
-				const data = JSON.parse(event.data);
-				console.log("data");
-				if (data.type === "onlineStatus") {
-					setFriendOnlineStatus(statuses => ({
+		wsRef.current.addEventListener("message", (event) => {
+			console.log("WebSocket message reçu :", event.data);
+		});
+	}, []);
+
+	useEffect(() => {
+		if (wsRef.current){
+			const handleOnlineStatus = (event : any) => {
+				try {
+					console.log(event);
+					const data = JSON.parse(event.data);
+					if (data.type === "onlineStatus") {
+						setFriendOnlineStatus((statuses : any) => ({
 						...statuses,
 						[data.id]: data.online
-					}));
+						}));
+					}
+				} catch (e) {
+					console.error(e);
 				}
-			} catch(e){}
-		};
-		wsRef.current.addEventListener("message", handleOnlineStatus);
-		return () => wsRef.current?.removeEventListener("message", handleOnlineStatus);
+			}
+
+			wsRef.current.addEventListener("message", handleOnlineStatus);
+			return () => {
+				wsRef.current.removeEventListener("message", handleOnlineStatus);
+			};
+		}
 	}, [wsRef]);
 
 	const handleAddFriend = async (id: number) => {
