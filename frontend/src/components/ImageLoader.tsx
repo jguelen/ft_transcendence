@@ -8,8 +8,8 @@ type ImageState = {
 };
 
 export default function ImageLoader() {
-	const default_image = "/futuristic-avatar.svg";
-    const { user } = useAuth();
+    const default_image = "/futuristic-avatar.svg";
+    const { user, setImageUrl, imageUrl } = useAuth();
     const id = (user) ? user.id : -1;
     const inputRef = useRef<HTMLInputElement>(null);
 	const [imageState, setImageState] = useState<ImageState>({
@@ -191,6 +191,7 @@ export default function ImageLoader() {
                 className="w-full h-full"
                 onLoad={() => {
                     console.log("Image Success:", imageState.current);
+                    setImageUrl(imageState.current);
                     setRetryCount(0);
                 }}
             />

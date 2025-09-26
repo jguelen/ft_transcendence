@@ -17,10 +17,13 @@ interface AuthContextType {
   login: (userData: User) => void;
   logout: () => void;
   wsRef: React.MutableRefObject<WebSocket | null>;
+  imageUrl: string;
+  setImageUrl: (url: string) => void;
 }
 
 // --- Création du Contexte ---
 // On type le contexte pour qu'il s'attende à la forme de AuthContextType ou null.
+const default_image = "/futuristic-avatar.svg";
 const AuthContext = createContext<AuthContextType | null>(null);
 
 
@@ -35,6 +38,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const wsRef = useRef<WebSocket | null>(null);
+  const [imageUrl, setImageUrl] = useState<string>(default_image);
 
   useEffect(() => {
     const checkLoggedInUser = async () => {
@@ -82,6 +86,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, [user]);
 
+  useEffect(() => {
+    setImageUrl(default_image);
+  }, [user?.id]);
+
   // La fonction login attend un paramètre qui doit être de type User.
   const login = (userData: User) => {
     setUser(userData);
@@ -98,6 +106,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     wsRef,
+    imageUrl,
+    setImageUrl,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
