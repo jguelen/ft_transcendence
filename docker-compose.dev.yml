@@ -1,0 +1,22 @@
+services:
+  frontend:
+    # On spécifie le Dockerfile de développement
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: frontend_service_dev # Un nom différent pour éviter les conflits
+    ports:
+      # On mappe le port du serveur de dev (Vite) et non celui de Nginx
+      - "5173:5173"
+    volumes:
+      # C'est la clé du live-reload :
+      # On synchronise le code local avec le code dans le conteneur.
+      - ./frontend:/app
+      # Astuce : On évite que le node_modules local n'écrase celui du conteneur
+      - /app/node_modules
+    # On remplace la commande par défaut par npm run dev
+    # L'option -- --host est souvent nécessaire avec Vite pour le rendre accessible
+    command: npm run dev -- --host
+    # On n'a pas besoin de la dépendance au volume avatar-images en dev
+    # donc on peut la redéfinir pour qu'elle soit vide.
+    volumes_from: []

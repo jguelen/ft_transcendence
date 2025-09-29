@@ -90,6 +90,6 @@
     "minuscule": "Your password need to have at least one lowercase letter.",
     "majuscule": "Your password need to have at least one uppercase letter.",
     "number": "Your password need to contain at least one number.",
-    "special": "Your password need to contain at least one of these special characters (!@#$%^&*)."
+    "special": "Your password need to contain at least one of those special characters (!@#$%^&*)."
   }
 }

@@ -3,14 +3,8 @@ import { Outlet } from 'react-router-dom';
 
 function GameLayout() {
   return (
-    <div className="h-full main-layout">
-      {/* Votre navigation, header, etc */}
-      
-      <main className="h-full content">
+    <div className="h-full w-full max-w-[880px] flex justify-center items-center">
         <Outlet />
-      </main>
-      
-      {/* Footer ou autres éléments */}
     </div>
   );
 }

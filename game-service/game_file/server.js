@@ -63,24 +63,43 @@ await fastify.register(fastifyStatic, {
 //JWT
 
 const { JWT_SECRET } = process.env
+console.log(`La clé secrète JWT est-elle chargée ? ${JWT_SECRET ? 'Oui' : 'NON !'}`); // <--- AJOUTE CETTE LIGNE
+
+if (!JWT_SECRET) {
+    console.error("ERREUR FATALE: La variable d'environnement JWT_SECRET n'est pas définie. Le serveur ne peut pas fonctionner correctement.");
+    process.exit(1); // Arrête le serveur si la clé est manquante
+}
+
 
 fastify.register(fastifyCookie, {
   secret: JWT_SECRET,
 });
 
 function verifyJWT(request, reply, done) {
-	const token = request.cookies['ft_transcendence_jwt'];
-	if (!token) {
-		reply.status(401).send({ error: 'JWT cookie missing' });
-		return;
-	}
-	try {
-		const decoded = jwt.verify(token, JWT_SECRET);
-		request.user = decoded;
-		done();
-	} catch (err) {
-		reply.status(401).send({ error: 'Invalid token' });
-	}
+    // Affiche TOUS les cookies reçus par le serveur pour cette requête
+    console.log('[verifyJWT] Cookies reçus:', request.cookies);
+
+    const token = request.cookies['ft_transcendence_jwt'];
+
+    if (!token) {
+        // Log si le cookie spécifique est manquant
+        console.error('[verifyJWT] ERREUR: Le cookie "ft_transcendence_jwt" est manquant.');
+        reply.status(401).send({ error: 'JWT cookie missing' });
+        return;
+    }
+
+    console.log('[verifyJWT] Token trouvé. Tentative de vérification...');
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        request.user = decoded;
+        console.log('[verifyJWT] Token vérifié avec succès pour l\'utilisateur:', decoded);
+        done();
+    } catch (err) {
+        // TRÈS IMPORTANT: Log l'erreur exacte pour savoir pourquoi le token est invalide
+        console.error('[verifyJWT] ERREUR: Le token est invalide. Raison:', err.message);
+        reply.status(401).send({ error: 'Invalid token' });
+    }
 }
 
 //Put the alias of logged user instead of saved name

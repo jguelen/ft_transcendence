@@ -1,0 +1,18 @@
+# On part de la même image Node
+FROM node:20-alpine
+
+# On définit le dossier de travail dans le conteneur
+WORKDIR /app
+
+# On copie d'abord package.json pour profiter du cache Docker
+COPY package*.json ./
+
+# On installe les dépendances
+RUN npm install
+
+# On copie tout le reste du code source
+COPY . .
+
+EXPOSE 5173
+
+CMD [ "sh" ]

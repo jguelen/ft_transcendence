@@ -18,8 +18,8 @@ function Card
      shadowColor = 'shadow-card',
      bgColor = "bg-main",
      className = '',
-     maxWidth = '400px',
-     maxHeight = '100px',
+     maxWidth = '',
+     maxHeight = '',
   }: CardProps
 )
 {
@@ -27,9 +27,13 @@ function Card
     <div
       style={{'--card-max-width': maxWidth, '--card-max-height': maxHeight}}
       className={clsx(
-        "h-full max-w-[var(--card-max-width)]",
-        "w-full rounded-big backdrop-blur-card",
-        "max-h-[var(--card-max-height)] h-full",
+        "max-w-[var(--card-max-width)]",
+        "rounded-big backdrop-blur-card",
+        "max-h-[var(--card-max-height)]",
+        {
+          "h-full" : maxHeight != '',
+          "w-full" : maxWidth != ''
+        },
         bgColor,
         shadowColor,
         className,

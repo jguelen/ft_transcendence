@@ -217,7 +217,7 @@ export function AuthProvider({ children }: AuthProviderProps)
     updateUsername,
     imageUrl,
     setImageUrl,
-  }), [user, isLoading, register, login, logout, updateUsername]);
+  }), [user, isLoading, register, login, logout, updateUsername, setImageUrl, imageUrl]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
