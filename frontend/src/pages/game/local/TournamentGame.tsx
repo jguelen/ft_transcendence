@@ -32,7 +32,7 @@ export default function TournamentGame() {
 
     return (
         <div className="h-full w-full flex flex-col justify-center items-center">
-            {endGameMessage && <h1 className="end-game-message">{endGameMessage}</h1>}
+            {endGameMessage && <h1 className="text-white font-orbitron text-[30px]">{endGameMessage}</h1>}
 
             {!gameStarted ? (
                 <GameMenu 
