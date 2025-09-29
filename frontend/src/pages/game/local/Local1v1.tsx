@@ -1,21 +1,51 @@
-import Game from '../../../components/PongGame'
+import { useState } from 'react';
+import GameMenu from '../GameMenu';       // On importe les nouveaux composants
+import GameCanvas from '../GameCanvas';     // Assure-toi que les chemins sont corrects
 
-function Local1v1() {
-	const gameConfig = {
-		IA: false,
-		local: true,
-		tournament: false,
-		player_nbr: 2,
-		custom_mode: false,
-		speeding_mode: false,
-		IA_diff: 1,
-		start: false
-	};
-	return (
-		<div>
-			<Game config={gameConfig}/>
-		</div>
-	);
+// La configuration de base pour ce mode de jeu
+const initialConfig = {
+    IA: false,
+    local: true,
+    tournament: false,
+    player_nbr: 2,
+    custom_mode: false,
+    speeding_mode: false,
+    IA_diff: 1,
+    start: false
+};
+
+export default function Local1v1() {
+    const [gameStarted, setGameStarted] = useState(false);
+    const [gameConfig, setGameConfig] = useState(initialConfig);
+    const [endGameMessage, setEndGameMessage] = useState("");
+
+    const handleStartGame = (finalConfig: any) => {
+        setGameConfig(finalConfig);
+        setGameStarted(true);
+        setEndGameMessage("");
+    };
+
+    const handleGameEnd = (message: string) => {
+        setGameStarted(false);
+        setGameConfig(initialConfig);
+        setEndGameMessage(message);
+    };
+
+    return (
+        <div className="h-full w-full flex flex-col justify-center items-center">
+            {endGameMessage && <h1 className="end-game-message">{endGameMessage}</h1>}
+
+            {!gameStarted ? (
+                <GameMenu 
+                    initialConfig={gameConfig} 
+                    onStartGame={handleStartGame} 
+                />
+            ) : (
+                <GameCanvas 
+                    gameConfig={gameConfig} 
+                    onGameEnd={handleGameEnd} 
+                />
+            )}
+        </div>
+    );
 }
-
-export default Local1v1

@@ -26,25 +26,36 @@ function Register()
     const trimmedUsername = username.trim();
     const trimmedEmail = email.trim();
 
-    console.log("where is it ?", trimmedUsername);
     if (!trimmedUsername || !password || !trimmedEmail)
     {
       setError(t("register.error.mail/password"));
       setLoadingSubmit(false);
       return;
     }
+
     if (trimmedUsername.includes('@'))
     {
       setError(t("register.error.usernameContainsAt"))
       setLoadingSubmit(false);
       return;
     }
+
     if (password !== repassword)
     {
       setError(t("register.error.repassword"));
       setLoadingSubmit(false);
       return;
     }
+
+    const passwordErrors = validatePassword(password, t);
+    if (passwordErrors.length > 0)
+    {
+      console.log({passwordErrors})
+      setError(passwordErrors.join(' ')); 
+      setLoadingSubmit(false);
+      return;
+    }
+
     try
     {
       await register(trimmedUsername, trimmedEmail, password);
@@ -64,7 +75,7 @@ function Register()
 
   return (
     <form onSubmit={handleSubmit} action="/register" method="POST" className="flex flex-col
-      items-center justify-center gap-5 w-full h-full">
+      items-center justify-evenly gap-1 w-full h-full">
 
       <h1 className="font-orbitron text-title text-white break-all">{t("register.title")}</h1>
 
@@ -79,15 +90,16 @@ function Register()
           required value={password} onChange={(e) => setPassword(e.target.value)} iconSrc={'/icons/lock.svg'}/>
 
       <div className={clsx(
-            "w-full flex flex-col items-center justify-center",
+            "w-full flex flex-col items-center justify-between",
             {
-              "flex-grow h-0": error,
+              "flex-1": error,
             }
       )}>
         <Input type="password" name="repassword" id="repassword" placeholder={t("register.repassword")}
           required value={repassword} onChange={(e) => setRepassword(e.target.value)} iconSrc={'/icons/lock.svg'}/>
       
-        {error && <p className="text-red-500 text-center font-inter text-sm w-full max-h-[25%] overflow-y-auto">{error}</p>}
+        {error && <p className="flex justify-center items-center text-red-500
+          text-center font-inter text-sm w-full overflow-y-auto flex-1 ">{error}</p>}
       </div>
 
       <Button gradientBorder={true} type='submit' disabled={isLoadingSubmit} hoverColor="rgba(39, 95, 153, 0.4)">

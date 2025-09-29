@@ -1,8 +1,9 @@
-import Game from '../../../components/PongGame'
+import { useState } from 'react';
+import GameMenu from '../GameMenu';
+import GameCanvas from '../GameCanvas';
 
-function Online2v2()
-{
-  const gameConfig = {
+// La configuration de base pour ce mode de jeu
+const initialConfig = {
     IA: false,
     local: false,
     tournament: false,
@@ -11,12 +12,40 @@ function Online2v2()
     speeding_mode: false,
     IA_diff: 1,
     start: false
-  };
-  return (
-    <div>
-      <Game config={gameConfig}/>
-    </div>
-  );
-}
+};
 
-export default Online2v2
+export default function Online2v2() {
+    const [gameStarted, setGameStarted] = useState(false);
+    const [gameConfig, setGameConfig] = useState(initialConfig);
+    const [endGameMessage, setEndGameMessage] = useState("");
+
+    const handleStartGame = (finalConfig: any) => {
+        setGameConfig(finalConfig);
+        setGameStarted(true);
+        setEndGameMessage("");
+    };
+
+    const handleGameEnd = (message: string) => {
+        setGameStarted(false);
+        setGameConfig(initialConfig);
+        setEndGameMessage(message);
+    };
+
+    return (
+        <div className="h-full w-full flex flex-col justify-center items-center">
+            {endGameMessage && <h1 className="end-game-message">{endGameMessage}</h1>}
+
+            {!gameStarted ? (
+                <GameMenu 
+                    initialConfig={gameConfig} 
+                    onStartGame={handleStartGame} 
+                />
+            ) : (
+                <GameCanvas 
+                    gameConfig={gameConfig} 
+                    onGameEnd={handleGameEnd} 
+                />
+            )}
+        </div>
+    );
+}

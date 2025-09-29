@@ -31,7 +31,7 @@ const ScrollableList = ({ items, t }: ScrollableListProps) => {
        (
         <div className="flex justify-between items-center w-full h-[79px] border
          border-cyan_darkend rounded-small p-[10px]">
-          <div className="flex w-[280px] h-full justify-start items-center gap-2">
+          <div className="flex w-[280px] h-full justify-start items-center gap-2 flex-1">
             <span className={clsx
               (
                 "rounded-small w-[120px] h-[47px]",
@@ -45,10 +45,10 @@ const ScrollableList = ({ items, t }: ScrollableListProps) => {
                {item.victory === true ? t("profile.victory") : t("profile.defeat")}
               </h1>
             </span>
-            <h2 className="font-inter font-semibold text-subtitle text-white">
+            <h2 className="font-inter font-semibold text-subtitle text-white flex-1">
              VS {item.oponentName}{item.team ? "’s teams" : ""}</h2>
           </div>
-          <div className="flex flex-col justify-center items-end pr-[10px]">
+          <div className="flex flex-col justify-center items-end pr-[10px] flex-1">
             <h2 className="font-inter font-semibold text-subtitle text-white">
             {item.score}
             </h2>
@@ -175,7 +175,7 @@ function Profile()
         </span>
       </Card>
       <Card maxHeight='' maxWidth='' className="col-start-2 row-start-2
-        row-span-2 col-span-2 flex flex-col justify-center items-center p-[10px]">
+        row-span-2 col-span-2 flex flex-col justify-center items-center p-[10px] min-h-0">
         <h1 className="font-inter font-semibold text-[32px] text-white">
           {t("profile.history")}</h1>
         {isLoading ? (<div className="font-inter text-subtitle text-text font-medium">

@@ -54,7 +54,7 @@ function Account()
         alert(t("account.usernameAlert"));
       }
     }
-    catch (error)
+    catch (error: any)
     {
       setUserError(error.message || t("account.error.unknownError"));
     }
@@ -69,14 +69,15 @@ function Account()
     event.preventDefault();
     setIsLoadingPassword(true);
     setPasswordError('');
-    // const passwordErrors = validatePassword(password, t);
+    const passwordErrors = validatePassword(password, t);
 
-    // if (passwordErrors.length > 0)
-    // {
-    //   console.log({passwordErrors})
-    //   setPasswordError(passwordErrors.join(' '));
-    //   setIsLoadingPassword(false);
-    // }
+    if (passwordErrors.length > 0)
+    {
+      console.log({passwordErrors})
+      setPasswordError(passwordErrors.join(' '));
+      setIsLoadingPassword(false);
+      return;
+    }
     try
     {
       const response = await
@@ -103,7 +104,6 @@ function Account()
     }
     finally
     {
-      console.log("why????");
       setIsLoadingPassword(false);
     }
   }
@@ -111,7 +111,6 @@ function Account()
     <div className="contents">
       <Navbar activeMenu='account' className="col-start-1 row-start-1"/>
       <Card maxHeight='' maxWidth='' className="col-start-2 row-start-1 row-span-3">
-        {/* Friends */}
         <Friends/>
       </Card>
       <Card maxHeight='' maxWidth='' className="col-start-3 row-start-1 p-[30px]
@@ -136,7 +135,7 @@ function Account()
         </form>
       </Card>
       <Card maxHeight='' maxWidth='' className="col-start-3 row-start-2 row-span-2
-        p-[30px] flex flex-col justify-evenly items-center">
+        flex flex-col justify-evenly items-center p-[30px]">
         <div className="flex justify-center items-center">
           <img src="/icons/lock.svg" className="w-[40px] h-[40px]"/>
           <h1 className="font-inter font-semibold text-[32px] text-white">
@@ -146,7 +145,7 @@ function Account()
         <form onSubmit={handlePassword} action="/settings/account" method="POST"
           className="flex flex-col items-center justify-center gap-1 w-full">
            {passwordError && <p className="text-red-500 text-center font-inter
-             text-sm w-full max-h-[25%] overflow-y-auto">{passwordError}</p>}
+             text-sm w-full overflow-y-auto flex-1">{passwordError}</p>}
             <Input type="password" name="password" id="password" required value={password}
               onChange={(e) => setPassword(e.target.value)} maxWidth=""
               border="border-stroke" className="text-center" placeholder={t("account.password")}/>

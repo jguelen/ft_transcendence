@@ -1,8 +1,8 @@
-import Game from '../../../components/PongGame'
+import { useState } from 'react';
+import GameMenu from '../GameMenu';
+import GameCanvas from '../GameCanvas';
 
-function TournamentGame()
-{
-  const gameConfig = {
+const initialConfig = {
     IA: false,
     local: true,
     tournament: true,
@@ -11,12 +11,40 @@ function TournamentGame()
     speeding_mode: false,
     IA_diff: 1,
     start: false
-  };
-  return (
-    <div>
-      <Game config={gameConfig}/>
-    </div>
-  );
-}
+};
 
-export default TournamentGame
+export default function TournamentGame() {
+    const [gameStarted, setGameStarted] = useState(false);
+    const [gameConfig, setGameConfig] = useState(initialConfig);
+    const [endGameMessage, setEndGameMessage] = useState("");
+
+    const handleStartGame = (finalConfig: any) => {
+        setGameConfig(finalConfig);
+        setGameStarted(true);
+        setEndGameMessage("");
+    };
+
+    const handleGameEnd = (message: string) => {
+        setGameStarted(false);
+        setGameConfig(initialConfig);
+        setEndGameMessage(message);
+    };
+
+    return (
+        <div className="h-full w-full flex flex-col justify-center items-center">
+            {endGameMessage && <h1 className="end-game-message">{endGameMessage}</h1>}
+
+            {!gameStarted ? (
+                <GameMenu 
+                    initialConfig={gameConfig} 
+                    onStartGame={handleStartGame} 
+                />
+            ) : (
+                <GameCanvas 
+                    gameConfig={gameConfig} 
+                    onGameEnd={handleGameEnd} 
+                />
+            )}
+        </div>
+    );
+}

@@ -1,17 +1,15 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // Layouts
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
 import GridLayout from './layouts/GridLayout';
-import GameLayout from './layouts/GameLayout';
+import GameLayout from './layouts/GameLayout'
 
 // Pages
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
-import Tournament from './pages/game/local/Tournament';
 import LocalPong from './pages/game/local/LocalPong';
 import OnlinePong from './pages/game/online/OnlinePong';
 import Profile from './pages/settings/Profile';
@@ -67,11 +65,13 @@ function App() {
               <Route path={ROUTES.HOME} element={<Home />}/>
               <Route path={ROUTES.LOCAL.INDEX} element={ <LocalPong/> }/>
               <Route path={ROUTES.ONLINE.INDEX} element={ <OnlinePong />}/>
-              <Route path={ROUTES.LOCAL.PLAY_1V1} element={ <Local1v1/> }/>
-              <Route path={ROUTES.LOCAL.PLAY_AI} element={ <Ai1v1/> }/>
-              <Route path={ROUTES.ONLINE.PLAY_1V1} element={<Online1v1 />}/>
-              <Route path={ROUTES.ONLINE.PLAY_2V2} element={<Online2v2 />}/>
-              <Route path={ROUTES.CONTEST.GAME} element={ <TournamentGame/> }/>
+              <Route element={<GameLayout/>}>
+                <Route path={ROUTES.LOCAL.PLAY_1V1} element={ <Local1v1/> }/>
+                <Route path={ROUTES.LOCAL.PLAY_AI} element={ <Ai1v1/> }/>
+                <Route path={ROUTES.ONLINE.PLAY_1V1} element={<Online1v1 />}/>
+                <Route path={ROUTES.ONLINE.PLAY_2V2} element={<Online2v2 />}/>
+                <Route path={ROUTES.CONTEST.GAME} element={ <TournamentGame/> }/>
+              </Route>
 
               <Route element={<GridLayout/>} >
                 <Route path={ROUTES.SETTINGS.PROFILE} element={<Profile />} />
