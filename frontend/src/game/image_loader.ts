@@ -87,12 +87,13 @@ export class ImageSrc {
 		this.powerupImg = returnColorImage(this.powerupImg, main_color);
 		this.obstacleImg = returnColorImage(this.obstacleImg, main_color);
 		this.meteorImg = returnColorImage(this.meteorImg, main_color);
-		this.blackholeImg = returnColorImage(this.blackholeImg, main_color);
+		this.blackholeImg = returnColorImage(this.blackholeImg, '#000000');
 		this.top_img = returnColorImage(this.top_img, main_color);
 	}
 	reloadColorPlayer(color : string){
 		this.playerImg = returnColorImage(this.playerImg, color);
 	}
+	
 }
 
 export function hexToRgbArray(hex : string) {
