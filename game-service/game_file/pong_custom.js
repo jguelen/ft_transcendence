@@ -35,8 +35,9 @@ let prob_box = 0.3;
 	Where is it ! Tell me ! {22} : The ball is invisible for 2 sec every 4 sec (until the next point)
 */
 
-async function effect0(game){ //done
+async function effect0(game){
 	console.log("Fake news {0}");
+	sendmessage(game, "Change of Direction");
 	let angle = (Math.random() - 0.5) * MAX_BOUNCE_ANGLE;
 	let dir = Math.random() < 0.5 ? 1 : -1;
 	game.ball.dx = dir * game.BALL_SPEED * Math.cos(angle);
@@ -44,8 +45,9 @@ async function effect0(game){ //done
 	game.ball.last_touch = null;
 }
 
-async function effect1(game){ //done to scale
+async function effect1(game){
 	console.log("Always faster {1}");
+	sendmessage(game, "Speeding");
 	if (game.true_speeding_ball == false){
 		game.true_speeding_ball = true;
 		setInterval(() => {
@@ -62,24 +64,28 @@ async function effect1(game){ //done to scale
 	}
 }
 
-async function effect2(game){ //done
+async function effect2(game){
 	console.log("You are not big enought {2}");
+	sendmessage(game, "Bigger Paddle");
 	if (game.player_size < 15) game.player_size += 1;
 }
 
-async function effect3(game){ //done
+async function effect3(game){
 	console.log("Smaller ! {3}");
+	sendmessage(game, "Smaller Paddle");
 	if (game.player_size > 1 + (game.players.length > 2) ? 1 : 0) game.player_size -= 1;
 }
 
-async function effect4(game){ //done
+async function effect4(game){ 
 	console.log("More ! More ! {4}");
+	sendmessage(game, "Multiplication");
 	game.multiple_ball = true;
 }
 
 async function effect5(game){  //second player don't work
 	game.hallucination = true;
 	console.log("You are hallucinating {5}");
+	sendmessage(game, "Hallucination");
 	game.teams.forEach(team =>{
 		team.backplayer.up_player = team.backplayer.base_down;
 		team.backplayer.down_player = team.backplayer.base_up;
@@ -95,6 +101,7 @@ async function effect6(game){  //lag a bit
 		return ;
 	game.in_effect = true;
 	console.log("It's just a break {6}");
+	sendmessage(game, "Breakpoint");
 	game.ball.last_touch = null;
 	let ball_before = game.BALL_SPEED;
 	let balldx = game.ball.dx;
@@ -113,15 +120,17 @@ async function effect6(game){  //lag a bit
 	game.in_effect = false;
 }
 
-async function effect7(game){  //done normally
+async function effect7(game){
 	console.log("Silver Bullet {7}", game.point_value * 2);
+	sendmessage(game, String("Silver Bullet value : " + game.point_value * 2));
 	game.point_value *= 2;
 }
 
-async function effect8(game){ //done maybe ajust despawn after point
+async function effect8(game){
 	if (game.obstacle_array.length > 0)
 		return ;
 	console.log("Obstacles {8}");
+	sendmessage(game, "Obstacles");
 	for (let i = 0; i < 15; i++){
 		let new_obstacle = new Obstacle(
 			SPAWN_MARGIN + Math.round((WIDTH - SPAWN_MARGIN) * Math.random()),
@@ -137,6 +146,7 @@ async function effect9(game){ //nothing
 		return ;
 	game.starfall = true;
 	console.log("Starfall {9}");
+	sendmessage(game, "Starfall");
 	max_box = 30;
 	prob_box = 1;
 	do{
@@ -161,6 +171,7 @@ async function effect9(game){ //nothing
 
 async function effect10(game){
 	console.log("Black Hole {10}");
+	sendmessage(game, "Black Hole");
 	// game.blackhole = true;
 
 	// const centerX = Math.floor(WIDTH / 2);
@@ -210,11 +221,12 @@ async function effect10(game){
 	// }
 }
 
-async function effect11(game){ //done
+async function effect11(game){ 
 	if (game.in_effect == true)
 		return ;
 	game.in_effect = true;
 	console.log("It's everywhere ! {11}");
+	sendmessage(game, "Fireworks");
 	game.ball.last_touch = null;
 	for (let i = 0; i < Math.floor(Math.random() * 30); i++){
 		game.ball.x = SPAWN_MARGIN + Math.round((WIDTH - SPAWN_MARGIN * 1.5) * Math.random());
@@ -228,21 +240,24 @@ async function effect11(game){ //done
 
 async function effect12(game){ //nothing
 	console.log("Nothing {12}");
+	sendmessage(game, "Nothing");
 }
 
-async function effect13(game){ //done
+async function effect13(game){ 
 	if (game.negative == true)
 		return ;
 	console.log("Negative mode {13}");
+	sendmessage(game, "Negative");
 	game.negative = true;
 	await utils.sleep(5000);
 	game.negative = false;
 }
 
-async function effect14(game){ //done to scale
+async function effect14(game){
 	if (game.snake_mode == true)
 		return ;
 	console.log("Snake mode {14}");
+	sendmessage(game, "Snake Mode");
 	game.snake_mode = true;
 	let hitbox = 1;
 	while (game.snake_mode == true){
@@ -258,8 +273,9 @@ async function effect14(game){ //done to scale
 	game.snake_array = [];
 }
 
-async function effect15(game){ //done to scale
+async function effect15(game){
 	console.log("Teleport player {15}");
+	sendmessage(game, "Teleportation");
 	let tmp_margin = TOP_MARGIN + game.player_size;
 	game.teams.forEach(team =>{
 		team.backplayer.posy =  tmp_margin + Math.round((HEIGHT - tmp_margin) * Math.random());
@@ -269,20 +285,22 @@ async function effect15(game){ //done to scale
 	})
 }
 
-async function effect16(game){ //done
+async function effect16(game){
 	if (game.invisible_player)
 		return ;
 	console.log("Invisible player {16}");
+	sendmessage(game, "Invisible Player");
 	game.invisible_player = true;
 	await utils.sleep(1500);
 	game.invisible_player = false;
 }
 
-async function effect17(game){ //done
+async function effect17(game){
 	if (game.meteorites == true)
 		return ;
 	game.meteorites = true;
-	console.log("Meteor shower ! {17}");
+	console.log("Meteor shower {17}");
+	sendmessage(game, "Meteor shower");
 	if (game.meteorites_array.length > 0)
 		return ;
 	do{
@@ -304,27 +322,30 @@ async function effect17(game){ //done
 	game.meteorites = false;
 }
 
-async function effect18(game){ //done
+async function effect18(game){
 	if (game.gold_game == true)
 		return ;
 	game.box_array = [];
 	console.log("Golden Ball {18}");
+	sendmessage(game, "Golden Ball");
 	game.teams.forEach(team => team.score = 0);
 	game.MAX_SCORE = 1;
 	game.gold_game = true;
 }
 
-async function effect19(game){ //done normally
-	console.log("I see the futur ! {19}");
+async function effect19(game){
+	console.log("Prediction {19}");
+	sendmessage(game, "Prediction");
 	game.vision = true;
 	await utils.sleep(10000);
 	game.vision = false;
 }
 
-async function effect20(game){ //done scale 1
+async function effect20(game){
 	if (game.epic_moment)
 		return ;
-	console.log("Epic moment ! {20}");
+	console.log("Epic moment {20}");
+	sendmessage(game, "Epic moment");
 	game.epic_moment = true;
 	game.box_array = [];
 	await effect11(game);
@@ -333,16 +354,18 @@ async function effect20(game){ //done scale 1
 	effect7(game);
 }
 
-async function effect21(game){ //done normally no visual
-	console.log("Portals ! {21}");
+async function effect21(game){
+	console.log("Portals {21}");
+	sendmessage(game, "Portals");
 	game.portal = true;
 }
 
-async function effect22(game){ //done normally no visual
+async function effect22(game){
 	if (game.invisible_ball_active)
 		return ;
 	game.invisible_ball_active = true;
 	console.log("Invisiball {22}");
+	sendmessage(game, "Invisiball");
 	for (let i = 0; i < 5; i++){
 		game.invisible_ball = true;
 		await utils.sleep(500);
@@ -388,7 +411,30 @@ function apply_effect(game, nbr){
 	}
 }
 
+function sendmessage(game, message){
+	game.players
+		.filter(client => client.connection && client.connection.readyState === client.connection.OPEN)
+		.forEach(client => {
+			try {
+				client.connection.send(JSON.stringify({ type: 'powerupmsg', msg : message}));
+			} catch (e){
+				console.error('Erreur lors de l\'envoi du this.over au client :', e);
+			}
+		});
+}
+
 export function reset_effect(game){
+	if (game.hallucination){
+		game.players
+			.filter(client => client.connection && client.connection.readyState === client.connection.OPEN)
+			.forEach(client => {
+				try {
+					client.connection.send(JSON.stringify({ type: 'colorreset'}));
+				} catch (e){
+					console.error('Erreur lors de l\'envoi du this.over au client :', e);
+				}
+			});
+	}
 	game.game_color = BASE_COLOR;
 	game.game_sec_color = BASE_SECONDARY_COLOR;
 	max_box = 10;
@@ -421,6 +467,7 @@ export function reset_effect(game){
 	game.starfall = false;
 	game.hallucination = false;
 	game.blackhole = false;
+	
 }
 
 export function touch_box(game){
@@ -486,9 +533,9 @@ export async function custom_mode_func(game){
 			let x = SPAWN_MARGIN + Math.round((WIDTH - SPAWN_MARGIN) * Math.random());;
 			let y = TOP_MARGIN + Math.round((HEIGHT - TOP_MARGIN) * Math.random());
 			let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
-			while (game.box_array.includes(new_box) == true)
-				new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
-			// let nbr = 5;
+			// while (game.box_array.includes(new_box) == true)
+			// 	new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
+			// let nbr = 9;
 			// let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), nbr);
 			return (new_box);
 		}

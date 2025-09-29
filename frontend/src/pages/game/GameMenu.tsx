@@ -33,8 +33,8 @@ function getTournamentPlayerIds(names: string[], userList: User[]): { ids: numbe
     const uniqueNames = new Set<string>();
 
     names.forEach((name, idx) => {
-        if (name.length > 15) {
-            errors.push(`Le nom "${name}" dépasse 15 caractères.`);
+        if (name.length > 30) {
+            errors.push(`Le nom "${name}" dépasse 30 caractères.`);
         }
         if (uniqueNames.has(name) && name !== `Player${idx + 1}` && name !== "") {
             errors.push(`Le nom "${name}" est utilisé plusieurs fois.`);
@@ -71,7 +71,7 @@ export default function GameMenu({ initialConfig, onStartGame }: { initialConfig
             .catch(error => console.error("Error fetching users", error));
     }, []);
 
-		 function handleCustom() {
+	function handleCustom() {
       setPongConfig((cfg: any) => ({ ...cfg, custom_mode: !cfg.custom_mode }));
     }
     
@@ -97,13 +97,8 @@ export default function GameMenu({ initialConfig, onStartGame }: { initialConfig
         onStartGame(finalConfig);
     }
 
-    // Le JSX est une copie de la partie menu de ton ancien fichier
-    // Remplace le return de ton composant GameMenu.tsx par ce code
-
 return (
-    // On utilise un conteneur global avec un espacement vertical (gap-6) entre les sections
     <div className="flex flex-col justify-center gap-4 text-white font-inter h-full w-full">
-        {/* --- Section 1: Options de jeu --- */}
         <Card className="p-3 w-full">
             <h2 className="text-xl font-bold mb-4 border-b border-gray-600 pb-2">Options de jeu</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
@@ -114,7 +109,6 @@ return (
                     Speeding mode : {pongConfig.speeding_mode ? "ON" : "OFF"}
                 </Button>
 
-                {/* La difficulté IA ne s'affiche que si le mode IA est activé */}
                 {pongConfig.IA && (
                     <div className="flex items-center gap-2 md:col-span-2">
                         <label htmlFor="iaDiff" className="font-semibold">Difficulté IA :</label>
@@ -135,7 +129,6 @@ return (
             </div>
         </Card>
 
-        {/* --- Section 2: Joueurs du Tournoi (Conditionnelle) --- */}
         {pongConfig.tournament && (
     	        <Card className="p-3 w-full">
                 <h2 className="text-xl font-bold mb-4 border-b border-gray-600 pb-2">Joueurs du Tournoi</h2>
@@ -143,8 +136,7 @@ return (
                     {tournamentPlayers.map((name, idx) => {
                         const isInDb = isNameInUsers(users, name);
                         const isDup = isDuplicate(name, idx, tournamentPlayers);
-                        
-                        // Logique de couleur améliorée
+
                         const bgColor = isDup ? 'bg-red-500/20 border-red-500' 
                                       : isInDb ? 'bg-green-500/20 border-green-500' 
                                       : 'bg-gray-700/50 border-gray-600';
@@ -167,8 +159,6 @@ return (
                 </div>
             </Card>
         )}
-
-        {/* --- Section 3: Configuration des Commandes --- */}
           <Card className="p-3 w-full">
             <h2 className="text-xl font-bold mb-4 border-b border-gray-600 pb-2">Commandes</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -199,10 +189,8 @@ return (
             </div>
         </Card>
 
-        {/* --- Section 4: Messages et Bouton START --- */}
         <div className="text-center">
-            {/* Le message d'erreur ne s'affiche que s'il y en a un */}
-            {msg && <p className="text-red-400 mb-4">{msg}</p>}
+            <h1 className="text-white font-orbitron text-[30px]">{msg}</h1>
 
             <div className="flex items-center justify-center">
                 <Button 
@@ -210,7 +198,7 @@ return (
                     hoverColor="rgba(39, 95, 153, 0.4)" 
                     id="startBtn" 
                     onClick={handleStart}
-                    className="px-10 py-3 text-lg" // On rend le bouton plus visible
+                    className="px-10 py-3 text-lg"
                 >
                     START
                 </Button>

@@ -7,6 +7,7 @@ export default function GameCanvas({ gameConfig, onGameEnd }: { gameConfig: any,
     const serviceRef = useRef<PongGameService>();
     const { user } = useAuth();
     const [msg, setMsg] = useState<string>("");
+    const [custommsg, setCustomMsg] = useState<string>("");
 
     useEffect(() => {
         if (canvasRef.current && user) {
@@ -16,7 +17,7 @@ export default function GameCanvas({ gameConfig, onGameEnd }: { gameConfig: any,
             // Logique de connexion et de démarrage du jeu
             const trySend = () => {
                 if (serviceRef.current?.ws.readyState === WebSocket.OPEN) {
-                    serviceRef.current.draw_start(gameConfig.custom_mode);
+                    serviceRef.current.draw_start(  gameConfig.custom_mode);
                     serviceRef.current.ws.send(JSON.stringify({
                         type: "gamesearch",
                         gameparam: gameConfig,
@@ -48,8 +49,12 @@ export default function GameCanvas({ gameConfig, onGameEnd }: { gameConfig: any,
             if (data.type === 'matchtitle') {
                 setMsg(data.msg);
             }
+            if (data.type === 'powerupmsg') {
+                setCustomMsg(data.msg);
+            }
             if (data.type === 'end' || data.type === 'multipleconnexion') {
                 onGameEnd(data.msg);
+                setCustomMsg(data.msg);
                 if (data.type === 'multipleconnexion') {
                     window.location.href = '/';
                 }
@@ -61,9 +66,10 @@ export default function GameCanvas({ gameConfig, onGameEnd }: { gameConfig: any,
     }, [serviceRef.current?.ws, onGameEnd]);
 
     return (
-        <div>
-            <h1>{msg}</h1>
+        <div className="flex flex-col justify-center items-center">
+            <h1 className="text-white font-orbitron text-[30px]">{msg}</h1>
             <canvas ref={canvasRef} id="pong" width={800} height={600}></canvas>
+            <h1 className="text-white font-orbitron text-[25px]">{custommsg}</h1>
         </div>
     );
 }

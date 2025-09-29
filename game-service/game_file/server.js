@@ -289,7 +289,7 @@ fastify.register(async function (fastify){
 						newProject.player_case_array.push({keyup: data.keys.keysup.p2, keydown: data.keys.keysdown.p2});
 					}
 					if (newProject.local && newProject.IA)
-						newProject.player_name_array.push(String('IA') + IA_DIFF_NAME[data.gameparam.IA_diff]);
+						newProject.player_name_array.push(String('AI ') + IA_DIFF_NAME[data.gameparam.IA_diff]);
 					else if (newProject.local && !newProject.IA){
 						newProject.player_name_array.push("Local player");
 					}
@@ -419,7 +419,7 @@ async function create_game(local, tournament, IA, IA_diff,
 				if (winner != ""){
 					console.log("Winner is :", winner);
 					for (let player of players_list){
-						player.connection.send(JSON.stringify({ type: 'end', msg: String("Winner is :" + winner)}));
+						player.connection.send(JSON.stringify({ type: 'end', msg: String("Winner is : " + winner)}));
 					}
 				} else {
 					console.log("Game Ended by deconnexion");
@@ -443,10 +443,10 @@ async function create_game(local, tournament, IA, IA_diff,
 			gameInstance_array.push(gameInstance);
 			let data = await gameInstance.startGame();
 			if (data != null){
-				console.log("Winner is :", data.winner1.name);
+				console.log("Winner is : ", data.winner1.name);
 				saveMatch("1v1 Local", data);
 				for (let player of players_list){
-					player.connection.send(JSON.stringify({ type: 'end', msg : String("Winner is :" + data.winner1.name)}));
+					player.connection.send(JSON.stringify({ type: 'end', msg : String("Winner is : " + data.winner1.name)}));
 				}
 			} else {
 				console.log("Game Ended by deconnexion");
@@ -472,7 +472,7 @@ async function create_game(local, tournament, IA, IA_diff,
 
 		let players = [];
 		for (let i = 0; i < players_list.length; i++){
-			players.push(new Player(players_list[i].id, players_id[i], players_name[i], pos[i], players_keys[0].keyup, players_keys[0].keydown, players_list[i].connection))
+			players.push(new Player(players_list[i].id, players_id[i], players_name[i], pos[i], players_keys[i].keyup, players_keys[i].keydown, players_list[i].connection))
 			players_list[i].connection.send(JSON.stringify({ type: 'matchtitle', msg: message }));
 		}
 	
@@ -482,9 +482,9 @@ async function create_game(local, tournament, IA, IA_diff,
 		let data = await gameInstance.startGame();
 		if (data != null){
 			if (player_nbr == 2)
-				message = "Winner is :" + data.winner1.name;
+				message = "Winner is : " + data.winner1.name;
 			else {
-				message = "Winners are :" + data.winner1.name + "and" + data.winner2.name;
+				message = "Winners are : " + data.winner1.name + " and " + data.winner2.name;
 			}
 			console.log(message);
 			saveMatch((player_nbr == 4) ? "2v2 Online" : "1v1 Online" , data);

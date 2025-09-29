@@ -53,6 +53,12 @@ export class PongGameService
 				const state = data.state;
 				this.draw_game(state);
 			}
+			if (data.type === 'colorreset'){
+				this.shadow_color = '#00F9EC';
+				this.ball_color = '#00f9ec';
+				this.ball_middle_color = '#66FF99';
+				this.imgsrc.reloadColorPlayer(this.shadow_color);
+			}
 			if (data.type === 'welcome') {
 				this.myId = data.id;
 			}
@@ -349,21 +355,23 @@ export class PongGameService
 				Number(255 - Number(game_colorrgb[1])).toString(16).padStart(2, "0") +
 				Number(255 - Number(game_colorrgb[2])).toString(16).padStart(2, "0"));
 		}
-		// let paddel_color = this.shadow_color;
-		// if (screen.hallucination){
-		// 	let paddelrgb : number[] = hexToRgbArray(paddel_color);
-		// 	paddel_color = String( "#" +
-		// 		Number(255 - Number(paddelrgb[0])).toString(16).padStart(2, "0") +
-		// 		Number(255 - Number(paddelrgb[1])).toString(16).padStart(2, "0") +
-		// 		Number(255 - Number(paddelrgb[2])).toString(16).padStart(2, "0"));
-		// }
 
-		// if (this.choose_color && this.shadow_color != previous_game_color){
-		// 	this.imgsrc.reloadColorImage(game_color);
-		// }
-		// if (this.shadow_color != paddel_color){
-		// 	this.imgsrc.reloadColorPlayer(paddel_color);
-		// }
+		if (this.choose_color && this.shadow_color != previous_game_color){
+			this.imgsrc.reloadColorImage(game_color);
+		}
+
+		let paddel_color = this.shadow_color;
+		if (screen.hallucination){
+			let paddelrgb : number[] = hexToRgbArray(paddel_color);
+			paddel_color = String( "#" +
+				Number(255 - Number(paddelrgb[0])).toString(16).padStart(2, "0") +
+				Number(255 - Number(paddelrgb[1])).toString(16).padStart(2, "0") +
+				Number(255 - Number(paddelrgb[2])).toString(16).padStart(2, "0"));
+		}
+		if (this.shadow_color != paddel_color && !screen.hallucination)
+			this.imgsrc.reloadColorPlayer(paddel_color);
+		else if (screen.hallucination)
+			this.imgsrc.reloadColorPlayer(paddel_color);
 
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.ctx.fillStyle = '#050a12';
@@ -409,7 +417,6 @@ export class PongGameService
 			this.ctx.drawImage(this.imgsrc.meteorImg, cx - mw/2, cy - mh/2, mw, mh);
 		}
 
-
 		//Star
 		for (let obs of screen.box_array){
 			this.draw_image(obs, 3, this.imgsrc.powerupImg);
@@ -424,9 +431,10 @@ export class PongGameService
 		}
 		if (screen.invisible_player == false){
 			for (let player of screen.players){
-				this.ctx.shadowColor = this.shadow_color;
+				this.ctx.shadowColor = paddel_color;
 				this.ctx.shadowBlur = blur_size;
 				this.ctx.drawImage(this.imgsrc.playerImg, player.posx * this.SCALE_X, (player.posy - player.size) * this.SCALE_Y, this.SCALE_X * 2, this.SCALE_Y * player.size * 2);
+				this.ctx.shadowColor = this.shadow_color;
 				this.ctx.shadowBlur = 0;
 			}
 		}
@@ -450,18 +458,10 @@ export class PongGameService
 		const mwb = this.imgsrc.blackholeImg.width / 5;
 		const mhb = this.imgsrc.blackholeImg.height / 5;
 		if (screen.blackhole){
-			const cx = (this.WIDTH / 2);
-			const cy = (this.HEIGHT / 2);
+			const cx = (this.WIDTH / 2) * this.SCALE_X;
+			const cy = (this.HEIGHT / 2) * this.SCALE_Y;
 			this.drawRotatedImage(this.imgsrc.blackholeImg, cx - mwb/2, cy - mhb/2, mwb, mhb);
 		}
-		
-		// if (screen.gameover == true){
-		// 	if (screen.team1_score >= screen.MAX_SCORE)
-		// 		afficherMessage(screen, "Team 1" + " Wins !!!", 'r');
-		// 	if (screen.team2_score >= screen.MAX_SCORE)
-		// 		afficherMessage(screen, "Team 2" + " Wins !!!", 'l');
-		// }
-		// this.write_score(2, this.fps, (this.WIDTH - 4) * this.SCALE_X, (this.HEIGHT - 4) * this.SCALE_Y);
 	}
 }
 	// function afficherMessage(game_data : any, msg : string, side : string) {

@@ -686,7 +686,6 @@ export class Game {
 		}
 	};
 
-	//Called when an input is released by a player
 	inputrelease(key, id){
 		for (let team of this.teams){
 			if (team == team[1] && IA == true && local == true)
@@ -700,16 +699,6 @@ export class Game {
 	terminate(){
 		this.over = true;
 		this.start = false;
-
-		// this.players
-		// 	.filter(client => client.connection && client.connection.readyState === client.connection.OPEN)
-		// 	.forEach(client => {
-		// 		try {
-		// 			client.connection.send(JSON.stringify({ type: 'terminated', state: null }));
-		// 		} catch (e){
-		// 			console.error('Erreur lors de l\'envoi du terminate au client :', e);
-		// 		}
-		// 	});
 
 		if (this._gameOverResolver) {
 			this._gameOverResolver(null);
