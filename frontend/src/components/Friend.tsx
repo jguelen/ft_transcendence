@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import type { FriendItem, FriendStatus } from "./FriendList";
+import type { FriendItem } from "./FriendList";
 
 interface FriendScrollableListProps {
   items: FriendItem[];
@@ -13,6 +13,8 @@ interface FriendScrollableListProps {
   onUnblock: (id: number) => void;
   onCancelRequest: (id: number) => void;
   friendOnlineStatus: Record<number, boolean>;
+  youBlockedIds: Set<number>;
+  blockedByIds: Set<number>;
 }
 
 const FriendScrollableList = ({
@@ -25,8 +27,14 @@ const FriendScrollableList = ({
   onBlock,
   onUnblock,
   onCancelRequest,
-  friendOnlineStatus
+  friendOnlineStatus,
+  youBlockedIds,
+  blockedByIds
 }: FriendScrollableListProps) => {
+  function isBlocked(id: number) {
+    return youBlockedIds.has(id) || blockedByIds.has(id);
+  }
+
   return (
     <div className="flex flex-col justify-start items-center w-full h-full gap-3 p-3 overflow-y-auto">
       {items.map((item) => (
@@ -64,9 +72,11 @@ const FriendScrollableList = ({
 			<span
                 className={clsx(
                   "w-3 h-3 rounded-full border-2 border-white",
-                  friendOnlineStatus[item.id] === true
-                    ? "bg-green-500"
-                    : "bg-red-500"
+                  item.status === "ami"
+                    ? friendOnlineStatus[item.id] === true
+                      ? "bg-green-500"
+                      : "bg-red-500"
+                    : "bg-grey-500"
                 )}
                 title={friendOnlineStatus[item.id] === true ? "En ligne" : "Hors ligne"}
             />
@@ -80,12 +90,16 @@ const FriendScrollableList = ({
                 <button
                   className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded transition text-sm sm:text-base"
                   onClick={() => onAddFriend(item.id)}
+                  disabled={isBlocked(item.id)}
+                  title={isBlocked(item.id) ? "Action impossible : bloqué ou bloqué par cet utilisateur" : undefined}
                 >
                   Demander en ami
                 </button>
                 <button
                   className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition text-sm sm:text-base"
                   onClick={() => onBlock(item.id)}
+                  disabled={blockedByIds.has(item.id)}
+                  title={blockedByIds.has(item.id) ? "Déjà bloqué par cet utilisateur" : undefined}
                 >
                   Bloquer
                 </button>
@@ -96,6 +110,8 @@ const FriendScrollableList = ({
                 <button
                   className="bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 rounded transition text-sm sm:text-base"
                   onClick={() => onRemoveFriend(item.id)}
+                  disabled={isBlocked(item.id)}
+                  title={isBlocked(item.id) ? "Action impossible : bloqué ou bloqué par cet utilisateur" : undefined}
                 >
                   Retirer des amis
                 </button>
@@ -105,6 +121,8 @@ const FriendScrollableList = ({
                     "bg-red-500 hover:bg-red-600"
                   )}
                   onClick={() => onBlock(item.id)}
+                  disabled={blockedByIds.has(item.id)}
+                  title={blockedByIds.has(item.id) ? "Déjà bloqué par cet utilisateur" : undefined}
                 >
                   Bloquer
                 </button>
@@ -117,14 +135,10 @@ const FriendScrollableList = ({
                     <button
                       className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded transition text-sm sm:text-base"
                       onClick={() => onAcceptRequest(item.id)}
+                      disabled={isBlocked(item.id)}
+                      title={isBlocked(item.id) ? "Action impossible : bloqué ou bloqué par cet utilisateur" : undefined}
                     >
                       Accepter
-                    </button>
-                    <button
-                      className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition text-sm sm:text-base"
-                      onClick={() => onDeclineRequest(item.id)}
-                    >
-                      Refuser
                     </button>
                   </>
                 )}
@@ -142,6 +156,8 @@ const FriendScrollableList = ({
                 <button
                   className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition text-sm sm:text-base"
                   onClick={() => onBlock(item.id)}
+                  disabled={blockedByIds.has(item.id)}
+                  title={blockedByIds.has(item.id) ? "Déjà bloqué par cet utilisateur" : undefined}
                 >
                   Bloquer
                 </button>

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import useAuth from '../context/AuthContext';
 
 export default function ImageAvatar() {
-<<<<<<< HEAD
     const { imageUrl } = useAuth();
 
     return (
