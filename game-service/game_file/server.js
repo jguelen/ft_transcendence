@@ -67,7 +67,7 @@ console.log(`La clé secrète JWT est-elle chargée ? ${JWT_SECRET ? 'Oui' : 'NO
 
 if (!JWT_SECRET) {
     console.error("ERREUR FATALE: La variable d'environnement JWT_SECRET n'est pas définie. Le serveur ne peut pas fonctionner correctement.");
-    process.exit(1); // Arrête le serveur si la clé est manquante
+    process.exit(1);
 }
 
 
@@ -76,13 +76,11 @@ fastify.register(fastifyCookie, {
 });
 
 function verifyJWT(request, reply, done) {
-    // Affiche TOUS les cookies reçus par le serveur pour cette requête
     console.log('[verifyJWT] Cookies reçus:', request.cookies);
 
     const token = request.cookies['ft_transcendence_jwt'];
 
     if (!token) {
-        // Log si le cookie spécifique est manquant
         console.error('[verifyJWT] ERREUR: Le cookie "ft_transcendence_jwt" est manquant.');
         reply.status(401).send({ error: 'JWT cookie missing' });
         return;
@@ -96,14 +94,11 @@ function verifyJWT(request, reply, done) {
         console.log('[verifyJWT] Token vérifié avec succès pour l\'utilisateur:', decoded);
         done();
     } catch (err) {
-        // TRÈS IMPORTANT: Log l'erreur exacte pour savoir pourquoi le token est invalide
-        console.error('[verifyJWT] ERREUR: Le token est invalide. Raison:', err.message);
+    	console.error('[verifyJWT] ERREUR: Le token est invalide. Raison:', err.message);
         reply.status(401).send({ error: 'Invalid token' });
     }
 }
 
-//Put the alias of logged user instead of saved name
-//{ preHandler: verifyJWT },
 fastify.get('/api/game/matches/:id', { preHandler: verifyJWT }, async (request, reply) => {
 	console.log('Cookies reçus:', request.cookies);
 	const id = request.params.id;
@@ -191,24 +186,47 @@ function disconnection(connection){
 			continue;
 		gameInstance.terminate();
 	}
-	for (let project of projectsArray){
-		const idx = project.player_array.findIndex(player => player.connection === connection);
-		if (idx !== -1) {
-			project.player_array.splice(idx, 1);
-			if (project.player_name_array) project.player_name_array.splice(idx, 1);
-			if (project.player_id_array) project.player_id_array.splice(idx, 1);
-			if (project.player_case_array) project.player_case_array.splice(idx, 1);
-		}
+	// for (let project of projectsArray){
+	// 	const idx = project.player_array.findIndex(player => player.connection === connection);
+	// 	if (idx !== -1) {
+	// 		project.player_array.splice(idx, 1);
+	// 		if (project.player_name_array) project.player_name_array.splice(idx, 1);
+	// 		if (project.player_id_array) project.player_id_array.splice(idx, 1);
+	// 		if (project.player_case_array) project.player_case_array.splice(idx, 1);
+	// 	}
+	// }
+	let projectsWithThisPlayer = [];
+    for (let project of projectsArray){
+        const idx = project.player_array.findIndex(player => player.connection === connection);
+        if (idx !== -1) {
+            projectsWithThisPlayer.push(project);
+            project.player_array.splice(idx, 1);
+            if (project.player_name_array) project.player_name_array.splice(idx, 1);
+            if (project.player_id_array) project.player_id_array.splice(idx, 1);
+            if (project.player_case_array) project.player_case_array.splice(idx, 1);
+
+            if (project.player_array.length === 0) {
+                const projIdx = projectsArray.indexOf(project);
+                if (projIdx !== -1) projectsArray.splice(projIdx, 1);
+            }
+        }
+    }
+    if (projectsWithThisPlayer.length > 1) {
+        console.warn("Un joueur était présent dans plusieurs projets !", projectsWithThisPlayer.length);
+    }
+	const index = clients.findIndex(client => client.connection === connection);
+	if (index !== -1) {
+		console.log("Client Leaving", clients[index].id, clients[index].global_id);
+		clients.splice(index, 1);
 	}
-	const index = clients.indexOf(connection);
-	console.log("Client Leaving", clients[index]);
-	if (index !== -1) clients.splice(index, 1);
 }
 
 fastify.register(async function (fastify){
 	fastify.get('/ws', {websocket : true }, (connection, req) => {
 		const global_id = Number(req.query.global_id);
 		const duplicates = clients.filter(client => client.global_id === global_id);
+
+		console.log("A Client arrived", id, global_id);
 
 		for (const client of duplicates) {
 			try {
@@ -247,7 +265,7 @@ fastify.register(async function (fastify){
 				}
 				if (data.type === 'gamesearch'){
 					// console.log(data);
-					// console.log("new Project search");
+					console.log("new Project search");
 					for (let projects of projectsArray){
 						if (projects.IA === data.gameparam.IA &&
 							projects.local === data.gameparam.local &&
@@ -257,13 +275,14 @@ fastify.register(async function (fastify){
 							projects.custom_mode === data.gameparam.custom_mode &&
 							projects.speeding_mode === data.gameparam.speeding_mode &&
 							projects.player_array.length < projects.player_nbr
-						)
-						projects.player_array.push(actual_client);
-						projects.player_name_array.push(data.name);
-						projects.player_id_array.push(data.id);
-						projects.player_case_array.push({keyup: data.keys.keysup.p1, keydown: data.keys.keysdown.p1});
-						// console.log("project", projects);
-						return ;
+						){
+							projects.player_array.push(actual_client);
+							projects.player_name_array.push(data.name);
+							projects.player_id_array.push(data.id);
+							projects.player_case_array.push({keyup: data.keys.keysup.p1, keydown: data.keys.keysdown.p1});
+							console.log("project", projects);
+							return ;
+						}
 					}
 					console.log("new Project");
 					let newProject = new GameProject(
@@ -294,7 +313,7 @@ fastify.register(async function (fastify){
 						newProject.player_name_array.push("Local player");
 					}
 					projectsArray.push(newProject);
-					// console.log(newProject);
+					console.log(newProject);
 				}
 			} catch (e) {}
 		});
@@ -444,7 +463,7 @@ async function create_game(local, tournament, IA, IA_diff,
 			let data = await gameInstance.startGame();
 			if (data != null){
 				console.log("Winner is : ", data.winner1.name);
-				saveMatch("1v1 Local", data);
+				saveMatch("1v1 gameConfig", data);
 				for (let player of players_list){
 					player.connection.send(JSON.stringify({ type: 'end', msg : String("Winner is : " + data.winner1.name)}));
 				}

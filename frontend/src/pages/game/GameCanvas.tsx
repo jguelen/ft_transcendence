@@ -27,6 +27,7 @@ export default function GameCanvas({ gameConfig, onGameEnd }: { gameConfig: any,
                         name: user?.name ?? "Unknown",
                         id: user?.id ?? -1
                     }));
+                    console.log(gameConfig);
                 } else {
                     setTimeout(trySend, 100); // On attend que la connexion WebSocket soit prête
                 }
