@@ -52,7 +52,7 @@ function Header({disabled = false}: HeaderProps)
   }
 
   return (
-    <Card className="flex justify-between p-4 items-center"
+    <Card className="flex justify-between p-4 items-center z-10"
       maxWidth="1600px" maxHeight="120px">
 
       {disabled ? <span className={logoStyle}>FT_TRANSCENDENCE</span> :

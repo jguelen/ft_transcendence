@@ -37,6 +37,7 @@
       "username": "pseudo incorrect",
       "mail/password": "email/mot de passe incorrect",
       "repassword": "les deux mots de passe doivent être identiques",
+      "taken": "Ce nom d'utilisateur est déjà pris.",
       "usernameContainsAt": "Le nom d'utilisateur ne peut pas contenir de '@'."
     }
   },
@@ -90,5 +91,44 @@
     "majuscule": "Votre mot de passe doit contenir au moins une lettre majuscule.",
     "number": "Votre mot de passe doit contenir au moins un chiffre.",
     "special": "Votre mot de passe doit contenir au moins un de ces caractères spéciaux (!@#$%^&*)."
+  },
+  "friend": {
+    "loading": "Chargement...",
+    "noUsers": "Aucun utilisateur.",
+    "relation": {
+      "friend": "Ami",
+      "blocked": "Bloqué",
+      "blockedBy": "Bloqué par",
+      "random": "Autre"
+    },
+    "actions": {
+      "remove": "Retirer l'ami",
+      "accept": "Accepter",
+      "decline": "Décliner",
+      "sendRequest": "Demander en ami",
+      "cancelRequest": "Annuler la demande",
+      "block": "Bloquer",
+      "unblock": "Débloquer"
+    },
+    "buttonError": {
+      "blockedTwoWay": "Utilisateur bloqué ou vous a bloqué.",
+      "blockedBy": "Déjà bloqué par l'utilisateur."
+    },
+    "status": {
+      "sent": "Demande envoyée",
+      "online": "En ligne",
+      "offline": "Hors ligne"
+    },
+    "tabs": {
+      "others": "Autres utilisateurs",
+      "requests": "Demandes d'amis",
+      "friends": "Amis",
+      "blocked": "Bloqués"
+    },
+    "errors": {
+      "cannotUnblock": "Impossible de débloquer l'utilisateur.",
+      "cannotSendBlocked": "Impossible d'envoyer une demande d'ami à un utilisateur que vous avez bloqué ou qui vous a bloqué.",
+      "cannotAcceptBlocked": "Impossible d'accepter une demande d'ami d'un utilisateur que vous avez bloqué ou qui vous a bloqué."
+    }
   }
 }

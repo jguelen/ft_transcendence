@@ -1,6 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import type { FriendItem } from "./FriendList";
+import { t } from "i18next";
 
 interface FriendScrollableListProps {
   items: FriendItem[];
@@ -61,12 +62,12 @@ const FriendScrollableList = ({
             >
               <h1 className="font-inter font-semibold text-subtitle text-white text-[18px]">
                 {item.status === "ami"
-                  ? "Ami"
+                  ? t("friend.relation.friend")
                   : item.status === "bloqué"
-                  ? "Bloqué"
+                  ? t("friend.relation.blocked")
                   : item.status === "blockedby"
-                  ? "Bloqué par eux"
-                  : "Random"}
+                  ? t("friend.relation.blockedBy")
+                  : t("friend.relation.random")}
               </h1>
             </span>
 			<span
@@ -78,7 +79,7 @@ const FriendScrollableList = ({
                       : "bg-red-500"
                     : "bg-grey-500"
                 )}
-                title={friendOnlineStatus[item.id] === true ? "En ligne" : "Hors ligne"}
+                title={friendOnlineStatus[item.id] === true ? t("friend.status.online") : t("friend.status.offline")}
             />
             <h2 className="font-inter font-semibold text-subtitle text-white text-[17px] truncate max-w-[130px] sm:max-w-[180px]">
               {item.name}
@@ -91,17 +92,17 @@ const FriendScrollableList = ({
                   className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded transition text-sm sm:text-base"
                   onClick={() => onAddFriend(item.id)}
                   disabled={isBlocked(item.id)}
-                  title={isBlocked(item.id) ? "Action impossible : bloqué ou bloqué par cet utilisateur" : undefined}
+                  title={isBlocked(item.id) ? t("friend.buttonError.blockedTwoWay") : undefined}
                 >
-                  Demander en ami
+                  {t("friend.actions.sendRequest")}
                 </button>
                 <button
                   className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition text-sm sm:text-base"
                   onClick={() => onBlock(item.id)}
                   disabled={blockedByIds.has(item.id)}
-                  title={blockedByIds.has(item.id) ? "Déjà bloqué par cet utilisateur" : undefined}
+                  title={blockedByIds.has(item.id) ? t("friend.buttonError.blockedBy") : undefined}
                 >
-                  Bloquer
+                  {t("friend.actions.block")}
                 </button>
               </>
             )}
@@ -111,9 +112,9 @@ const FriendScrollableList = ({
                   className="bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 rounded transition text-sm sm:text-base"
                   onClick={() => onRemoveFriend(item.id)}
                   disabled={isBlocked(item.id)}
-                  title={isBlocked(item.id) ? "Action impossible : bloqué ou bloqué par cet utilisateur" : undefined}
+                  title={isBlocked(item.id) ? t("friend.buttonError.blockedTwoWay") : undefined}
                 >
-                  Retirer des amis
+                  {t("friend.actions.remove")}
                 </button>
                 <button
                   className={clsx(
@@ -122,9 +123,9 @@ const FriendScrollableList = ({
                   )}
                   onClick={() => onBlock(item.id)}
                   disabled={blockedByIds.has(item.id)}
-                  title={blockedByIds.has(item.id) ? "Déjà bloqué par cet utilisateur" : undefined}
+                  title={blockedByIds.has(item.id) ? t("friend.buttonError.blockedBy") : undefined}
                 >
-                  Bloquer
+                  {t("friend.actions.block")}
                 </button>
               </>
             )}
@@ -136,20 +137,20 @@ const FriendScrollableList = ({
                       className="bg-green-500 hover:bg-green-600 text-white px-2 py-1 rounded transition text-sm sm:text-base"
                       onClick={() => onAcceptRequest(item.id)}
                       disabled={isBlocked(item.id)}
-                      title={isBlocked(item.id) ? "Action impossible : bloqué ou bloqué par cet utilisateur" : undefined}
+                      title={isBlocked(item.id) ? t("friend.buttonError.blockedTwoWay") : undefined}
                     >
-                      Accepter
+                      {t("friend.actions.accept")}
                     </button>
                   </>
                 )}
                 {item.requestType === "sent" && (
 					<>
-						<span className="text-gray-400 text-sm">Demande envoyée</span>
+						<span className="text-gray-400 text-sm">{t("friend.status.sent")}</span>
 						<button
 							className="bg-orange-400 hover:bg-orange-500 text-white px-2 py-1 rounded transition text-sm sm:text-base"
 							onClick={() => onCancelRequest(item.id)}
 						>
-							Annuler la demande
+							{t("friend.actions.cancelRequest")}
 						</button>
 					</>
 			   )}
@@ -157,9 +158,9 @@ const FriendScrollableList = ({
                   className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded transition text-sm sm:text-base"
                   onClick={() => onBlock(item.id)}
                   disabled={blockedByIds.has(item.id)}
-                  title={blockedByIds.has(item.id) ? "Déjà bloqué par cet utilisateur" : undefined}
+                  title={blockedByIds.has(item.id) ? t("friend.buttonError.blockedBy") : undefined}
                 >
-                  Bloquer
+                  {t("friend.actions.block")}
                 </button>
               </>
             )}
@@ -173,11 +174,11 @@ const FriendScrollableList = ({
                     )}
                     onClick={() => onUnblock(item.id)}
                   >
-                    Débloquer
+                    {t("friend.actions.unblock")}
                   </button>
                 )}
                 {item.status === "blockedby" && (
-                  <span className="text-gray-400 text-sm">Impossible de débloquer</span>
+                  <span className="text-gray-400 text-sm">{t("friend.errors.cannotUnblock")}</span>
                 )}
               </>
             )}
