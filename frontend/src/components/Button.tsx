@@ -5,6 +5,7 @@ type ButtonProps = {
   gradientBorder?: boolean;
   hoverColor?: string;
   maxWidth?: string;
+  maxHeight?: string;
 } & React.ComponentPropsWithoutRef<'button'>;
 
 function Button({
@@ -14,12 +15,14 @@ function Button({
   type = 'button',
   hoverColor,
   maxWidth = '252px',
+  maxHeight = '58px',
   ...rest
 }: ButtonProps) {
 
   const dynamicStyle = {
     ...(hoverColor && { '--hover-bg-color': hoverColor }),
-    '--input-max-width': maxWidth,
+    '--button-max-width': maxWidth,
+    '--button-max-height': maxHeight,
   };
 
   const disabled = rest.disabled;
@@ -31,12 +34,15 @@ function Button({
       style={dynamicStyle}
       className={clsx(
         "relative overflow-hidden text-white font-inter text-subtitle rounded-small",
-        "max-w-[var(--input-max-width)] w-full h-[58px] transition-colors duration-300",
+        "max-w-[var(--button-max-width)] max-h-[var(--button-max-height)]",
+        "transition-colors duration-300",
         { 'dynamic-hover': hoverColor && !disabled },
         {
           'gradient-ring': gradientBorder && !disabled,
           'opacity-50 cursor-not-allowed border border-stroke': disabled,
-          'hover:bg-opacity-20 hover:bg-white': !hoverColor && !disabled
+          'hover:bg-opacity-20 hover:bg-white': !hoverColor && !disabled,
+          'w-full': maxWidth != '',
+          'h-full': maxHeight != ''
         },
         className
       )}

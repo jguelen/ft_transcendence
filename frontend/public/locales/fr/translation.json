@@ -1,12 +1,12 @@
 {
   "login": {
     "title": "Connexion",
-    "mail": "Email/Pseudo",
+    "mail": "E-mail/Nom d'utilisateur",
     "password": "Mot de passe",
     "loading": "Connexion...",
-    "button": "Entrer",
-    "text": "Pas membre ?",
-    "link": "Inscription",
+    "button": "Se connecter",
+    "text": "Pas encore membre ?",
+    "link": "S'inscrire",
     "githubButton": "Se connecter avec GitHub",
     "success": "Connexion réussie !",
     "error": {
@@ -25,18 +25,18 @@
   },
   "register": {
     "title": "Inscription",
-    "mail": "Email",
-    "username": "Pseudo",
-    "check_username": "Vérif",
+    "mail": "E-mail",
+    "username": "Nom d'utilisateur",
+    "check_username": "Vérification...",
     "password": "Mot de passe",
-    "repassword": "Répéter mot de passe",
-    "loading": "Connexion...",
+    "repassword": "Répéter le mot de passe",
+    "loading": "Inscription...",
     "sign_up": "S'inscrire",
-    "alert": "Connexion réussie !",
+    "alert": "Inscription réussie !",
     "error": {
-      "username": "pseudo incorrect",
-      "mail/password": "email/mot de passe incorrect",
-      "repassword": "les deux mots de passe doivent être identiques",
+      "username": "Nom d'utilisateur incorrect",
+      "mail/password": "E-mail/mot de passe incorrect",
+      "repassword": "Les deux mots de passe doivent être identiques",
       "taken": "Ce nom d'utilisateur est déjà pris.",
       "usernameContainsAt": "Le nom d'utilisateur ne peut pas contenir de '@'."
     }
@@ -70,9 +70,9 @@
     }
   },
   "home": {
-    "local": "LOCALE",
+    "local": "LOCAL",
     "online": "EN LIGNE",
-    "cup": "TOURNOI",
+    "cup": "COUPE",
     "button": "JOUER"
   },
   "gameMenu": {
@@ -83,10 +83,41 @@
     },
     "online": {
       "description": "Affronte une équipe de deux autres joueurs"
-    }
+    },
+    "gameOptions": {
+      "title": "Options de jeu",
+      "customMode": "Mode personnalisé :",
+      "speedingMode": "Mode accéléré :",
+      "on": "ACTIVÉ",
+      "off": "DÉSACTIVÉ",
+      "iaDifficulty": "Difficulté IA :",
+      "iaLevels": {
+        "impossible": "Impossible",
+        "hard": "Difficile",
+        "medium": "Moyen",
+        "easy": "Facile",
+        "joke": "Blague"
+      }
+    },
+    "tournament": {
+      "title": "Joueurs du tournoi",
+      "playerPlaceholder": "Joueur {{number}}"
+    },
+    "controls": {
+      "title": "Contrôles",
+      "p1Up": "J1 Haut",
+      "p1Down": "J1 Bas",
+      "p2Up": "J2 Haut",
+      "p2Down": "J2 Bas"
+    },
+    "errors": {
+      "nameTooLong": "Le nom \"{{name}}\" dépasse 30 caractères.",
+      "duplicateName": "Le nom \"{{name}}\" est utilisé plusieurs fois."
+    },
+    "startButton": "DÉMARRER"
   },
   "error": {
-    "length": "Votre mot de passe doit avoir au moins 12 caractères.",
+    "length": "Votre mot de passe doit contenir au moins 12 caractères.",
     "minuscule": "Votre mot de passe doit contenir au moins une lettre minuscule.",
     "majuscule": "Votre mot de passe doit contenir au moins une lettre majuscule.",
     "number": "Votre mot de passe doit contenir au moins un chiffre.",
@@ -104,8 +135,8 @@
     "actions": {
       "remove": "Retirer l'ami",
       "accept": "Accepter",
-      "decline": "Décliner",
-      "sendRequest": "Demander en ami",
+      "decline": "Refuser",
+      "sendRequest": "Envoyer une demande",
       "cancelRequest": "Annuler la demande",
       "block": "Bloquer",
       "unblock": "Débloquer"
@@ -127,8 +158,8 @@
     },
     "errors": {
       "cannotUnblock": "Impossible de débloquer l'utilisateur.",
-      "cannotSendBlocked": "Impossible d'envoyer une demande d'ami à un utilisateur que vous avez bloqué ou qui vous a bloqué.",
-      "cannotAcceptBlocked": "Impossible d'accepter une demande d'ami d'un utilisateur que vous avez bloqué ou qui vous a bloqué."
+      "cannotSendBlocked": "Impossible d'envoyer une demande à un utilisateur que vous avez bloqué ou qui vous a bloqué.",
+      "cannotAcceptBlocked": "Impossible d'accepter une demande d'un utilisateur que vous avez bloqué ou qui vous a bloqué."
     }
   }
 }

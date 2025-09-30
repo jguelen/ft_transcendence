@@ -129,7 +129,7 @@ function Account()
             onChange={(e) => setUsername(e.target.value)} maxWidth=""
             border="border-stroke" className="text-center"/>
           <Button gradientBorder={true} type="submit" disabled={isLoadingUser}
-            hoverColor="rgba(39, 95, 153, 0.15)" maxWidth="">
+            hoverColor="rgba(39, 95, 153, 0.15)" maxHeight='' maxWidth='' className='h-[58px] w-full'>
            {isLoadingUser ? t("account.loading") : t("account.button")}
           </Button>
         </form>
@@ -153,7 +153,7 @@ function Account()
               value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
              maxWidth="" placeholder={t("account.newPassword")} className="text-center"/>
           <Button gradientBorder={true} type="submit" disabled={isLoadingPassword}
-            hoverColor="rgba(39, 95, 153, 0.15)" maxWidth="">
+            hoverColor="rgba(39, 95, 153, 0.15)" maxHeight="" maxWidth='' className='h-[58px] w-full'>
            {isLoadingPassword ? t("account.loading") : t("account.button")}
           </Button>
         </form>

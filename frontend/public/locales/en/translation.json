@@ -83,7 +83,38 @@
     },
     "online": {
       "description": "Duel a team of two other players"
-    }
+    },
+    "gameOptions": {
+      "title": "Game Options",
+      "customMode": "Custom mode :",
+      "speedingMode": "Speeding mode :",
+      "on": "ON",
+      "off": "OFF",
+      "iaDifficulty": "AI Difficulty :",
+      "iaLevels": {
+        "impossible": "Impossible",
+        "hard": "Hard",
+        "medium": "Medium",
+        "easy": "Easy",
+        "joke": "Joke"
+      }
+    },
+    "tournament": {
+      "title": "Tournament Players",
+      "playerPlaceholder": "Player {{number}}"
+    },
+    "controls": {
+      "title": "Controls",
+      "p1Up": "P1 Up",
+      "p1Down": "P1 Down",
+      "p2Up": "P2 Up",
+      "p2Down": "P2 Down"
+    },
+    "errors": {
+      "nameTooLong": "The name \"{{name}}\" exceeds 30 characters.",
+      "duplicateName": "The name \"{{name}}\" is used more than once."
+    },
+    "startButton": "START"
   },
   "error": {
     "length": "Your password need to be at least 12 characters.",

@@ -54,14 +54,16 @@ function Login()
       <form onSubmit={handleSubmit} method="POST" className="flex flex-col items-center justify-center gap-5">
 
         <Input type="text" name="email" id="email" placeholder={t("login.mail")}
-          required value={email} onChange={(e) => setEmail(e.target.value)} iconSrc={'/icons/mail.svg'}/>
+          required value={email} onChange={(e) => setEmail(e.target.value)}
+          iconSrc={'/icons/mail.svg'}/>
 
         <Input type="password" name="password" id="password" placeholder={t("login.password")}
            required value={password} onChange={(e) => setPassword(e.target.value)} iconSrc={'/icons/lock.svg'}/>
 
         {error && <p className="text-red-500 text-center text-sm">{error}</p>}
 
-        <Button gradientBorder={true} type='submit' disabled={isLoading} hoverColor="rgba(39, 95, 153, 0.4)">
+        <Button gradientBorder={true} type='submit' disabled={isLoading}
+          hoverColor="rgba(39, 95, 153, 0.4)" maxHeight='' className='h-[58px]'>
           {isLoading ? t("login.loading") : t("login.button")}
         </Button>
 

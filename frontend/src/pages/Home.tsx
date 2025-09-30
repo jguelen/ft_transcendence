@@ -16,7 +16,7 @@ function Home()
         <Link to={ROUTES.LOCAL.INDEX} className="flex justify-center items-center w-full
           max-w-[252px]">
           <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.13)"
-            >{t("home.button")}</Button>
+            className="h-[58px]" maxHeight=''>{t("home.button")}</Button>
         </Link>
       </Card>
       <Card maxWidth="400px" maxHeight="504px" className="flex flex-col
@@ -25,7 +25,7 @@ function Home()
         <Link to={ROUTES.ONLINE.INDEX} className="flex justify-center items-center w-full
           max-w-[252px]">
           <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.13)"
-            >{t('home.button')}</Button>
+            className="h-[58px]" maxHeight=''>{t('home.button')}</Button>
         </Link>
       </Card>
       <Card maxWidth="400px" maxHeight="504px" className="flex flex-col
@@ -34,7 +34,7 @@ function Home()
         <Link to={ROUTES.CONTEST.GAME} className="flex justify-center items-center max-w-[252px]
           w-full">
           <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.13)"
-            >{t("home.button")}</Button>
+            className="h-[58px]" maxHeight=''>{t("home.button")}</Button>
         </Link>
       </Card>
     </div>
