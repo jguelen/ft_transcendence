@@ -34,7 +34,10 @@ fastify.register(fastify_cookie, {
 
 // OAuth
 const startRedirectPath = `/api/auth/login/github`
-const callbackUri = `https://localhost:8443/login/github/callback`
+const callbackUri = `https://localhost:8443/api/auth/login/github/callback`
+//const startRedirectPath = `/login/github`
+//const callbackUri = `https://localhost:8443/login/github/callback`
+
 
 fastify.register(fastifyOauth2, {
 	name: 'githubOAuth2',
@@ -96,7 +99,7 @@ console.log(emails);
 
 	if (emails.length >= 2)
 		if (emails[1].email == "testtest@notrealthisisa.test")
-			return { fullName: "Dev-test", email: "a@a.a" }
+			return { fullName: "Dev-test", email: "a@a.aa" }
 
 	const primary_verified_emails =
 		emails.filter((item) => { return item.primary && item.verified } )
@@ -110,7 +113,7 @@ console.log(primary_verified_emails);
 }
 
 
-fastify.get(`/login/github/callback`, async function (req, res) {
+fastify.get(`/api/auth/login/github/callback`, async function (req, res) {
 
 	try {
 //throw (Error("test"));
@@ -185,7 +188,7 @@ console.log(session_token)
 			httpOnly: true,
 			sameSite: "none",
 			secure: true
-		}).redirect("http://localhost:3000/login")
+		}).redirect("https://localhost:8443")
 //		}).redirect("http://localhost:3000/login?oauth=true")
 
 //		return { access_token: token.access_token }
