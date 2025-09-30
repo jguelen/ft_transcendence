@@ -145,31 +145,3 @@ function returnColorImage(img : HTMLImageElement | HTMLCanvasElement, color : st
 		return img;
 	}
 }
-
-// function returnColorImage(img : HTMLImageElement | HTMLCanvasElement, color : string, scaleX = 1, scaleY = 1) {
-//     try {
-// 		if (img instanceof HTMLImageElement) {
-// 			if (!img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
-// 				console.warn("Image non chargée ou taille nulle :", img.src, img.width, img.height);
-// 				return img;
-// 			}
-// 		}
-// 		const deccolor = hexToRgbArray(color);
-// 		const tempCanvas = document.createElement('canvas');
-// 		tempCanvas.width = img.width * scaleX;
-// 		tempCanvas.height = img.height * scaleY;
-// 		const tempCtx = tempCanvas.getContext('2d') as CanvasRenderingContext2D;
-// 		tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
-// 		const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-// 		const data = imageData.data;
-// 		for (let i = 0; i < data.length; i += 4) {
-// 			data[i] = Number(deccolor[0]);
-// 			data[i + 1] = Number(deccolor[1]);
-// 			data[i + 2] = Number(deccolor[2]);
-// 		}
-// 		tempCtx.putImageData(imageData, 0, 0);
-// 		return tempCanvas;
-// 	} catch (e) {
-// 		return img;
-// 	}
-// }

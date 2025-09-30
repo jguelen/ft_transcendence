@@ -7,7 +7,7 @@ export default function GameCanvas({ gameConfig, onGameEnd }: { gameConfig: any,
     const serviceRef = useRef<PongGameService>();
     const { user } = useAuth();
     const [msg, setMsg] = useState<string>("");
-    const [custommsg, setCustomMsg] = useState<string>("");
+    const [custommsg, setCustomMsg] = useState<string>("---");
 
     useEffect(() => {
         if (canvasRef.current && user) {
@@ -67,7 +67,7 @@ export default function GameCanvas({ gameConfig, onGameEnd }: { gameConfig: any,
     }, [serviceRef.current?.ws, onGameEnd]);
 
     return (
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col justify-center items-center h-full w-full">
             <h1 className="text-white font-orbitron text-[30px]">{msg}</h1>
             <canvas ref={canvasRef} id="pong" width={800} height={600}></canvas>
             <h1 className="text-white font-orbitron text-[25px]">{custommsg}</h1>

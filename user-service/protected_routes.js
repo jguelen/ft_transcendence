@@ -11,29 +11,6 @@ const { AUTH_SERVICE_URL } = process.env
 const { checkUserNameDuplicate } = require('./index.js')
 
 exports.protected_routes = function(fastify_instance, options, next) {
-/*
-// JWT verification function
-	const verifyJWT = async (req, res) => {
-		try {
-			// console.log("user request1:",req);
-			if (!req.cookies) {
-				return res.status(401).send({ error: 'No cookies' });
-			}
-			const token = req.cookies['ft_transcendence_jwt'];
-			if (!token) {
-				return res.status(401).send({ error: 'No JWT cookie' });
-			}
-			const decoded = jwt.verify(token, JWT_SECRET);
-			req.user = { userId: Number(decoded.userId) };
-			// console.log("user request:",req);
-		} catch (error) {
-			console.error(error);
-			return res.status(401).send({ error: 'Invalid token' });
-		}
-	};
-*/
-
-// JWT verification function	
 	fastify_instance.addHook('preValidation', (req, res, done) =>  {
 		try {
 // console.log("user request1:",req);
@@ -57,8 +34,8 @@ exports.protected_routes = function(fastify_instance, options, next) {
 
 
 	fastify_instance.get('/api/user/getloggeduser', async function (req, res) {
-console.log("/api/user/getloggeduser");
-console.log(req.user);
+// console.log("/api/user/getloggeduser");
+// console.log(req.user);
 		try {
 			var user = await prisma.user.findUnique({
 				where: { 
@@ -108,8 +85,8 @@ fastify_instance.get('/api/user/all', async (req, reply) => {
 	fastify_instance.put('/api/user/updatekeybinds/:keymap', async function (req, res) {
 
 		const keymap = req.params.keymap;
-console.log("/api/user/updatekeybinds");
-console.log(keymap);
+// console.log("/api/user/updatekeybinds");
+// console.log(keymap);
 
 		try {
 			var user = await prisma.user.update({
@@ -132,8 +109,8 @@ console.log(keymap);
 	fastify_instance.put('/api/user/updatelanguage/:language', async function (req, res) {
 
 		const language = req.params.language;
-console.log("/api/user/updatelanguage");
-console.log(language);
+// console.log("/api/user/updatelanguage");
+// console.log(language);
 
 		try {
 			var user = await prisma.user.update({
@@ -154,12 +131,12 @@ console.log(language);
 
 
 	fastify_instance.put('/api/user/updateusername', async function (req, res) {
-console.log("#PUT /api/user/updateusername");
-console.log(req.body);
+// console.log("#PUT /api/user/updateusername");
+// console.log(req.body);
 
 		const newName = req.body.newusername;
 
-console.log(newName);
+// console.log(newName);
 
 		try {
 			var user = await prisma.user.findUnique({
@@ -194,10 +171,10 @@ console.log(newName);
 
 
 	fastify_instance.put('/api/user/requestfriendship/:userid', async function (req, res) {
-console.log("/api/user/requestfriendship/:userid");
+// console.log("/api/user/requestfriendship/:userid");
 
 		const requesteduserid = req.params.userid
-console.log(requesteduserid);
+// console.log(requesteduserid);
 //res.status(200).send({uu:ii});
 //return 
 
@@ -208,8 +185,8 @@ console.log(requesteduserid);
 					requestedId: Number(requesteduserid)
 			}
 		})
-console.log(friendshiprequest);
-console.log('new friendshiprequest created');
+// console.log(friendshiprequest);
+// console.log('new friendshiprequest created');
 
 			res.status(200).send();
 		}
@@ -222,8 +199,8 @@ console.log('new friendshiprequest created');
 
 	fastify_instance.get('/api/user/getyourfriendshiprequests', async function (req, res) {
 
-console.log("/api/user/getyourfriendshiprequests");
-console.log(req.user);
+// console.log("/api/user/getyourfriendshiprequests");
+// console.log(req.user);
 
 		try {
 			var yourfriendshiprequests = await prisma.$queryRawUnsafe(`
@@ -234,7 +211,7 @@ console.log(req.user);
 			Number(req.user.userId)
 			)
 
-console.log(yourfriendshiprequests);
+// console.log(yourfriendshiprequests);
 
 			return res.status(200).send(yourfriendshiprequests);
 		}
@@ -247,11 +224,11 @@ console.log(yourfriendshiprequests);
 
 	fastify_instance.delete('/api/user/delyourfriendshiprequest/:requestedid', async function (req, res) {
 
-console.log("/api/user/delyourfriendshiprequest");
-console.log(req.user);
+// console.log("/api/user/delyourfriendshiprequest");
+// console.log(req.user);
 
 		const requestedId = Number(req.params.requestedid)
-console.log(req.params);
+// console.log(req.params);
 
 		try {
             await prisma.friendshipRequest.delete({
@@ -276,9 +253,9 @@ console.log(req.params);
 
 		const pw = req.body.pw;
 		const newPw = req.body.newpw;
-console.log("/api/user/updatepw");
-console.log(pw);
-console.log(newPw);
+// console.log("/api/user/updatepw");
+// console.log(pw);
+// console.log(newPw);
 
 		try {
 			var user = await prisma.user.findUnique({
@@ -286,11 +263,11 @@ console.log(newPw);
 					id: req.user.userId
 				}
 			})
-console.log(user);
+// console.log(user);
 			if (!user)
 				return res.status(500).send()
 
-console.log("uu");
+// console.log("uu");
 			const response = await fetch(`${AUTH_SERVICE_URL}/api/auth/changepw`,
 			{
 				method: 'POST',
@@ -303,14 +280,14 @@ console.log("uu");
 			})
 
 //console.log(response);
-console.log("response received");
+// console.log("response received");
 			if (response.status == 401)
 				return res.status(401).send();
 			if (response.status == 500)
 				return res.status(500).send();
 
 			const userData = await response.json();
-console.log(userData);
+// console.log(userData);
 
 			var user = await prisma.user.update({
 				where: {  
@@ -332,8 +309,8 @@ console.log(userData);
 
 	fastify_instance.get('/api/user/getfriendshiprequests', async function (req, res) {
 
-console.log("/api/user/getfriendshiprequests");
-console.log(req.user);
+// console.log("/api/user/getfriendshiprequests");
+// console.log(req.user);
 
 		try {
 			var yourfriendshiprequests = await prisma.$queryRawUnsafe(`
@@ -344,7 +321,7 @@ console.log(req.user);
 			Number(req.user.userId)
 			)
 
-console.log(yourfriendshiprequests);
+// console.log(yourfriendshiprequests);
 
 			return res.status(200).send(yourfriendshiprequests);
 		}
@@ -357,14 +334,14 @@ console.log(yourfriendshiprequests);
 
 	fastify_instance.put('/api/user/acceptfriendshiprequest/:requesterid', async function (req, res) {
 
-console.log("/api/user/acceptfriendshiprequest");
-console.log(req.user);
+// console.log("/api/user/acceptfriendshiprequest");
+// console.log(req.user);
 
 		try {
 
 
 		const requesterId = Number(req.params.requesterid)
-console.log(requesterId)
+// console.log(requesterId)
 
 		await prisma.$transaction([
 			prisma.friendship.create({
@@ -383,7 +360,7 @@ console.log(requesterId)
 			})
 		])
 
-console.log("ok");
+// console.log("ok");
 
 			return res.status(200).send();
 		}
@@ -396,8 +373,8 @@ console.log("ok");
 
 	fastify_instance.put('/api/user/declinefriendshiprequest/:requesterid', async function (req, res) {
 
-console.log("/api/user/declinefriendshiprequest");
-console.log(req.user);
+// console.log("/api/user/declinefriendshiprequest");
+// console.log(req.user);
 
 		const requesterId = Number(req.params.requesterid)
 
@@ -413,7 +390,7 @@ console.log(req.user);
 				declined: 1
 			},
 			})
-console.log("ok");
+// console.log("ok");
 			return res.status(200).send();
 		}
 		catch (err) {
@@ -424,8 +401,8 @@ console.log("ok");
 
 
 	fastify_instance.get('/api/user/getfriends', async function (req, res) {
-console.log("/api/user/getfriends");
-console.log(req.user);
+// console.log("/api/user/getfriends");
+// console.log(req.user);
 
 		try {
 
@@ -442,7 +419,7 @@ console.log(req.user);
 			Number(req.user.userId)
 			)
 
-console.log(friends);
+// console.log(friends);
 
 			return res.status(200).send(friends);
 		}
@@ -454,12 +431,12 @@ console.log(friends);
 
 	fastify_instance.delete('/api/user/unfriend/:friendid', async function (req, res) {
 
-console.log("/api/user/unfriend");
-console.log(req.user);
+// console.log("/api/user/unfriend");
+// console.log(req.user);
 
 		const friendId = Number(req.params.friendid)
 
-console.log(req.params);
+// console.log(req.params);
 
 		try {
 			var friendship = await prisma.$queryRawUnsafe(`
@@ -471,7 +448,7 @@ console.log(req.params);
 			friendId
 			)
 
-console.log(friendship);
+// console.log(friendship);
 			if (friendship.length == 0)
 				return res.status(200).send()
 
@@ -494,8 +471,8 @@ console.log(friendship);
 
 
 	fastify_instance.get('/api/user/getrelationship/:userid', async function (req, res) {
-console.log("/api/user/getrelationship/:name");	
-console.log(req.params);
+// console.log("/api/user/getrelationship/:name");	
+// console.log(req.params);
 
 		const targetUserId = Number(req.params.userid);
 
@@ -525,7 +502,7 @@ THEN TRUE ELSE FALSE END AS hasblockedyou`,
 				hasblockedyou: relationship[0].hasblockedyou  == 1
 			}
 			
-console.log(relationship);
+// console.log(relationship);
 
 			return res.status(200).send(relationship);
 		}
@@ -538,8 +515,8 @@ console.log(relationship);
 
 	fastify_instance.get('/api/user/getblockeds', async function (req, res) {
 
-console.log("/api/user/getblockeds");
-console.log(req.user);
+// console.log("/api/user/getblockeds");
+// console.log(req.user);
 
 		try {
 			var blockeds = await prisma.$queryRawUnsafe(`
@@ -549,8 +526,8 @@ console.log(req.user);
 				WHERE blockerId = $1`,
 			Number(req.user.userId)
 			)
-console.log("blockeds");
-console.log(blockeds);
+// console.log("blockeds");
+// console.log(blockeds);
 
 			return res.status(200).send(blockeds);
 		}
@@ -562,8 +539,8 @@ console.log(blockeds);
 
 
 	fastify_instance.put('/api/user/block/:usertoblockid', async function (req, res) {
-console.log("/api/user/block");
-console.log(req.user);
+// console.log("/api/user/block");
+// console.log(req.user);
 
 		const usertoblockId = Number(req.params.usertoblockid)
 
@@ -586,12 +563,12 @@ console.log(req.user);
 
 
 	fastify_instance.delete('/api/user/unblock/:blockedid', async function (req, res) {
-console.log("/api/user/unblock");
-console.log(req.user);
+// console.log("/api/user/unblock");
+// console.log(req.user);
 
 		const blockedId = Number(req.params.blockedid)
 
-console.log(req.params);
+// console.log(req.params);
 
 		try {
             await prisma.blockedUser.delete({
@@ -611,10 +588,9 @@ console.log(req.params);
 		}
 	})
 
-// A virer
 	fastify_instance.get('/api/user/getprofilebyname/:name', async function (req, res) {
-console.log("/api/user/getprofilebyname/:name");	
-console.log(req.params);
+// console.log("/api/user/getprofilebyname/:name");	
+// console.log(req.params);
 
 		const value = req.params.name;
 		try {
@@ -623,10 +599,10 @@ console.log(req.params);
 					name: value
 				}
 			})
-console.log("result");
+// console.log("result");
 			if (user.length == 0)
 				return res.status(200).send({});
-console.log(user[0]);
+// console.log(user[0]);
 			const userData = {id:user[0].id, name:value, rank:user[0].rank}
 
 			return res.status(200).send(userData);
@@ -639,8 +615,8 @@ console.log(user[0]);
 
 
 	fastify_instance.post('/api/user/getprofilebyname', async function (req, res) {
-console.log("#POST /api/user/getprofilebyname");	
-console.log(req.body);
+// console.log("#POST /api/user/getprofilebyname");	
+// console.log(req.body);
 
 		const value = req.body.name;
 		try {
@@ -649,10 +625,10 @@ console.log(req.body);
 					name: value
 				}
 			})
-console.log("result");
+// console.log("result");
 			if (user.length == 0)
 				return res.status(200).send({});
-console.log(user[0]);
+// console.log(user[0]);
 			const userData = {id:user[0].id, name:value, rank:user[0].rank}
 
 			return res.status(200).send(userData);

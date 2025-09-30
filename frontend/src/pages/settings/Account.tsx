@@ -73,7 +73,7 @@ function Account()
 
     if (passwordErrors.length > 0)
     {
-      console.log({passwordErrors})
+      // console.log({passwordErrors})
       setPasswordError(passwordErrors.join(' '));
       setIsLoadingPassword(false);
       return;
@@ -90,7 +90,7 @@ function Account()
     		})
 			if (response.status == 401)
 			{
-        console.log("Current password not equal to real password");
+        // console.log("Current password not equal to real password");
         setPasswordError(t("account.error.passwordError"));
         setIsLoadingPassword(false);
         return;

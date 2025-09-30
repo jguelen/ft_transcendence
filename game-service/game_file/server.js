@@ -63,7 +63,6 @@ await fastify.register(fastifyStatic, {
 //JWT
 
 const { JWT_SECRET } = process.env
-console.log(`La clé secrète JWT est-elle chargée ? ${JWT_SECRET ? 'Oui' : 'NON !'}`); // <--- AJOUTE CETTE LIGNE
 
 if (!JWT_SECRET) {
     console.error("ERREUR FATALE: La variable d'environnement JWT_SECRET n'est pas définie. Le serveur ne peut pas fonctionner correctement.");
@@ -76,8 +75,6 @@ fastify.register(fastifyCookie, {
 });
 
 function verifyJWT(request, reply, done) {
-    console.log('[verifyJWT] Cookies reçus:', request.cookies);
-
     const token = request.cookies['ft_transcendence_jwt'];
 
     if (!token) {
@@ -86,12 +83,9 @@ function verifyJWT(request, reply, done) {
         return;
     }
 
-    console.log('[verifyJWT] Token trouvé. Tentative de vérification...');
-
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
         request.user = decoded;
-        console.log('[verifyJWT] Token vérifié avec succès pour l\'utilisateur:', decoded);
         done();
     } catch (err) {
     	console.error('[verifyJWT] ERREUR: Le token est invalide. Raison:', err.message);
@@ -100,7 +94,6 @@ function verifyJWT(request, reply, done) {
 }
 
 fastify.get('/api/game/matches/:id', { preHandler: verifyJWT }, async (request, reply) => {
-	console.log('Cookies reçus:', request.cookies);
 	const id = request.params.id;
 	const id_rows = database.prepare(`
 		SELECT * FROM matches
@@ -186,15 +179,6 @@ function disconnection(connection){
 			continue;
 		gameInstance.terminate();
 	}
-	// for (let project of projectsArray){
-	// 	const idx = project.player_array.findIndex(player => player.connection === connection);
-	// 	if (idx !== -1) {
-	// 		project.player_array.splice(idx, 1);
-	// 		if (project.player_name_array) project.player_name_array.splice(idx, 1);
-	// 		if (project.player_id_array) project.player_id_array.splice(idx, 1);
-	// 		if (project.player_case_array) project.player_case_array.splice(idx, 1);
-	// 	}
-	// }
 	let projectsWithThisPlayer = [];
     for (let project of projectsArray){
         const idx = project.player_array.findIndex(player => player.connection === connection);
@@ -212,11 +196,10 @@ function disconnection(connection){
         }
     }
     if (projectsWithThisPlayer.length > 1) {
-        console.warn("Un joueur était présent dans plusieurs projets !", projectsWithThisPlayer.length);
+        // console.warn("Player is in multiple instance", projectsWithThisPlayer.length);
     }
 	const index = clients.findIndex(client => client.connection === connection);
 	if (index !== -1) {
-		console.log("Client Leaving", clients[index].id, clients[index].global_id);
 		clients.splice(index, 1);
 	}
 }
@@ -265,7 +248,7 @@ fastify.register(async function (fastify){
 				}
 				if (data.type === 'gamesearch'){
 					// console.log(data);
-					console.log("new Project search");
+					// console.log("new Project search");
 					for (let projects of projectsArray){
 						if (projects.IA === data.gameparam.IA &&
 							projects.local === data.gameparam.local &&
@@ -280,11 +263,11 @@ fastify.register(async function (fastify){
 							projects.player_name_array.push(data.name);
 							projects.player_id_array.push(data.id);
 							projects.player_case_array.push({keyup: data.keys.keysup.p1, keydown: data.keys.keysdown.p1});
-							console.log("project", projects);
+							// console.log("project", projects);
 							return ;
 						}
 					}
-					console.log("new Project");
+					// console.log("new Project");
 					let newProject = new GameProject(
 						data.gameparam.IA,
 						data.gameparam.local,
@@ -313,7 +296,7 @@ fastify.register(async function (fastify){
 						newProject.player_name_array.push("Local player");
 					}
 					projectsArray.push(newProject);
-					console.log(newProject);
+					// console.log(newProject);
 				}
 			} catch (e) {}
 		});
@@ -407,28 +390,12 @@ async function create_game(local, tournament, IA, IA_diff,
 				{name : players_name[5], rank : 0, id : players_id[5]}, 
 				{name : players_name[6], rank : 0, id : players_id[6]}, 
 				{name : players_name[7], rank : 0, id : players_id[7]}];
-				// {name : "Ness", rank : 0}, 
-				// {name : "Lucas", rank : 0},
-				// {name : "Wolf", rank : 0},
-				// {name : "Amphinobi", rank : 0}, 
-				// {name : "Mewtwo", rank : 0},
-				// {name : "Mario", rank : 0},
-				// {name : "Kirby", rank : 0},
-				// {name : "Shulk", rank : 0}];
-				// {name : "Pikachu", rank : 0}, 
-				// {name : "Link", rank : 0},
-				// {name : "Zelda", rank : 0},
-				// {name : "Mr.Game and Watch", rank : 0}, 
-				// {name : "Ike", rank : 0},
-				// {name : "Chrom", rank : 0},
-				// {name : "Luigi", rank : 0},
-				// {name : "Bowser", rank : 0}];
 	
 			if (tournament_players.length != 8){
 				console.log("Tournament don't have enough player");
 				return ;
 			}
-			console.log("keys", players_keys);
+			// console.log("keys", players_keys);
 			let tournamentInstance = new Tournament(
 					players_list, tournament_players, players_keys,
 					operator, custom, IA_diff, speeding_mode);

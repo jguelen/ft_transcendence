@@ -22,8 +22,6 @@ interface AuthContextType
   refreshAvatar: () => void;
 }
 
-// --- Création du Contexte ---
-// On type le contexte pour qu'il s'attende à la forme de AuthContextType ou null.
 const AuthContext = createContext<AuthContextType | null>(null);
 
 type AuthProviderProps =
@@ -88,12 +86,10 @@ export function AuthProvider({ children }: AuthProviderProps)
     wsRef.current = ws;
     ws.onopen = () =>
     {
-      console.log("WebSocket connecté.");
       ws.send(JSON.stringify({ type: "connection", id: user.id }));
     };
     ws.onclose = () =>
     {
-      console.log("WebSocket déconnecté.");
       wsRef.current = null;
     };
     return () =>
@@ -105,7 +101,6 @@ export function AuthProvider({ children }: AuthProviderProps)
 
   const refreshAvatar = useCallback(() =>
   {
-    console.log("AuthProvider: Annonce d'un changement d'avatar.");
     window.dispatchEvent(new CustomEvent('avatarUpdated'));
   }, []);
 
@@ -121,7 +116,6 @@ export function AuthProvider({ children }: AuthProviderProps)
     }
     catch (error: any)
     {
-      console.log("Aucune session active trouvée.", error.message);
       setUser(null);
     }
   }, [t]);

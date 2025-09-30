@@ -1,5 +1,3 @@
-//Import
-// import * as global from './pong_class.js';
 import {FPS, HEIGHT, WIDTH, BASE_PLAYER_SPEED,
 	BASE_BALL_SPEED, MAX_BOUNCE_ANGLE, TOP_MARGIN,
 	KILL_MARGIN, BASE_MAX_SCORE, BASE_COLOR,
@@ -105,7 +103,6 @@ export class Game {
 			this._gameOverResolver = resolve;
 			this.gameLoop();
 
-			//Check if the player is moving to give Velocity to the Ball
 			setInterval(() => {
 				this.teams.forEach(team =>{
 					team.backplayer.update_velocity();
@@ -114,7 +111,6 @@ export class Game {
 					})
 			}, 100);
 
-			//Update the IA every 1 sec
 			if (this.IA == true){
 				setInterval(() => {
 					this.error_margin +=  Math.random() < 0.7 - (this.IA_diff * 0.1) ? -1 : 1;
@@ -165,7 +161,6 @@ export class Game {
 		});
 	}
 
-	//The iteration of the Game
 	async gameLoop() {
 		let now = Date.now();
 		for (let team of this.teams){
@@ -226,7 +221,6 @@ export class Game {
 			this.ball_array_past.shift();
 	}
 
-	//Store the futur of the this.ball at an instance
 	count_array_futur(touch){
 		for (let x = this.ball_futur.x - this.ball_size + 1; x < this.ball_futur.x + this.ball_size; x++){
 			for (let y = this.ball_futur.y - this.ball_size + 1; y < this.ball_futur.y + this.ball_size; y++)
@@ -238,7 +232,6 @@ export class Game {
 		}
 	}
 
-	//Use to change the dir of a this.ball of the custom mode "More ! More ! {4}"
 	new_direction_aproximation(obj_ball){
 		const angle = Math.atan2(obj_ball.dy, obj_ball.dx);
 		const speed = Math.sqrt(obj_ball.dx * obj_ball.dx + obj_ball.dy * obj_ball.dy);
@@ -271,26 +264,12 @@ export class Game {
 	}
 
 	isBallOnPaddle(obj_ball, player, post) {
-		// if ((this.holes == false && post == "b") || post == "f"){
-			return (
-				obj_ball.x >= player.posx - player.hitbox &&
-				obj_ball.x <= player.posx + player.hitbox &&
-				obj_ball.y >= player.posy - (this.player_size + 0.5) &&
-				obj_ball.y <= player.posy + (this.player_size + 0.5)
-			);
-		// } else {
-		// 	const roundedOffset = Math.round(obj_ball.y - player.posy);
-		// 	const isInHole = this.holes_array.includes(roundedOffset);
-
-		// 	if (isInHole) return false;
-		// 	return (
-		// 		obj_ball.x >= player.posx - player.hitbox &&
-		// 		obj_ball.x <= player.posx + player.hitbox &&
-		// 		obj_ball.y >= player.posy - (this.player_size + 0.5) &&
-		// 		obj_ball.y <= player.posy + (this.player_size + 0.5)
-		// 	);
-		// }
-			
+		return (
+			obj_ball.x >= player.posx - player.hitbox &&
+			obj_ball.x <= player.posx + player.hitbox &&
+			obj_ball.y >= player.posy - (this.player_size + 0.5) &&
+			obj_ball.y <= player.posy + (this.player_size + 0.5)
+		);		
 	}
 
 	bounce_on_player(obj_ball){
@@ -328,7 +307,6 @@ export class Game {
 			obj_ball.dx *= -1;
 		}
 
-		//Player's velocity
 		if (player.velocity != 0){
 			obj_ball.dy += player.velocity * this.effect;
 			if (obj_ball == this.ball)
@@ -346,7 +324,6 @@ export class Game {
 		}
 	}
 
-	//Compute the new position of a this.ball
 	move_obj_ball(obj_ball){
 		obj_ball.x += obj_ball.dx;
 		obj_ball.y += obj_ball.dy;
@@ -370,12 +347,9 @@ export class Game {
 					obj_ball.y  =this.ball_size + TOP_MARGIN + 2;
 			}
 		}
-		// for (let player of players){
 		this.bounce_on_player(obj_ball);
-		// }
 	}
 
-	//Compute and Store the info on the this.ball's futur in 'this.vision' distance
 	futur(){
 		this.ball_futur = {...this.ball};
 		let touch = false;
@@ -391,7 +365,6 @@ export class Game {
 		}
 	}
 
-	//Get the next position of the this.IA
 	searchIA(player){
 		const arr = Array.from(this.ball_array_futur);
 		let target = arr.slice().reverse().find(obj =>
@@ -404,9 +377,8 @@ export class Game {
 		if (target) this.target_IA = { x: target.x, y: target.y };
 	}
 
-	//It's in the name, it moves the this.IA
 	moveIA(){
-		let ia_array = new Set(); // [];
+		let ia_array = new Set();
 		let ia_player_size = (this.player_size <= 1) ? (this.player_size) : (this.player_size - 1);
 		for (let i = 0 - ia_player_size; i <= ia_player_size; i++)
 			ia_array.add(Math.round(this.teams[1].backplayer.posy) + i);
@@ -426,7 +398,6 @@ export class Game {
 		}
 	}
 
-	//Get the hitbox of the players and this.ball
 	count_array_web(){
 		for (let x = Math.round(this.ball.x) - this.ball_size + 1; x < Math.round(this.ball.x) + this.ball_size; x++){
 			for (let y = Math.round(this.ball.y) - this.ball_size + 1; y < Math.round(this.ball.y) + this.ball_size; y++)
@@ -443,7 +414,6 @@ export class Game {
 		};
 	}
 
-	//Store the data to send to the front
 	game_data_creation(){
 		let display_players = [];
 		let idx = 1;
@@ -522,7 +492,6 @@ export class Game {
 		return game_data;
 	}
 
-	//Send info to the front (Again it's in the name)
 	sendInfoToFront(){
 		let game_data = this.game_data_creation();
 		game_data.ball_real_array_futur = Array.from(this.ball_real_array_futur);
@@ -537,13 +506,11 @@ export class Game {
 			});
 	}
 
-	//Groups function that are used to draw the game
 	draw_web(){
 		this.count_array_web();
 		this.sendInfoToFront();
 	}
 
-	//It's in the name, it moves the players
 	movePlayers(){
 		for (let team of this.teams){
 			team.backplayer.move(this.player_size, 1);
@@ -572,7 +539,6 @@ export class Game {
 		this.pause = false;
 	}
 
-	//It's in the name, it moves the this.Ball
 	async moveBall(){
 		this.move_obj_ball(this.ball);
 		if (this.ball.x < 0){
@@ -588,7 +554,6 @@ export class Game {
 		custom.touch_box(this);
 	}
 
-	//It moves the array of this.ball if the custom mode "More ! More ! {4}" is active
 	async moveMultipleBall(){
 		let remove = [];
 		for (let i = 0; i < this.multiple_ball_array.length; i++){

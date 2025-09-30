@@ -43,8 +43,8 @@ export class PongGameService
 		this.SCALE_Y = canvas.height / this.HEIGHT;
 		this.ctx = canvas.getContext("2d")!;
 		const wsUrl = `wss://${window.location.hostname}:8443/ws?global_id=${global_id}`;
-		console.log(`user global id :${global_id}`);
-		console.log(wsUrl);
+		// console.log(`user global id :${global_id}`);
+		// console.log(wsUrl);
 		this.ws = new WebSocket(wsUrl);
 		this.myId = null;
 		this.ws.onmessage = (event : any) => {
@@ -141,12 +141,10 @@ export class PongGameService
 
 	drawBall = (
 		ball : any, bsize: number) => {
-		// Add trail point
 		this.ball_trail.push({ x: ball.x, y: ball.y, alpha: 1, color : this.ball_color});
 		if (this.ball_trail.length > 45) {
 			this.ball_trail.shift();
 		}
-		// Draw trail
 		this.ball_trail.forEach((point : any, index : number) => {
 			const TRAIL_MAX = 45;
 			let virtual_index = index + (TRAIL_MAX - this.ball_trail.length);
@@ -162,14 +160,12 @@ export class PongGameService
 			this.ctx.fill();
 		});
 
-		// Main ball
 		this.ctx.globalAlpha = 0.8;
 		this.ctx.beginPath();
 		this.ctx.arc(ball.x * this.SCALE_X, ball.y * this.SCALE_Y, bsize, 0, Math.PI * 2);
 		this.ctx.fillStyle = this.ball_color;
 		this.ctx.fill();
 
-		// Bright center
 		this.ctx.beginPath();
 		this.ctx.arc(ball.x * this.SCALE_X, ball.y * this.SCALE_Y, bsize * 0.5, 0, Math.PI * 2);
 		this.ctx.fillStyle = this.ball_middle_color;
@@ -183,14 +179,13 @@ export class PongGameService
 			this.ctx.shadowColor = color;
 			this.ctx.shadowBlur = 2;
 		}
-		// Main ball
+
 		this.ctx.globalAlpha = 0.8;
 		this.ctx.beginPath();
 		this.ctx.arc(ball.x * this.SCALE_X, ball.y * this.SCALE_Y, bsize, 0, Math.PI * 2);
 		this.ctx.fillStyle = color;
 		this.ctx.fill();
 
-		// Bright center
 		this.ctx.beginPath();
 		this.ctx.arc(ball.x * this.SCALE_X, ball.y * this.SCALE_Y, bsize * 0.5, 0, Math.PI * 2);
 		this.ctx.fillStyle = colorcenter;
@@ -224,7 +219,6 @@ export class PongGameService
 				this.ctx.stroke();
 			}
 
-			// Floating particles
 			this.ctx.globalAlpha = 0.3;
 			this.ctx.fillStyle = this.shadow_color;
 			for (let i = 0; i < 12; i++) {
@@ -464,37 +458,7 @@ export class PongGameService
 		}
 	}
 }
-	// function afficherMessage(game_data : any, msg : string, side : string) {
-	// 	ctx.font = "40px Arial";
-	// 	ctx.fillStyle = "#FFFFFF";
-	// 	let stats : string[] = [
-	// 		"STATS :",
-	// 		"exchange_nbr : " + (game_data.exchange_nbr ?? "0"),
-	// 		"bounce nbr : " + (game_data.bounce_nbr ?? "0"),
-	// 		"velocity boost nbr : " + (game_data.velocity_use ?? "0")
-	// 	];
-	// 	let msgX : number = 0, statsX : number = 0;
-	// 	let lineHeight : number = 40;
-	// 	let maxStatsWidth = Math.max(...stats.map(text => ctx.measureText(text).width));
-	// 	if (side == 'l') {
-	// 		msgX = 10;
-	// 		statsX = canvas.width - 10 - maxStatsWidth;
-	// 	} else if (side == 'r') {
-	// 		msgX = canvas.width - 10 - ctx.measureText(msg).width;
-	// 		statsX = 10;
-	// 	}
-	// 	let blockTop = canvas.height / 2 - (stats.length * lineHeight) / 2;
-		
-	// 	ctx.fillStyle = "#AAAAAA";
-	// 	ctx.fillText(msg, msgX, (canvas.height / 2) + (lineHeight / 2));
 
-	// 	for (let i = 0; i < stats.length; i++) {
-	// 		let text = (stats[i] ?? "0");
-	// 		let y = blockTop + i * lineHeight;
-	// 		ctx.fillStyle = "#AAAAAA";
-	// 		ctx.fillText(text, statsX, y);
-	// 	}
-	// }
 
 
 

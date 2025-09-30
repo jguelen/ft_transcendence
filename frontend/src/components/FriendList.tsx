@@ -13,7 +13,6 @@ export interface FriendItem {
 
 type FriendType = "notFriend" | "requests" | "friends" | "blocked";
 
-// Vérifie si un id est bloqué (par toi ou t'a bloqué)
 const isBlocked = (id: number, youBlockedIds: Set<number>, blockedByIds: Set<number>) =>
   youBlockedIds.has(id) || blockedByIds.has(id);
 
@@ -42,7 +41,6 @@ async function removeBlockedFriends(
 ) {
   for (const f of friendList) {
     if (isBlocked(f.id, youBlockedIds, blockedByIds)) {
-      // Unfriend et optionnellement envoyer un refresh
       await fetch(`/api/user/unfriend/${f.id}`, { method: "DELETE", credentials: "include" });
     }
   }
@@ -75,10 +73,8 @@ function makeList(
       const requestByIds = new Set(requestsBy.map((r: any) => r.requesterId));
       const youRequestIds = new Set(youRequests.map((r: any) => r.requestedId));
 
-      // Supprime des amis ceux qui sont bloqués ou qui t'ont bloqué
       await removeBlockedFriends(myId, friends, youBlockedIds, blockedByIds);
 
-      // Filtre randomList : pas d'utilisateur bloqué ou qui t'a bloqué
       const randomList = allUsers
         .filter(
           (u: any) =>
@@ -91,11 +87,9 @@ function makeList(
         )
         .map((u: any) => ({ ...u, status: "random" }));
 
-      // Filtre amis : pas d'utilisateur bloqué ou qui t'a bloqué
       const filteredFriends = friends.filter((f: any) => !youBlockedIds.has(f.id) && !blockedByIds.has(f.id));
       setFriendList(filteredFriends.map((f: any) => ({ ...f, status: "ami" })));
 
-      // Filtre demandes reçues : pas d'utilisateur bloqué ou qui t'a bloqué
       setRequestByList(requestsBy
         .filter((r: any) => !youBlockedIds.has(r.requesterId) && !blockedByIds.has(r.requesterId))
         .map((r: any) => ({
@@ -106,7 +100,6 @@ function makeList(
         }))
       );
 
-      // Filtre demandes envoyées : pas d'utilisateur bloqué ou qui t'a bloqué
       setYouRequestList(youRequests
         .filter((r: any) => !youBlockedIds.has(r.requestedId) && !blockedByIds.has(r.requestedId))
         .map((r: any) => ({
@@ -146,9 +139,8 @@ export default function FriendList() {
   const [friendOnlineStatus, setFriendOnlineStatus] = useState<Record<number, boolean>>({});
   const { wsRef } = useAuth();
 
-  // Sets pour la logique de blocage
-  const youBlockedIds = new Set(youBlockedList.map(u => u.id));
-  const blockedByIds = new Set(blockedByList.map(u => u.id));
+  const youBlockedIds = new Set(youBlockedList.map((u : any) => u.id));
+  const blockedByIds = new Set(blockedByList.map((u : any) => u.id));
 
   const refreshLists = useCallback(() => {
     makeList(
@@ -209,7 +201,6 @@ export default function FriendList() {
     }
   };
 
-  // Ajout : empêche d'ajouter/accpeter/voir si bloqué
   const handleAddFriend = async (id: number) => {
     if (isBlocked(id, youBlockedIds, blockedByIds)) {
       alert(t("friend.errors.cannotSendBlocked"));

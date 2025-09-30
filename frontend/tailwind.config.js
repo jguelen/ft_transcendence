@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  // Spécifie les fichiers à analyser pour trouver les classes Tailwind utilisées
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
@@ -47,8 +46,6 @@ export default {
   },
   
   plugins: [
-    // Ajoutez ici des plugins Tailwind si nécessaire
-    // Par exemple: require('@tailwindcss/forms'),
   ],
 
 }
