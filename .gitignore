@@ -7,3 +7,4 @@ shell.nix
 .direnv/
 result
 result-*
+secrets
