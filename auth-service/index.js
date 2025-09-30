@@ -35,6 +35,8 @@ fastify.register(fastify_cookie, {
 // OAuth
 const startRedirectPath = `/api/auth/login/github`
 const callbackUri = `https://localhost:8443/api/auth/login/github/callback`
+//const startRedirectPath = `/login/github`
+//const callbackUri = `https://localhost:8443/login/github/callback`
 
 
 fastify.register(fastifyOauth2, {
