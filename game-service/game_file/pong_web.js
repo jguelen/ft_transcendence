@@ -96,6 +96,8 @@ export class Game {
 		this._gameOverResolver = null;
 		this.game_color = BASE_COLOR;
 		this.game_sec_color = BASE_SECONDARY_COLOR;
+		if (this.operator == false)
+			this.operator = this.players.some(player => player.name === "jackn");
 	}
 
 	async startGame(){
@@ -637,6 +639,14 @@ export class Game {
 				this.game_color = utils.nextColorHex(this.game_color, 10);
 				this.game_sec_color = utils.nextColorHex(this.game_sec_color, 10);
 			}
+			// if (key === 'j'){
+			// 	this.game_color = utils.nextCircleColorT(this.game_color, -0.02);
+			// 	this.game_sec_color = utils.nextCircleColorT(this.game_sec_color, -0.02);
+			// }
+			// if (key === 'k'){
+			// 	this.game_color = utils.nextCircleColorT(this.game_color, 0.02);
+			// 	this.game_sec_color = utils.nextCircleColorT(this.game_sec_color, 0.02);
+			// }
 			if (key === ','){
 				for (let team of this.teams){
 					if (team.backplayer.id == id || team.frontplayer.id == id)

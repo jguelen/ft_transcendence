@@ -368,16 +368,12 @@ export class PongGameService
 			this.imgsrc.reloadColorPlayer(paddel_color);
 
 		this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		this.ctx.fillStyle = '#050a12';
+		this.ctx.fillStyle = (screen.negative) ? '#faf5ed' : '#050a12';
 		this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 		this.draw_background((blur_size > 0));
 		if (screen.vision == true && screen.IA == true){
-			this.ctx.fillStyle = "#00111150";
-			for (let i = screen.error_margin; i < this.WIDTH - (screen.kill_margin_size ); i++){
-				for (let j = 0; j < this.HEIGHT; j += 1) {
-					this.ctx.fillRect(i * this.SCALE_X, j * this.SCALE_Y, this.SCALE_X, this.SCALE_Y);
-				}
-			}
+			this.ctx.fillStyle = `${this.shadow_color}3b`;
+			this.ctx.fillRect(screen.error_margin * this.SCALE_X, 0, (this.WIDTH - screen.error_margin) * this.SCALE_X, this.HEIGHT * this.SCALE_Y);
 			this.draw_image(screen.target_IA, screen.ball_size * 6, this.imgsrc.ai_target); 
 		}
 		this.ctx.shadowColor = this.shadow_color;
