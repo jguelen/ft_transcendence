@@ -36,7 +36,6 @@ export class Player{
 		if (this.posy <= local_player_size + TOP_MARGIN) this.posy++;
 	}
 	input(game, local_player_size, key, id){
-		// console.log("id :", id, "player id :", this.id);
 		if (key == this.up_player && this.posy < HEIGHT - (local_player_size + TOP_MARGIN) && id == this.id){
 			this.player_vel = -1 * game.PLAYER_SPEED;
 			this.keyDown = false; this.keyUp = true;
@@ -46,13 +45,7 @@ export class Player{
 			this.keyUp = false; this.keyDown = true;
 		}
 		if (key == "." && id == this.id && game.operator){
-			// this.posy = game.ball.y;
 			const arr = Array.from(game.ball_array_futur);
-			// console.log("arr :", arr);
-			// console.log("arr s:", arr.slice().reverse());
-			// for (let i = this.x - (this.hitbox + 6); i < this.x + (this.hitbox + 6); i++){
-			// 	console.log(i);
-			// }
 			let target = arr.slice().reverse().find(obj =>
 				obj.touch === false &&
 				obj.x < this.posx + (this.hitbox + 6) &&
@@ -60,7 +53,7 @@ export class Player{
 			);
 			if (target){
 				this.posy = target.y;
-				console.log("did");
+				// console.log("did");
 			}
 			else{
 				this.posy = game.ball.y;
@@ -68,7 +61,6 @@ export class Player{
 		}
 	}
 	release(game, key, id){
-		// console.log("id :", id, "player id :", this.id);
 		if (key == this.up_player && id == this.id){
 			this.keyUp = false;
 			if (this.keyDown == false) this.player_vel = 0;

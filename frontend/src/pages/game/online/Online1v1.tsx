@@ -2,7 +2,6 @@ import { useState } from 'react';
 import GameMenu from '../GameMenu';
 import GameCanvas from '../GameCanvas';
 
-// La configuration de base pour ce mode de jeu
 const initialConfig = {
     IA: false,
     local: false,

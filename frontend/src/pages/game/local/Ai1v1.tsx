@@ -1,10 +1,7 @@
-// src/pages/Ai1v1.tsx (fichier modifié)
-
 import { useState } from 'react';
 import GameMenu from '../GameMenu';
 import GameCanvas from '../GameCanvas';
 
-// Configuration initiale passée au menu
 const initialConfig = {
     start: false,
     IA: true,

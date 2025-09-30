@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import GameMenu from '../GameMenu';       // On importe les nouveaux composants
-import GameCanvas from '../GameCanvas';     // Assure-toi que les chemins sont corrects
+import GameMenu from '../GameMenu';
+import GameCanvas from '../GameCanvas';
 
-// La configuration de base pour ce mode de jeu
 const initialConfig = {
     IA: false,
     local: true,

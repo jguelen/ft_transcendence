@@ -1,12 +1,8 @@
-// src/ProtectedRoute.tsx
-
 import { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import useAuth from '../context/AuthContext'; // On importe notre hook personnalisé
+import useAuth from '../context/AuthContext';
 import { ROUTES } from '../App';
 
-// On définit le type des props que ce composant accepte.
-// 'children' représente les composants qui seront imbriqués à l'intérieur.
 type ProtectedRouteProps = {
   children: ReactNode;
 };

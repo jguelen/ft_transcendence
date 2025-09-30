@@ -18,8 +18,6 @@ exports.validateUserName = function(userName) {
     return true	
 };
 
-
-// !! Hashed password
 exports.validatePassword = function(password) {
 
     if (password == null)

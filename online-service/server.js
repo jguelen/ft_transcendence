@@ -29,15 +29,15 @@ fastify.register(async function (fastify){
 		connection.on('message', async (message) => {
 			try {
 				const data = JSON.parse(message.toString());
-				console.log("online message :", data.type);
-				console.log("data :", data);
+				// console.log("online message :", data.type);
+				// console.log("data :", data);
 				if (data.type == "connection" && data.id){
 					userId = data.id;
 					onlineUsers.set(data.id, connection);
-					console.log(`User connected: (${data.id})`);
+					// console.log(`User connected: (${data.id})`);
 					broadcastFriendUpdate();
 				} else if (data.type == "getOnlineUser" && data.id){
-					console.log("received");
+					// console.log("received");
 					const isOnline = onlineUsers.has(data.id);
 					connection.send(
 						JSON.stringify({

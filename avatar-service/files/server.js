@@ -3,21 +3,12 @@ import path from 'path';
 import fs from 'fs/promises';
 import websocketPlugin from '@fastify/websocket';
 import fastifyStatic from '@fastify/static';
-// import Database from 'better-sqlite3';
 import { fileURLToPath } from 'url';
 
 const fastify = Fastify();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-// const db = new Database('/app/data/avatar_db.db');
-// db.prepare(`
-//   CREATE TABLE IF NOT EXISTS avatars (
-//     id INTEGER PRIMARY KEY,
-//     image BLOB NOT NULL
-//   )
-// `).run();
 
 function isValidPNG(buffer) {
     const pngSignature = Buffer.from([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]);
@@ -36,9 +27,8 @@ await fastify.register(fastifyStatic, {
 fastify.get('/', { websocket: true }, (connection, req) => {
 	let avatarId = -1;
 	let bufferChunks = [];
-	console.log("new connection");
+	// console.log("new connection");
 	connection.on('message', async (message) => {
-		console.log("message");
 		try {
 			const data = JSON.parse(message.toString());
 			if (data.type === "new avatar") {
@@ -59,11 +49,6 @@ fastify.get('/', { websocket: true }, (connection, req) => {
   	connection.on('close', async () => {
 		if (avatarId !== -1 && bufferChunks.length > 0) {
 			const buffer = Buffer.concat(bufferChunks.map(chunk => Buffer.from(chunk)));
-			// console.log(buffer);
-			// db.prepare(`
-			// 	INSERT INTO avatars (id, image) VALUES (?, ?)
-			// 	ON CONFLICT(id) DO UPDATE SET image=excluded.image
-			// `).run(avatarId, buffer);
 
 			if (!isValidPNG(buffer)) {
                 console.error(`Avatar ${avatarId} : Unvalid PNG file`);

@@ -9,7 +9,6 @@ type ImageState = {
 
 export default function ImageLoader() {
     const default_image = "/futuristic-avatar.svg";
-    // AMÉLIORATION : On récupère refreshAvatar et on utilise bien l'utilisateur du contexte
     const { user, refreshAvatar } = useAuth(); 
     const id = user ? user.id : null;
 
@@ -21,11 +20,8 @@ export default function ImageLoader() {
     });
     const [isUploading, setIsUploading] = useState(false);
 
-    // AMÉLIORATION : La dépendance [id] est cruciale pour que l'avatar se mette à jour
-    // si l'utilisateur se déconnecte et qu'un autre se connecte.
     useEffect(() => {
         if (!id) {
-            // Si pas d'utilisateur, on met l'image par défaut
             setImageState({ current: default_image, previous: default_image, hasCustomAvatar: false });
             return;
         }
@@ -33,10 +29,9 @@ export default function ImageLoader() {
         async function checkAvatarExists() {
             const avatarUrl = `https://${window.location.hostname}:8443/avatars/avatar${id}.png`;
             try {
-                // On utilise 'no-cache' pour être sûr de vérifier la dernière version
                 const response = await fetch(avatarUrl, { method: 'HEAD', cache: 'no-cache' });
                 if (response.ok) {
-                    const newUrl = `${avatarUrl}?v=${Date.now()}`; // On force le rafraîchissement
+                    const newUrl = `${avatarUrl}?v=${Date.now()}`;
                     setImageState({ current: newUrl, previous: newUrl, hasCustomAvatar: true });
                 }
             } catch (error) {
@@ -79,7 +74,7 @@ export default function ImageLoader() {
                 const arrayBuffer = this.result;
                 if (arrayBuffer) {
                     ws.send(arrayBuffer);
-                    ws.close(); // On ferme la connexion une fois l'envoi terminé
+                    ws.close();
 
                     setTimeout(async () => {
                         const avatarUrl = `https://${window.location.hostname}:8443/avatars/avatar${id}.png`;
@@ -100,7 +95,7 @@ export default function ImageLoader() {
                             setImageState(currentState);
                         }
                         setIsUploading(false);
-                    }, 1500); // On garde le délai pour laisser le temps au serveur de traiter l'image.
+                    }, 1500);
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -112,7 +107,6 @@ export default function ImageLoader() {
         };
     }
 
-    // Le JSX a été légèrement simplifié pour plus de clarté
     return (
         <div
             className={`shadow-card max-w-[200px] max-h-[200px] h-full aspect-square rounded-full overflow-hidden flex items-center justify-center relative ${isUploading ? 'cursor-wait opacity-70' : 'cursor-pointer'}`}
@@ -124,11 +118,11 @@ export default function ImageLoader() {
                 </div>
             )}
             <img
-                key={imageState.current} // Ajout d'une clé pour forcer React à recharger l'élément img
+                key={imageState.current}
                 src={imageState.current}
                 alt="Avatar"
                 className="w-full h-full object-cover pointer-events-none"
-                // En cas d'erreur de chargement, on remet l'image par défaut
+                
                 onError={() => setImageState(prev => ({ ...prev, current: default_image }))}
             />
             <input

@@ -6,8 +6,6 @@ import useAuth from '../../context/AuthContext';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx'
 
-// const token = localStorage.getItem('ft_transcendance_jwt');
-
 interface ListItem
 {
   victory: boolean;
@@ -102,7 +100,6 @@ export async function fetchItemsFromAPI(
   if (!response.ok) {
     throw new Error("API error: " + response.status);
   }
-  // console.log("token :", token);
   const data = await response.json();
   
   const items: ListItem[] = await Promise.all(

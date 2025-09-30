@@ -51,7 +51,7 @@ function Register()
     const passwordErrors = validatePassword(password, t);
     if (passwordErrors.length > 0)
     {
-      console.log({passwordErrors})
+      // console.log({passwordErrors})
       setError(passwordErrors.join(' ')); 
       setLoadingSubmit(false);
       return;

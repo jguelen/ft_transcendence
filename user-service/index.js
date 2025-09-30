@@ -21,26 +21,6 @@
 
 // npm i fastify @fastify/cookie @fastify/jwt sqlite3 bcrypt jsonwebtoken prisma --save-dev
 
-
-/*
-
-const fastify = require('fastify')({ logger: false })
-const fastify_static = require('@fastify/static')
-const path = require('path')
-const jwt = require('jsonwebtoken');
-//const { Interface } = require('readline')
-
-const fastify_jwt = require('@fastify/jwt')
-//const  { FastifyJWT } = require('@fastify/jwt')
-const fastify_cookie = require('@fastify/cookie')
-
-//import { PrismaClient } from '@prisma/client'
-const  { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
-
-
-*/
-
 const { AUTH_SERVICE_URL } = process.env;
 if (!AUTH_SERVICE_URL) {
 	throw new Error("Missing AUTH_SERVICE_URL env var");
@@ -57,10 +37,8 @@ const fastify_cookie = require('@fastify/cookie')
 
 
 
-
-// Temporary due to CORS sh!te
 fastify.addHook('preHandler', (req, res, next) => {
-console.log("preHandler-CORS-tmp");
+// console.log("preHandler-CORS-tmp");
 //  req.jwt = fastify.jwt
 
 	res.header("Access-Control-Allow-Origin", "http://localhost:3002")
@@ -108,8 +86,8 @@ fastify.listen({ host: '0.0.0.0', port: process.env.PORT ?? 3002 }, (err) => {
 })
 
 async function checkUserNameDuplicate(userName) {
-console.log("checkUserNameDuplicate")
-console.log(userName)
+// console.log("checkUserNameDuplicate")
+// console.log(userName)
 // console.log("prisma :", prisma != mull);
 //	try {
 		var user = await prisma.user.findMany({
@@ -117,8 +95,8 @@ console.log(userName)
 				name: userName
 			}
 		})
-console.log("checkUserNameDuplicate: 1")		
-console.log(user)
+// console.log("checkUserNameDuplicate: 1")		
+// console.log(user)
 		if (user.length == 0)
 			return userName
 
@@ -131,8 +109,8 @@ console.log(user)
 					name: alternateName
 				}
 			})
-console.log(`checkUserNameDuplicate: 2 - ${index}`)
-console.log(user)
+// console.log(`checkUserNameDuplicate: 2 - ${index}`)
+// console.log(user)
 			if (user.length == 0)
 				return alternateName
 		}

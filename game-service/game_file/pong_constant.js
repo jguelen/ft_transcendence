@@ -1,4 +1,3 @@
-//Game constant
 export const FPS = 60;
 export const GAME_SPEED = 1.4
 export const HEIGHT = 60;
