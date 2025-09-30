@@ -5,6 +5,7 @@ import Input from '../../components/Input';
 import { useTranslation } from 'react-i18next';
 import { FaGithub } from 'react-icons/fa';
 import useAuth from '../../context/AuthContext'
+import { ROUTES } from '../../App';
 
 function Login()
 {
@@ -32,7 +33,7 @@ function Login()
     {
       await login(email, password);
       alert(t("login.success"));
-      navigate('/');
+      navigate(ROUTES.HOME);
 
     }
     catch (error: any)
@@ -50,7 +51,7 @@ function Login()
   return (
     <div className="flex flex-col justify-center items-center gap-5">
       <h1 className="font-orbitron text-title text-white break-all">{t("login.title")}</h1>
-      <form onSubmit={handleSubmit} action="/login" method="POST" className="flex flex-col items-center justify-center gap-5">
+      <form onSubmit={handleSubmit} method="POST" className="flex flex-col items-center justify-center gap-5">
 
         <Input type="text" name="email" id="email" placeholder={t("login.mail")}
           required value={email} onChange={(e) => setEmail(e.target.value)} iconSrc={'/icons/mail.svg'}/>
@@ -67,7 +68,7 @@ function Login()
       </form>
       <div className="flex justify-center items-center gap-3">
         <h2 className="text-text font-inter text-[18px]">{t("login.text")}</h2>
-        <Link to="/register" className="text-accent font-inter text-[18px]
+        <Link to={ROUTES.REGISTER} className="text-accent font-inter text-[18px]
          hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-accent
          focus-visible:ring-offset-2 rounded-[4px]">{t("login.link")}
         </Link>

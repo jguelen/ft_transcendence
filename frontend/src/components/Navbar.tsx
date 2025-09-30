@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import useAuth from '../context/AuthContext';
 import Card from './Card'
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '../App';
 
 type NavItemProps = {
   to: string;
@@ -53,9 +54,9 @@ function Navbar({activeMenu, className}: NavbarProps)
       "flex flex-col p-[15px] gap-[10px]", className)
     }>
       <NavItem iconSrc='/icons/shield-user.svg' isActive={activeMenu === 'profile'}
-         label={t("navbar.profile")} to="/settings/profile"/>
+         label={t("navbar.profile")} to={ROUTES.SETTINGS.PROFILE}/>
       <NavItem iconSrc='/icons/user.svg' isActive={activeMenu === 'account'}
-         label={t("navbar.account")} to="/settings/account"/>
+         label={t("navbar.account")} to={ROUTES.SETTINGS.ACCOUNT}/>
       <span className="border border-stroke w-full h-[1px]"/>
       <button className="w-full max-h-[105px] h-full rounded-small
         flex justify-start items-center pl-[10px] gap-[15px] border border-transparent

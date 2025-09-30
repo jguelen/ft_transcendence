@@ -123,7 +123,7 @@ function Account()
         </div>
         {userError && <p className="text-red-500 text-center font-inter text-sm
           w-full max-h-[25%] overflow-y-auto">{userError}</p>}
-        <form onSubmit={handleUsername} action="/settings/account" method="POST"
+        <form onSubmit={handleUsername} method="POST"
          className="flex flex-col items-center justify-center gap-1 w-full">
           <Input type="text" name="username" id="username" required value={username}
             onChange={(e) => setUsername(e.target.value)} maxWidth=""
@@ -142,7 +142,7 @@ function Account()
             {t("account.passwordTitle")}
           </h1>
         </div>
-        <form onSubmit={handlePassword} action="/settings/account" method="POST"
+        <form onSubmit={handlePassword} method="POST"
           className="flex flex-col items-center justify-center gap-1 w-full">
            {passwordError && <p className="text-red-500 text-center font-inter
              text-sm w-full overflow-y-auto flex-1">{passwordError}</p>}

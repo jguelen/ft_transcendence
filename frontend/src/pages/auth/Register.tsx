@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import useAuth from "../../context/AuthContext"
+import { ROUTES } from '../../App';
 
 function Register()
 {
@@ -60,7 +61,7 @@ function Register()
     {
       await register(trimmedUsername, trimmedEmail, password);
       alert(t("register.alert"));
-      navigate('/');
+      navigate(ROUTES.HOME);
     }
     catch (error: any)
     {
@@ -74,7 +75,7 @@ function Register()
   }
 
   return (
-    <form onSubmit={handleSubmit} action="/register" method="POST" className="flex flex-col
+    <form onSubmit={handleSubmit} method="POST" className="flex flex-col
       items-center justify-evenly gap-1 w-full h-full">
 
       <h1 className="font-orbitron text-title text-white break-all">{t("register.title")}</h1>
