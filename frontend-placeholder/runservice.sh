@@ -1,5 +1,6 @@
 #!/bin/sh
 
 clear
-export JWT_SECRET="your_jwt_secret_key_change_this_in_production"
+. ../.env
+export JWT_SECRET
 node index.js

@@ -14,7 +14,4 @@ COPY --from=build /dist/ /usr/share/nginx/html
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-COPY nginx/ssl/cert.pem /etc/nginx/ssl/cert.pem
-COPY nginx/ssl/key.pem /etc/nginx/ssl/key.pem
-
 EXPOSE 443 

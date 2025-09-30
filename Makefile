@@ -2,8 +2,12 @@ DC = docker compose
 
 all: up
 
-up:
+up: secrets/nginx.key secrets/nginx.crt
 	$(DC) up --build -d
+
+secrets/nginx.key secrets/nginx.crt:
+	mkdir -p secrets
+	openssl req -x509 -nodes -days 365 -newkey rsa:4096 -subj "/C=/ST=/L=/O=/CN=localhost" -keyout secrets/nginx.key -out secrets/nginx.crt
 
 down:
 	$(DC) down
