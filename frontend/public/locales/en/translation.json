@@ -91,5 +91,44 @@
     "majuscule": "Your password need to have at least one uppercase letter.",
     "number": "Your password need to contain at least one number.",
     "special": "Your password need to contain at least one of those special characters (!@#$%^&*)."
+  },
+  "friend": {
+    "loading": "Loading...",
+    "noUsers": "No users.",
+    "relation": {
+      "friend": "Friend",
+      "blocked": "Blocked",
+      "blockedBy": "Blocked By",
+      "random": "Other"
+    },
+    "actions": {
+      "remove": "Remove Friend",
+      "accept": "Accept",
+      "decline": "Decline",
+      "sendRequest": "Send Request",
+      "cancelRequest": "Cancel Request",
+      "block": "Block",
+      "unblock": "Unblock"
+    },
+    "buttonError": {
+      "blockedTwoWay": "User blocked or has blocked you.",
+      "blockedBy": "Already blocked by user."
+    },
+    "status": {
+      "sent": "Request Sent",
+      "online": "Online",
+      "offline": "Offline"
+    },
+    "tabs": {
+      "others": "Other users",
+      "requests": "Friend Requests",
+      "friends": "Friends",
+      "blocked": "Blocked"
+    },
+    "errors": {
+      "cannotUnblock": "Cannot unblock user.",
+      "cannotSendBlocked": "Cannot send friend request to a user you have blocked or who has blocked you.",
+      "cannotAcceptBlocked": "Cannot accept friend request from a user you have blocked or who has blocked you."
+    }
   }
 }

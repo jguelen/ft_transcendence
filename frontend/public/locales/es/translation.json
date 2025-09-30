@@ -37,6 +37,7 @@
       "username": "usuario incorrecto",
       "mail/password": "correo/clave incorrectos",
       "repassword": "las dos claves deben ser iguales",
+      "taken": "Este nombre de usuario ya está en uso.",
       "usernameContainsAt": "El nombre de usuario no puede contener '@'."
     }
   },
@@ -90,5 +91,44 @@
     "majuscule": "Tu clave debe tener al menos una letra mayúscula.",
     "number": "Tu clave debe tener al menos un número.",
     "special": "Tu clave debe tener al menos uno de estos caracteres especiales (!@#$%^&*)."
+  },
+  "friend": {
+    "loading": "Cargando...",
+    "noUsers": "No hay usuarios.",
+    "relation": {
+      "friend": "Amigos",
+      "blocked": "Bloqueado",
+      "blockedBy": "Bloqueado por",
+      "random": "Otro"
+    },
+    "actions": {
+      "remove": "Eliminar amigo",
+      "accept": "Aceptar",
+      "decline": "Rechazar",
+      "sendRequest": "Enviar solicitud",
+      "cancelRequest": "Cancelar solicitud",
+      "block": "Bloquear",
+      "unblock": "Desbloquear"
+    },
+    "buttonError": {
+      "blockedTwoWay": "Usuario bloqueado o te ha bloqueado.",
+      "blockedBy": "Ya bloqueado por el usuario."
+    },
+    "status": {
+      "sent": "Solicitud enviada",
+      "online": "En línea",
+      "offline": "Desconectado"
+    },
+    "tabs": {
+      "others": "Otros usuarios",
+      "requests": "Solicitudes de amistad",
+      "friends": "Amigos",
+      "blocked": "Bloqueados"
+    },
+    "errors": {
+      "cannotUnblock": "No se puede desbloquear al usuario.",
+      "cannotSendBlocked": "No se puede enviar una solicitud de amistad a un usuario que has bloqueado o que te ha bloqueado.",
+      "cannotAcceptBlocked": "No se puede aceptar una solicitud de amistad de un usuario que has bloqueado o que te ha bloqueado."
+    }
   }
 }
