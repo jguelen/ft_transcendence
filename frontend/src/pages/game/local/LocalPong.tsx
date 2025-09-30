@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
 import Card from '../../../components/Card'
 import { useTranslation } from "react-i18next" 
+import { ROUTES } from "../../../App";
 
 function LocalPong()
 {
@@ -12,7 +13,7 @@ function LocalPong()
     <div className="flex items-center justify-between max-w-[1440px] w-full
       max-h-[485px] h-full gap-2">
 
-      <Link to="1v1" className="max-w-[670px] max-h-[465px] w-full h-full">
+      <Link to={ROUTES.LOCAL.PLAY_1V1} className="max-w-[670px] max-h-[465px] w-full h-full">
         <div className="flex items-center justify-center max-h-[670px] max-w-[670px]
            w-full h-full bg-transparent hover:bg-main rounded-big group">
           <Card maxWidth="670px" maxHeight="465px"
@@ -26,7 +27,7 @@ function LocalPong()
         </div>
       </Link>
 
-      <Link to="ai" className="max-w-[670px] max-h-[465px] w-full h-full">
+      <Link to={ROUTES.LOCAL.PLAY_AI} className="max-w-[670px] max-h-[465px] w-full h-full">
         <div className="flex items-center justify-center max-h-[670px] max-w-[670px]
            w-full h-full bg-transparent hover:bg-main rounded-big group">
           <Card maxWidth="670px" maxHeight="465px"

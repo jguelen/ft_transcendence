@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import Avatar from "./AvatarDisplay"
+import { ROUTES } from '../App';
 
 const languages =
 [
@@ -56,11 +57,11 @@ function Header({disabled = false}: HeaderProps)
       maxWidth="1600px" maxHeight="120px">
 
       {disabled ? <span className={logoStyle}>FT_TRANSCENDENCE</span> :
-      <Link to="/" className={clsx(logoStyle, "hover:brightness-110")}>FT_TRANSCENDENCE</Link>}
+      <Link to={ROUTES.HOME} className={clsx(logoStyle, "hover:brightness-110")}>FT_TRANSCENDENCE</Link>}
 
       <div ref={dropdownRef} className="flex justify-center items-center min-w-fit">
 
-        {!disabled && <Link to="/settings/profile">
+        {!disabled && <Link to={ROUTES.SETTINGS.PROFILE}>
           <Avatar/>
         </Link>}
 

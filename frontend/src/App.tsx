@@ -28,21 +28,21 @@ const ROUTES = {
   REGISTER: '/register',
 
   SETTINGS: {
-    PROFILE: 'settings/profile',
-    ACCOUNT: 'settings/account',
+    PROFILE: '/settings/profile',
+    ACCOUNT: '/settings/account',
   },
   CONTEST: {
     GAME: '/cup/game',
   },
   LOCAL: {
-    INDEX: '/local-pong',
-    PLAY_1V1: '/local-pong/1v1',
-    PLAY_AI: '/local-pong/ai',
+    INDEX: '/pong-local',
+    PLAY_1V1: '/pong-local/1v1',
+    PLAY_AI: '/pong-local/ai',
   },
   ONLINE: {
-    INDEX: '/online-pong',
-    PLAY_1V1: '/online-pong/1v1',
-    PLAY_2V2: '/online-pong/2v2',
+    INDEX: '/pong-online',
+    PLAY_1V1: '/pong-online/1v1',
+    PLAY_2V2: '/pong-online/2v2',
   },
 };
 
@@ -89,3 +89,4 @@ function App() {
 }
 
 export default App;
+export { ROUTES };

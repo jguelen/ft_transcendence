@@ -2,6 +2,7 @@ import Card from '../components/Card'
 import Button from '../components/Button'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next' 
+import { ROUTES } from '../App';
 
 function Home()
 {
@@ -12,7 +13,7 @@ function Home()
       <Card maxWidth="400px" maxHeight="504px" className="flex flex-col
         items-center justify-evenly p-1">
         <h1 className="font-orbitron text-title text-white font-medium break-all">{t("home.local")}</h1>
-        <Link to="/local-pong" className="flex justify-center items-center w-full
+        <Link to={ROUTES.LOCAL.INDEX} className="flex justify-center items-center w-full
           max-w-[252px]">
           <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.13)"
             >{t("home.button")}</Button>
@@ -21,7 +22,7 @@ function Home()
       <Card maxWidth="400px" maxHeight="504px" className="flex flex-col
         items-center justify-evenly p-3">
         <h1 className="font-orbitron text-title text-white font-medium break-all">{t("home.online")}</h1>
-        <Link to="/online-pong" className="flex justify-center items-center w-full
+        <Link to={ROUTES.ONLINE.INDEX} className="flex justify-center items-center w-full
           max-w-[252px]">
           <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.13)"
             >{t('home.button')}</Button>
@@ -30,7 +31,7 @@ function Home()
       <Card maxWidth="400px" maxHeight="504px" className="flex flex-col
         items-center justify-evenly p-1">
         <h1 className="font-orbitron text-title text-white font-medium break-all">{t("home.cup")}</h1>
-        <Link to="/cup/game" className="flex justify-center items-center max-w-[252px]
+        <Link to={ROUTES.CONTEST.GAME} className="flex justify-center items-center max-w-[252px]
           w-full">
           <Button gradientBorder={true} hoverColor="rgba(39, 95, 153, 0.13)"
             >{t("home.button")}</Button>
