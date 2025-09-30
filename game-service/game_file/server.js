@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS matches (
     details TEXT -- JSON
 )`);
 
-let operator = true;
+let operator = false;
 
 //Websocket
 let clients = [];
