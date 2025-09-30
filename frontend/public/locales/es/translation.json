@@ -1,17 +1,17 @@
 {
   "login": {
-    "title": "Acceso",
-    "mail": "Correo/Usuario",
-    "password": "Clave",
+    "title": "Inicio de sesión",
+    "mail": "Correo/Nombre de usuario",
+    "password": "Contraseña",
     "loading": "Conectando...",
-    "button": "Entrar",
+    "button": "Iniciar sesión",
     "text": "¿No eres miembro?",
-    "link": "Registro",
+    "link": "Registrarse",
     "githubButton": "Iniciar sesión con GitHub",
     "success": "¡Inicio de sesión exitoso!",
     "error": {
-      "requiredFields": "El correo electrónico y la contraseña son obligatorios.",
-      "invalidCredentials": "Correo electrónico o contraseña inválidos."
+      "requiredFields": "El correo y la contraseña son obligatorios.",
+      "invalidCredentials": "Correo o contraseña inválidos."
     }
   },
   "auth": {
@@ -26,17 +26,17 @@
   "register": {
     "title": "Registro",
     "mail": "Correo",
-    "username": "Usuario",
-    "check_username": "Verif",
-    "password": "Clave",
-    "repassword": "Repetir clave",
-    "loading": "Conectando...",
-    "sign_up": "Registrar",
-    "alert": "¡Conexión exitosa!",
+    "username": "Nombre de usuario",
+    "check_username": "Verificación...",
+    "password": "Contraseña",
+    "repassword": "Repite la contraseña",
+    "loading": "Registrando...",
+    "sign_up": "Registrarse",
+    "alert": "¡Registro exitoso!",
     "error": {
-      "username": "usuario incorrecto",
-      "mail/password": "correo/clave incorrectos",
-      "repassword": "las dos claves deben ser iguales",
+      "username": "Nombre de usuario incorrecto",
+      "mail/password": "Correo/contraseña incorrectos",
+      "repassword": "Ambas contraseñas deben coincidir",
       "taken": "Este nombre de usuario ya está en uso.",
       "usernameContainsAt": "El nombre de usuario no puede contener '@'."
     }
@@ -83,20 +83,51 @@
     },
     "online": {
       "description": "Duéltate contra un equipo de dos jugadores"
-    }
+    },
+    "gameOptions": {
+      "title": "Opciones de juego",
+      "customMode": "Modo personalizado :",
+      "speedingMode": "Modo rápido :",
+      "on": "ACTIVADO",
+      "off": "DESACTIVADO",
+      "iaDifficulty": "Dificultad IA :",
+      "iaLevels": {
+        "impossible": "Imposible",
+        "hard": "Difícil",
+        "medium": "Medio",
+        "easy": "Fácil",
+        "joke": "Broma"
+      }
+    },
+    "tournament": {
+      "title": "Jugadores del torneo",
+      "playerPlaceholder": "Jugador {{number}}"
+    },
+    "controls": {
+      "title": "Controles",
+      "p1Up": "J1 Arriba",
+      "p1Down": "J1 Abajo",
+      "p2Up": "J2 Arriba",
+      "p2Down": "J2 Abajo"
+    },
+    "errors": {
+      "nameTooLong": "El nombre \"{{name}}\" supera los 30 caracteres.",
+      "duplicateName": "El nombre \"{{name}}\" se usa más de una vez."
+    },
+    "startButton": "INICIAR"
   },
   "error": {
-    "length": "Tu clave debe tener al menos 12 caracteres.",
-    "minuscule": "Tu clave debe tener al menos una letra minúscula.",
-    "majuscule": "Tu clave debe tener al menos una letra mayúscula.",
-    "number": "Tu clave debe tener al menos un número.",
-    "special": "Tu clave debe tener al menos uno de estos caracteres especiales (!@#$%^&*)."
+    "length": "Tu contraseña debe tener al menos 12 caracteres.",
+    "minuscule": "Tu contraseña debe contener al menos una letra minúscula.",
+    "majuscule": "Tu contraseña debe contener al menos una letra mayúscula.",
+    "number": "Tu contraseña debe contener al menos un número.",
+    "special": "Tu contraseña debe contener al menos uno de estos caracteres especiales (!@#$%^&*)."
   },
   "friend": {
     "loading": "Cargando...",
     "noUsers": "No hay usuarios.",
     "relation": {
-      "friend": "Amigos",
+      "friend": "Amigo",
       "blocked": "Bloqueado",
       "blockedBy": "Bloqueado por",
       "random": "Otro"
@@ -127,8 +158,8 @@
     },
     "errors": {
       "cannotUnblock": "No se puede desbloquear al usuario.",
-      "cannotSendBlocked": "No se puede enviar una solicitud de amistad a un usuario que has bloqueado o que te ha bloqueado.",
-      "cannotAcceptBlocked": "No se puede aceptar una solicitud de amistad de un usuario que has bloqueado o que te ha bloqueado."
+      "cannotSendBlocked": "No se puede enviar una solicitud a un usuario que has bloqueado o que te ha bloqueado.",
+      "cannotAcceptBlocked": "No se puede aceptar la solicitud de un usuario que has bloqueado o que te ha bloqueado."
     }
   }
 }
