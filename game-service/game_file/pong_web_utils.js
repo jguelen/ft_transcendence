@@ -75,3 +75,18 @@ export function nextColorHex(hex, step = 20) {
     let [nr, ng, nb] = hslToRgb(h, s, l);
     return rgbToHex(nr, ng, nb);
 }
+
+// export function circleWhiteBlackWhite(t) {
+//     t = Math.max(0, Math.min(1, t));
+//     let l = (t < 0.5) ? 1 - (t * 2) : (t - 0.5) * 2;
+//     l = Math.abs(l);
+//     const rgb = hslToRgb(0, 0, l);
+//     return rgbToHex(rgb[0], rgb[1], rgb[2]);
+// }
+
+// export function nextCircleColorT(currentT, step) {
+//     let nextT = currentT + step;
+//     if (nextT > 1) nextT -= 1;
+//     if (nextT < 0) nextT += 1;
+//     return nextT;
+// }
