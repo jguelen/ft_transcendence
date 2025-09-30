@@ -69,7 +69,7 @@ function Account()
     event.preventDefault();
     setIsLoadingPassword(true);
     setPasswordError('');
-    const passwordErrors = validatePassword(password, t);
+    const passwordErrors = validatePassword(newPassword, t);
 
     if (passwordErrors.length > 0)
     {
