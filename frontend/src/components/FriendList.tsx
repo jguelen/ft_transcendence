@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import FriendScrollableList from "./Friend";
 import useAuth from "../context/AuthContext";
+import { t } from "i18next";
 
 export type FriendStatus = "ami" | "random" | "bloqué" | "blockedby";
 export interface FriendItem {
@@ -211,7 +212,7 @@ export default function FriendList() {
   // Ajout : empêche d'ajouter/accpeter/voir si bloqué
   const handleAddFriend = async (id: number) => {
     if (isBlocked(id, youBlockedIds, blockedByIds)) {
-      alert("Impossible d'envoyer une demande d'ami à un utilisateur bloqué ou qui t'a bloqué.");
+      alert(t("friend.errors.cannotSendBlocked"));
       return;
     }
     setIsLoading(true);
@@ -229,7 +230,7 @@ export default function FriendList() {
 
   const handleAcceptRequest = async (id: number) => {
     if (isBlocked(id, youBlockedIds, blockedByIds)) {
-      alert("Impossible d'accepter la demande d'un utilisateur bloqué ou qui t'a bloqué.");
+      alert(t("friend.errors.cannotAcceptBlocked"));
       return;
     }
     setIsLoading(true);
@@ -269,10 +270,10 @@ export default function FriendList() {
   };
 
   const tabNames: Record<FriendType, string> = {
-    notFriend: "Non amis",
-    requests: "Demandes d'amis",
-    friends: "Amis",
-    blocked: "Bloqués"
+    notFriend: t("friend.tabs.others"),
+    requests: t("friend.tabs.requests"),
+    friends: t("friend.tabs.friends"),
+    blocked: t("friend.tabs.blocked")
   };
 
   const requestsList = [...requestByList, ...youRequestList];
@@ -303,9 +304,9 @@ export default function FriendList() {
       </div>
       <div className="h-96 overflow-y-auto flex flex-col gap-4 bg-white rounded shadow p-2">
         {isLoading ? (
-          <div className="text-center text-gray-400 mt-10">Chargement...</div>
+          <div className="text-center text-gray-400 mt-10">{t("friend.loading")}</div>
         ) : currentList.length === 0 ? (
-          <div className="text-center text-gray-400 mt-10">Aucun utilisateur</div>
+          <div className="text-center text-gray-400 mt-10">{t("friend.noUsers")}</div>
         ) : (
           <FriendScrollableList
             items={currentList}
