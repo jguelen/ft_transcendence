@@ -82,13 +82,30 @@ export class ImageSrc {
 		this.nbrfont = [this.font0, this.font1, this.font2, this.font3, this.font4, this.font5, this.font6, this.font7, this.font8, this.font9];
 	}
 	reloadColorImage(main_color : string){
-		this.playerImg = returnColorImage(this.playerImg, main_color);
-		this.ai_target = returnColorImage(this.ai_target, main_color);
-		this.powerupImg = returnColorImage(this.powerupImg, main_color);
-		this.obstacleImg = returnColorImage(this.obstacleImg, main_color);
-		this.meteorImg = returnColorImage(this.meteorImg, main_color);
-		this.blackholeImg = returnColorImage(this.blackholeImg, '#000000');
-		this.top_img = returnColorImage(this.top_img, main_color);
+		let player = this.playerImg
+		let ai_target = this.ai_target
+		let power = this.powerupImg
+		let obstacle = this.obstacleImg
+		let meteor = this.meteorImg
+		let black = this.blackholeImg
+		let top = this.top_img
+		try {
+			this.playerImg = returnColorImage(this.playerImg, main_color);
+			this.ai_target = returnColorImage(this.ai_target, main_color);
+			this.powerupImg = returnColorImage(this.powerupImg, main_color);
+			this.obstacleImg = returnColorImage(this.obstacleImg, main_color);
+			this.meteorImg = returnColorImage(this.meteorImg, main_color);
+			this.blackholeImg = returnColorImage(this.blackholeImg, '#000000');
+			this.top_img = returnColorImage(this.top_img, main_color);
+		} catch (e){
+			this.playerImg = player;
+			this.ai_target = ai_target
+			this.powerupImg = power;
+			this.obstacleImg = obstacle;
+			this.meteorImg = meteor;
+			this.blackholeImg = black;
+			this.top_img = top;
+		}
 	}
 	reloadColorPlayer(color : string){
 		this.playerImg = returnColorImage(this.playerImg, color);
@@ -105,22 +122,54 @@ export function hexToRgbArray(hex : string) {
 }
 
 function returnColorImage(img : HTMLImageElement | HTMLCanvasElement, color : string, scaleX = 1, scaleY = 1) {
-	const deccolor = hexToRgbArray(color);
-	const tempCanvas = document.createElement('canvas');
-	tempCanvas.width = img.width * scaleX;
-	tempCanvas.height = img.height * scaleY;
-	const tempCtx = tempCanvas.getContext('2d') as CanvasRenderingContext2D;;
-	tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
-	const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-	const data = imageData.data;
+	try {
+		const deccolor = hexToRgbArray(color);
+		const tempCanvas = document.createElement('canvas');
+		tempCanvas.width = img.width * scaleX;
+		tempCanvas.height = img.height * scaleY;
+		const tempCtx = tempCanvas.getContext('2d') as CanvasRenderingContext2D;;
+		tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+		const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+		const data = imageData.data;
 
-	for (let i = 0; i < data.length; i += 4) {
-		data[i] = Number(deccolor[0]);
-		data[i + 1] = Number(deccolor[1]);
-		data[i + 2] = Number(deccolor[2]);
+		for (let i = 0; i < data.length; i += 4) {
+			data[i] = Number(deccolor[0]);
+			data[i + 1] = Number(deccolor[1]);
+			data[i + 2] = Number(deccolor[2]);
+		}
+
+		tempCtx.putImageData(imageData, 0, 0);
+
+		return tempCanvas;
+	} catch (e){
+		return img;
 	}
-
-	tempCtx.putImageData(imageData, 0, 0);
-
-	return tempCanvas;
 }
+
+// function returnColorImage(img : HTMLImageElement | HTMLCanvasElement, color : string, scaleX = 1, scaleY = 1) {
+//     try {
+// 		if (img instanceof HTMLImageElement) {
+// 			if (!img.complete || img.naturalWidth === 0 || img.naturalHeight === 0) {
+// 				console.warn("Image non chargée ou taille nulle :", img.src, img.width, img.height);
+// 				return img;
+// 			}
+// 		}
+// 		const deccolor = hexToRgbArray(color);
+// 		const tempCanvas = document.createElement('canvas');
+// 		tempCanvas.width = img.width * scaleX;
+// 		tempCanvas.height = img.height * scaleY;
+// 		const tempCtx = tempCanvas.getContext('2d') as CanvasRenderingContext2D;
+// 		tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+// 		const imageData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+// 		const data = imageData.data;
+// 		for (let i = 0; i < data.length; i += 4) {
+// 			data[i] = Number(deccolor[0]);
+// 			data[i + 1] = Number(deccolor[1]);
+// 			data[i + 2] = Number(deccolor[2]);
+// 		}
+// 		tempCtx.putImageData(imageData, 0, 0);
+// 		return tempCanvas;
+// 	} catch (e) {
+// 		return img;
+// 	}
+// }
