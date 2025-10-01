@@ -41,6 +41,16 @@ function Register()
       return;
     }
 
+    if (trimmedUsername.length <= 3 || trimmedUsername.length >= 18)
+    {
+      if (trimmedUsername.length <= 3)
+        setError(t("register.error.tooshort"));
+      else if (trimmedUsername.length >= 18)
+        setError(t("register.error.toolong"));
+      setLoadingSubmit(false);
+      return;
+    }
+
     if (password !== repassword)
     {
       setError(t("register.error.repassword"));

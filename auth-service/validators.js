@@ -11,9 +11,9 @@ exports.validateUserName = function(userName) {
 
     if (userName.includes('@'))
         return false
-    if (userName.length == 0)
+    if (userName.length <= 3)
         return false
-    if (userName.length > 32)
+    if (userName.length >= 18)
         return false
     return true	
 }

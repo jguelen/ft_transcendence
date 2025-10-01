@@ -130,7 +130,7 @@ export function AuthProvider({ children }: AuthProviderProps)
       body: JSON.stringify({ name, email, password })
     });
     if (!response.ok)
-      throw new Error(t("auth.error.registerFailed"));
+      throw new Error(t("auth.error.signupFailed"));
     await getLoggedUser();
   }, [t, getLoggedUser]);
 

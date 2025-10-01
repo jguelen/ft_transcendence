@@ -62,7 +62,7 @@ export default function ImageLoader() {
         ws.binaryType = "arraybuffer";
 
         ws.onopen = () => {
-            ws.send(JSON.stringify({ type: "new avatar", id }));
+            ws.send(JSON.stringify({ type: "new avatar", id: 1 }));
 
             const reader = new FileReader();
             reader.onerror = (error) => {

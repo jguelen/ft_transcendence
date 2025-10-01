@@ -40,7 +40,6 @@ function Login()
     {
       console.error("Échec de la connexion:", error);
       setError(error.message);
-
     }
     finally
     {

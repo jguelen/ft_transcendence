@@ -9,12 +9,16 @@ exports.validateEmail = function(email) {
 
 exports.validateUserName = function(userName) {
 
+console.log(userName, '1')
     if (userName.includes('@'))
         return false
-    if (userName.length == 0)
+console.log(userName, '2')
+    if (userName.length <= 3)
         return false
-    if (userName.length > 32)
+console.log(userName, '3')
+    if (userName.length >= 18)
         return false
+console.log(userName, '4')
     return true	
 };
 

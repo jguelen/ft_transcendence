@@ -37,8 +37,10 @@
       "username": "Incorrect username",
       "mail/password": "Incorrect email/password",
       "repassword": "Both passwords need to be equal",
-      "taken": "This username has already been taken.",
-      "usernameContainsAt": "Username cannot contain an '@'."
+      "taken": "This username/email has already been taken.",
+      "usernameContainsAt": "Username cannot contain an '@'.",
+      "tooshort": "Username is too short",
+      "toolong": "Username is too long"
     }
   },
   "navbar": {
@@ -66,7 +68,8 @@
     "error": {
       "userError": "The username shouldn't be empty",
       "unknownError": "An unknown error happened",
-      "passwordError": "Wrong password"
+      "passwordError": "Wrong password",
+      "lengthError": "Username too long"
     }
   },
   "home": {

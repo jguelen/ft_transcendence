@@ -37,8 +37,10 @@
       "username": "Nom d'utilisateur incorrect",
       "mail/password": "E-mail/mot de passe incorrect",
       "repassword": "Les deux mots de passe doivent être identiques",
-      "taken": "Ce nom d'utilisateur est déjà pris.",
-      "usernameContainsAt": "Le nom d'utilisateur ne peut pas contenir de '@'."
+      "taken": "Ce nom d'utilisateur/email est déjà pris.",
+      "usernameContainsAt": "Le nom d'utilisateur ne peut pas contenir de '@'.",
+      "tooshort": "Nom d'utilisateur trop court",
+      "toolong": "Nom d'utilisateur trop long"
     }
   },
   "navbar": {
@@ -66,7 +68,8 @@
     "error": {
       "userError": "Le nom d'utilisateur ne doit pas être vide",
       "unknownError": "Une erreur inconnue est survenue",
-      "passwordError": "Mot de passe incorrect"
+      "passwordError": "Mot de passe incorrect",
+      "lengthError": "Nom d'utilisateur trop long"
     }
   },
   "home": {
