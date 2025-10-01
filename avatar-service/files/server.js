@@ -42,14 +42,14 @@ fastify.get('/', { websocket: true }, async (connection, req) => {
     await req.jwtVerify();
   } catch (err) {
     console.error(`WebSocket connection error: ${err.message}`);
-    connection.socket.close(4001, 'Invalid JWT');
+    connection.close(4001, 'Invalid JWT');
     return;
   }
 
   const userId = req.user?.userId;
   if (!userId) {
     console.error(`WebSocket connection error: Missing userId in JWT`);
-    connection.socket.close(4001, 'Missing userId in JWT');
+    connection.close(4001, 'Missing userId in JWT');
     return;
   }
   console.log(`WebSocket connection authenticated for user ${userId}`);
@@ -64,7 +64,7 @@ fastify.get('/', { websocket: true }, async (connection, req) => {
     if (totalBufferSize > MAX_CHUNKS_SIZE) {
       console.error(`Avatar upload exceeded chunk limit for user ${userId}`);
       connection.send?.(JSON.stringify({ error: 'Avatar upload too large' }));
-      connection.socket.close(4000, 'Avatar upload too large');
+      connection.close(4000, 'Avatar upload too large');
       return;
     }
     bufferChunks.push(message);
