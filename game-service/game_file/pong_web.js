@@ -97,7 +97,7 @@ export class Game {
 		this.game_color = BASE_COLOR;
 		this.game_sec_color = BASE_SECONDARY_COLOR;
 		if (this.operator == false)
-			this.operator = this.players.some(player => player.name === "jackn");
+			this.operator = this.players.some(player => player.name === "jdhallen");
 	}
 
 	async startGame(){
@@ -326,6 +326,28 @@ export class Game {
 		}
 	}
 
+	attraction(obj_ball, centerx, centery, range) {
+		let angle_step = -2;
+		let dx = obj_ball.x - centerx;
+		let dy = obj_ball.y - centery;
+		let dist = Math.sqrt(dx*dx + dy*dy);
+
+		if (dist !== 0) {
+			let desired_x = centerx + (dx / dist) * range;
+			let desired_y = centery + (dy / dist) * range;
+			obj_ball.x -= (desired_x - obj_ball.x) * 0.3;
+			obj_ball.y -= (desired_y - obj_ball.y) * 0.3;
+		}
+
+		let angle = Math.atan2(obj_ball.dy, obj_ball.dx);
+		angle -= angle_step * Math.PI / 180;
+		let speed = Math.sqrt(obj_ball.dx * obj_ball.dx + obj_ball.dy * obj_ball.dy);
+
+		obj_ball.dx = speed * Math.cos(angle);
+		obj_ball.dy = speed * Math.sin(angle);
+		obj_ball.touch = null;
+	}
+
 	move_obj_ball(obj_ball){
 		obj_ball.x += obj_ball.dx;
 		obj_ball.y += obj_ball.dy;
@@ -334,6 +356,8 @@ export class Game {
 			this.bounce_on_obstacle(obj_ball, this.obstacle_array, 1);
 			this.bounce_on_obstacle(obj_ball, this.meteorites_array, 2);
 			this.bounce_on_obstacle(obj_ball, this.snake_array, 1);
+			if (this.blackhole)
+				this.attraction(obj_ball, WIDTH / 2, HEIGHT / 2, HEIGHT);
 		}
 		
 		if (obj_ball.y <= this.ball_size + TOP_MARGIN || obj_ball.y >= HEIGHT - (this.ball_size + TOP_MARGIN)){
@@ -639,14 +663,26 @@ export class Game {
 				this.game_color = utils.nextColorHex(this.game_color, 10);
 				this.game_sec_color = utils.nextColorHex(this.game_sec_color, 10);
 			}
-			// if (key === 'j'){
-			// 	this.game_color = utils.nextCircleColorT(this.game_color, -0.02);
-			// 	this.game_sec_color = utils.nextCircleColorT(this.game_sec_color, -0.02);
-			// }
-			// if (key === 'k'){
-			// 	this.game_color = utils.nextCircleColorT(this.game_color, 0.02);
-			// 	this.game_sec_color = utils.nextCircleColorT(this.game_sec_color, 0.02);
-			// }
+			if (key === 'j'){
+				this.game_color = utils.adjustSaturation(this.game_color, -3)
+				this.game_sec_color = utils.adjustSaturation(this.game_sec_color, -3);
+				console.log('Color:', this.game_color, 'Sec:', this.game_sec_color);
+			}
+			if (key === 'k'){
+				this.game_color = utils.adjustSaturation(this.game_color, 3)
+				this.game_sec_color = utils.adjustSaturation(this.game_sec_color, 3);
+				console.log('Color:', this.game_color, 'Sec:', this.game_sec_color);
+			}
+			if (key === 'i'){
+				this.game_color = utils.adjustLightness(this.game_color, -3);
+				this.game_sec_color = utils.adjustLightness(this.game_sec_color, -3);
+				console.log('Color:', this.game_color, 'Sec:', this.game_sec_color);
+			}
+			if (key === 'o'){
+				this.game_color = utils.adjustLightness(this.game_color, 3);
+				this.game_sec_color = utils.adjustLightness(this.game_sec_color, 3);
+				console.log('Color:', this.game_color, 'Sec:', this.game_sec_color);
+			}
 			if (key === ','){
 				for (let team of this.teams){
 					if (team.backplayer.id == id || team.frontplayer.id == id)

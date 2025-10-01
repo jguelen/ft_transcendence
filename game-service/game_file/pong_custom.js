@@ -170,8 +170,19 @@ async function effect9(game){
 }
 
 async function effect10(game){
+	if (game.blackhole)
+		return ;
 	// console.log("Nothing {10}");
-	sendmessage(game, "Nothing");
+	sendmessage(game, "Black Hole");
+	let prev_color = game.game_color;
+	let prev_color2 = game.game_sec_color;
+	game.game_color = '#FFFFFF';
+	game.game_sec_color = '#000000'
+	game.blackhole = true;
+	await utils.sleep(200 * Math.floor(Math.random() * 30));
+	game.game_color = prev_color;
+	game.game_sec_color = prev_color2;
+	game.blackhole = false;
 }
 
 async function effect11(game){ 
@@ -479,7 +490,7 @@ export async function custom_mode_func(game){
 			let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
 			// while (game.box_array.includes(new_box) == true)
 			// 	new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
-			// let nbr = 13;
+			// let nbr = 10;
 			// let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), nbr);
 			return (new_box);
 		}
