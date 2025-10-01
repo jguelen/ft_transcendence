@@ -62,8 +62,6 @@ export default function ImageLoader() {
         ws.binaryType = "arraybuffer";
 
         ws.onopen = () => {
-            ws.send(JSON.stringify({ type: "new avatar", id: 1 }));
-
             const reader = new FileReader();
             reader.onerror = (error) => {
                 console.error("ERREUR: Impossible de lire le fichier.", error);
@@ -83,9 +81,7 @@ export default function ImageLoader() {
                             if (response.ok) {
                                 const newUrl = `${avatarUrl}?v=${Date.now()}`;
                                 setImageState({ current: newUrl, previous: currentState.current, hasCustomAvatar: true });
-                                
                                 refreshAvatar();
-
                             } else {
                                 console.error("Échec de la vérification après upload.");
                                 setImageState(currentState);
