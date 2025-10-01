@@ -345,7 +345,8 @@ export class Game {
 
 		obj_ball.dx = speed * Math.cos(angle);
 		obj_ball.dy = speed * Math.sin(angle);
-		obj_ball.touch = null;
+		if (obj_ball == this.ball)
+			obj_ball.last_touch = null;
 	}
 
 	move_obj_ball(obj_ball){
@@ -641,15 +642,15 @@ export class Game {
 				let speed = Math.sqrt(this.ball.dx * this.ball.dx + this.ball.dy * this.ball.dy) || this.BALL_SPEED;
 				this.ball.dx = speed * Math.cos(angle * Math.PI / 180);
 				this.ball.dy = speed * Math.sin(angle * Math.PI / 180);
-				this.ball.touch = null;
+				this.ball.last_touch = null;
 			}
 			if (key === '9' || key === '0'){
 				let angle = Math.atan2(this.ball.dy, this.ball.dx) * 180 / Math.PI;
-				angle += (key === '9') ? 4 : -4;
+				angle += (key === '0') ? 4 : -4;
 				let speed = Math.sqrt(this.ball.dx * this.ball.dx + this.ball.dy * this.ball.dy) || this.BALL_SPEED;
 				this.ball.dx = speed * Math.cos(angle * Math.PI / 180);
 				this.ball.dy = speed * Math.sin(angle * Math.PI / 180);
-				this.ball.touch = null;
+				this.ball.last_touch = null;
 			}
 			if (key === 'b'){
 				this.game_color = BASE_COLOR;
@@ -682,6 +683,9 @@ export class Game {
 				this.game_color = utils.adjustLightness(this.game_color, 3);
 				this.game_sec_color = utils.adjustLightness(this.game_sec_color, 3);
 				console.log('Color:', this.game_color, 'Sec:', this.game_sec_color);
+			}
+			if (key === 'c'){
+				custom.addBox(this);
 			}
 			if (key === ','){
 				for (let team of this.teams){

@@ -482,6 +482,11 @@ function randomCustomWeighted() {
 	return weights.length - 1;
 }
 
+export function addBox(game){
+	let new_box = new Box(Math.round(WIDTH * Math.random()), Math.round(HEIGHT * Math.random()), randomCustomWeighted());
+	game.box_array.push(new_box);
+}
+
 export async function custom_mode_func(game){
 	if (game.custom_mode == true){
 		function spawn_a_box(){
