@@ -148,6 +148,9 @@ fastify_instance.get('/api/user/all', async (req, reply) => {
 			if (user.name == newName)
 				return res.status(200).send( {name: newName} )
 
+			if (!validateUserName(newName))
+				return res.status(400).send();
+			
 			var altName = await checkUserNameDuplicate(newName)
 			if (altName == "")
 				res.status(200).send( {name: ""} )
