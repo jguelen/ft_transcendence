@@ -353,6 +353,9 @@ fastify.post('/api/auth/changepw', async (req, res) => {
 // console.log(pwHash);
 // console.log(newPw);
 
+	if (!validatePassword(newPw))
+		return res.status(400).send();
+
 	try {
 		if (!await bcrypt.compare(pw, pwHash))
 			return res.status(401).send();
