@@ -460,11 +460,12 @@ function randomCustomWeighted() {
 	let rare = 3;
 	let epic = 2;
 	let legendary = 0.5;
+	let mythic = 0.1;
 
     const weights = [
         common, rare, common, common, //0, 1, 2, 3
 		uncommon, epic, rare, rare, //4, 5, 6, 7
-		uncommon, legendary, epic, uncommon, //8, 9, 10, 11
+		uncommon, legendary, mythic, uncommon, //8, 9, 10, 11
 		uncommon, uncommon, rare, epic, //12, 13, 14, 15
 		uncommon, rare, legendary, common, //16, 17, 18, 19
 		rare, rare, uncommon //20, 21, 22
