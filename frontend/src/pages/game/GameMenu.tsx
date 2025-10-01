@@ -4,7 +4,7 @@ import Button from '../../components/Button';
 import Card from '../../components/Card';
 import ArrowInput from '../../components/ArrowInput';
 import useAuth from '../../context/AuthContext';
-import { useTranslation, TFunction } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 type User = {
     id: number;

@@ -10,6 +10,8 @@ const { AUTH_SERVICE_URL } = process.env
 
 const { checkUserNameDuplicate } = require('./index.js')
 
+const { validateEmail, validateUserName, validatePassword } = require('./validators.js')
+
 exports.protected_routes = function(fastify_instance, options, next) {
 	fastify_instance.addHook('preValidation', (req, res, done) =>  {
 		try {
@@ -131,12 +133,15 @@ fastify_instance.get('/api/user/all', async (req, reply) => {
 
 
 	fastify_instance.put('/api/user/updateusername', async function (req, res) {
-// console.log("#PUT /api/user/updateusername");
-// console.log(req.body);
+console.log("#PUT /api/user/updateusername");
+console.log(req.body);
 
 		const newName = req.body.newusername;
 
-// console.log(newName);
+console.log(newName);
+
+		if (!validateUserName(newName))
+			return res.status(400).send();
 
 		try {
 			var user = await prisma.user.findUnique({
@@ -281,6 +286,8 @@ fastify_instance.get('/api/user/all', async (req, reply) => {
 
 //console.log(response);
 // console.log("response received");
+			if (response.status == 400)
+				return res.status(400).send();
 			if (response.status == 401)
 				return res.status(401).send();
 			if (response.status == 500)

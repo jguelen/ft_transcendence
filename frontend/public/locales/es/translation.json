@@ -37,8 +37,10 @@
       "username": "Nombre de usuario incorrecto",
       "mail/password": "Correo/contraseña incorrectos",
       "repassword": "Ambas contraseñas deben coincidir",
-      "taken": "Este nombre de usuario ya está en uso.",
-      "usernameContainsAt": "El nombre de usuario no puede contener '@'."
+      "taken": "Este nombre de usuario/correo electrónico ya está en uso.",
+      "usernameContainsAt": "El nombre de usuario no puede contener '@'.",
+      "tooshort": "Nombre de usuario demasiado corto",
+      "toolong": "Nombre de usuario demasiado largo"
     }
   },
   "navbar": {
@@ -66,7 +68,8 @@
     "error": {
       "userError": "El nombre de usuario no debe estar vacío",
       "unknownError": "Ocurrió un error desconocido",
-      "passwordError": "Contraseña incorrecta"
+      "passwordError": "Contraseña incorrecta",
+      "lengthError": "Nombre de usuario demasiado largo"
     }
   },
   "home": {

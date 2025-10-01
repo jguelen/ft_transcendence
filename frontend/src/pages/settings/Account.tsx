@@ -34,15 +34,32 @@ function Account()
     setUserError('');
     const trimmedUsername = username.trim();
 
+    if (!trimmedUsername)
+    {
+      setUserError(t("account.error.userError"));
+      setIsLoadingUser(false);
+      return;
+    }
+
+    if (trimmedUsername.length <= 3 || trimmedUsername.length >= 18)
+    {
+      if (trimmedUsername.length <= 3)
+        setUserError(t("register.error.tooshort"));
+      else if (trimmedUsername.length >= 18)
+        setUserError(t("register.error.toolong"));
+      setIsLoadingUser(false);
+      return;
+    }
+
     if (trimmedUsername.includes('@'))
     {
       setUserError(t("register.error.usernameContainsAt"));
       setIsLoadingUser(false);
       return;
     }
-    if (!trimmedUsername)
+    if (trimmedUsername.length > 18)
     {
-      setUserError(t("account.error.userError"));
+      setUserError(t("account.error.lengthError"));
       setIsLoadingUser(false);
       return;
     }
@@ -88,7 +105,7 @@ function Account()
       		headers: {'Content-Type': 'application/json'},
     			body: JSON.stringify({pw: password, newpw: newPassword})
     		})
-			if (response.status == 401)
+			if (!response.ok)
 			{
         // console.log("Current password not equal to real password");
         setPasswordError(t("account.error.passwordError"));
