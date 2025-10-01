@@ -76,17 +76,18 @@ export function nextColorHex(hex, step = 20) {
     return rgbToHex(nr, ng, nb);
 }
 
-// export function circleWhiteBlackWhite(t) {
-//     t = Math.max(0, Math.min(1, t));
-//     let l = (t < 0.5) ? 1 - (t * 2) : (t - 0.5) * 2;
-//     l = Math.abs(l);
-//     const rgb = hslToRgb(0, 0, l);
-//     return rgbToHex(rgb[0], rgb[1], rgb[2]);
-// }
+export function adjustSaturation(hex, amount) {
+    let [r, g, b] = hexToRgb(hex);
+    let [h, s, l] = rgbToHsl(r, g, b);
+    s = Math.max(0, Math.min(100, s * 100 + amount));
+    let [nr, ng, nb] = hslToRgb(h, s / 100, l);
+    return rgbToHex(nr, ng, nb);
+}
 
-// export function nextCircleColorT(currentT, step) {
-//     let nextT = currentT + step;
-//     if (nextT > 1) nextT -= 1;
-//     if (nextT < 0) nextT += 1;
-//     return nextT;
-// }
+export function adjustLightness(hex, amount) {
+    let [r, g, b] = hexToRgb(hex);
+    let [h, s, l] = rgbToHsl(r, g, b);
+    l = Math.max(0, Math.min(100, l * 100 + amount));
+    let [nr, ng, nb] = hslToRgb(h, s, l / 100);
+    return rgbToHex(nr, ng, nb);
+}
