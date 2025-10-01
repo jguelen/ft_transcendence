@@ -68,6 +68,7 @@ services:
         container_name: avatar_service
         ports:
             - "3003:3003"
+        env_file: ./.env
         environment:
             - DATABASE_URL=file:./data/avatar_db.db
             - PORT=3003
